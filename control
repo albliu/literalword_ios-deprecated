@@ -1,0 +1,9 @@
+Package: com.ebcsv.literalword
+Name: LiteralWord
+Depends: 
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome application!
+Maintainer: albliu
+Author: albliu
+Section: Utilities
