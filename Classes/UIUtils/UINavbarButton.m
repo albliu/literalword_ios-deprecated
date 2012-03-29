@@ -63,7 +63,8 @@
 
 - (id)initWithTitle:(NSString *)title style:(UIBarStyle)style target:(id) target action:(SEL)action {
     UILabel *label = [[UILabel alloc] init];
-    [label setFont:[UIFont fontWithName:@"Arial-BoldMT" size:13.0]];
+    [label setFont:[UIFont fontWithName:@"Arial-BoldMT" size:18.0]];
+    [label setTextColor:[UIColor blackColor]];
     [label setShadowOffset:CGSizeMake(0.0, -1.0)];
     [label setText:title];
     [label sizeToFit];

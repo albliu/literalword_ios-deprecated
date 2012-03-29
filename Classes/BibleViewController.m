@@ -9,6 +9,22 @@
 @synthesize fontscale=_fontscale;
 @synthesize selectMenu=_selectMenu;
 
+// used to store temp values for when changing books
+int tmp_book;
+int tmp_chapter;
+
+-(UIPickerView *) selectMenu {
+	if (_selectMenu == nil) {
+		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 - 160 , 0, 320, 240)];
+		_selectMenu.delegate =self;	
+		_selectMenu.showsSelectionIndicator = YES;
+		_selectMenu.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin); 
+		[_selectMenu setHidden:YES];
+	}
+	return _selectMenu;
+
+}
+
 -(UIWebView *) webView{
 	if (_webView == nil) { 
 		_webView = [[UIWebView alloc] initWithFrame:[self.view bounds]];
@@ -70,8 +86,9 @@
 
 	[super loadView];
 
-	
+		
 	[self.view addSubview:self.webView];
+	[self.view addSubview:self.selectMenu];
 	
 
 }
@@ -116,6 +133,7 @@
 	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(memverse:)];
 	memoryverse.style = UIBarButtonItemStyleBordered;
 	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	UIBarButtonItem *flex2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 /*
 	UIBarButtonItem *action = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(action:)];
 	action.style = UIBarButtonItemStyleBordered;
@@ -131,6 +149,7 @@
 
 	[lButtons addObject:memoryverse];
 	[lButtons addObject:bookmark];
+	[lButtons addObject:flex2];
 
 	[rightButtons setItems:rButtons animated:NO];
 	[leftButtons setItems:lButtons animated:NO];
@@ -167,6 +186,7 @@
 
 
 - (void)dealloc {
+	[self.selectMenu release];	
 	[self.webView release];	
 	[self.bibleDB release];	
 	[self.bibleHtml release];	
@@ -241,7 +261,7 @@
 	if (component == 0)
 		ret = [self.bibleDB maxBook]; 
 	else if (component == 1)
-		ret = [[self.bibleDB getBookChapterCountAt:curr_book] intValue];
+		ret = [[self.bibleDB getBookChapterCountAt:tmp_book] intValue];
 	return ret;
 }
 
@@ -258,14 +278,18 @@
 
 	if (component == 0) {
 		if (curr_book != row) {
-			curr_book = row;
-			curr_chapter = 1;
+			tmp_book = row;
+			tmp_chapter = 1;
 			[pickerView reloadComponent:1];
 		}
 	}
 	else if (component == 1) {
-		curr_chapter = row + 1;
-		[pickerView removeFromSuperview];
+		tmp_chapter = row + 1;
+
+		//commit
+		curr_book = tmp_book;
+		curr_chapter = tmp_chapter;
+		[pickerView setHidden:YES];
 		[self loadPassage];
 	}
 }
@@ -274,17 +298,23 @@
 
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
-//	[[[[UIAlertView alloc] initWithTitle:@"Change Passage?" message:@"Do you really want to change the passage?" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
-
-	self.selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
-	self.selectMenu.delegate =self;	
-	self.selectMenu.showsSelectionIndicator = YES;
-	
-	[self.selectMenu selectRow:curr_book inComponent:0 animated: NO];
-	[self.selectMenu selectRow:(curr_chapter - 1) inComponent:1 animated: NO];
-
-	[self.view addSubview:self.selectMenu];
-
+	UIPickerView * pickerView;
+/*	
+	for (UIView *view in self.view.subviews) {
+		if([view isKindOfClass:[UIPickerView class]])
+			pickerView = (UIPickerView *) view;
+	}
+*/	pickerView = self.selectMenu;
+	if (pickerView.hidden == YES) {
+		tmp_book = curr_book;
+		tmp_chapter = curr_chapter;
+		[pickerView selectRow:curr_book inComponent:0 animated: NO];
+		[pickerView reloadComponent:1];
+		[pickerView selectRow:(curr_chapter - 1) inComponent:1 animated: NO];
+		[pickerView setHidden:NO];
+	} else {
+		[pickerView setHidden:YES];
+	}
 }
 
 - (void) search:(id)ignored {
