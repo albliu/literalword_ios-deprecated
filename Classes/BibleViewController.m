@@ -7,6 +7,7 @@
 @synthesize bibleDB=_bibleDB;
 @synthesize webView=_webView;
 @synthesize fontscale=_fontscale;
+@synthesize selectMenu=_selectMenu;
 
 -(UIWebView *) webView{
 	if (_webView == nil) { 
@@ -97,14 +98,14 @@
 	[super viewDidLoad];
 
 	/* toolbar */
-	UIToolbar * leftButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100 ,44 )];
+	UIToolbar * leftButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100 ,40 )];
 	leftButtons.barStyle = -1; // clear background
 
-	UIToolbar * rightButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
+	UIToolbar * rightButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 40)];
 	rightButtons.barStyle = -1; // clear background
 
 	NSMutableArray * lButtons = [[NSMutableArray alloc] initWithCapacity:2];
-	NSMutableArray * rButtons = [[NSMutableArray alloc] initWithCapacity:2];
+	NSMutableArray * rButtons = [[NSMutableArray alloc] initWithCapacity:3];
 
 	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
 	search.style = UIBarButtonItemStyleBordered;
@@ -114,6 +115,7 @@
 	notes.style = UIBarButtonItemStyleBordered;
 	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(memverse:)];
 	memoryverse.style = UIBarButtonItemStyleBordered;
+	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 /*
 	UIBarButtonItem *action = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(action:)];
 	action.style = UIBarButtonItemStyleBordered;
@@ -123,6 +125,7 @@
 	[rButtons addObject:fullscreen];
 */
 
+	[rButtons addObject:flex];
 	[rButtons addObject:notes];
 	[rButtons addObject:search];
 
@@ -228,12 +231,59 @@
     return YES;
 }
 
+#pragma mark UIPickerView Delegate methods
+- (NSInteger) numberOfComponentsInPickerView:(UIPickerView *)pickerView
+{ return 2; }
+
+- (NSInteger)pickerView: (UIPickerView *)pView numberOfRowsInComponent: (NSInteger) component
+{
+	NSInteger ret = 0; 
+	if (component == 0)
+		ret = [self.bibleDB maxBook]; 
+	else if (component == 1)
+		ret = [[self.bibleDB getBookChapterCountAt:curr_book] intValue];
+	return ret;
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
+	NSString * title;
+	if (component == 0 )
+		title =  [self.bibleDB getBookNameAt:row];
+	else if (component == 1)
+		title =  [NSString stringWithFormat:@"%d", row + 1];
+	return title;
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow: (NSInteger)row inComponent:(NSInteger)component {
+
+	if (component == 0) {
+		if (curr_book != row) {
+			curr_book = row;
+			curr_chapter = 1;
+			[pickerView reloadComponent:1];
+		}
+	}
+	else if (component == 1) {
+		curr_chapter = row + 1;
+		[pickerView removeFromSuperview];
+		[self loadPassage];
+	}
+}
 
 #pragma mark Button reactions
 
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
-	[[[[UIAlertView alloc] initWithTitle:@"Change Passage?" message:@"Do you really want to change the passage?" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+//	[[[[UIAlertView alloc] initWithTitle:@"Change Passage?" message:@"Do you really want to change the passage?" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+
+	self.selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
+	self.selectMenu.delegate =self;	
+	self.selectMenu.showsSelectionIndicator = YES;
+	
+	[self.selectMenu selectRow:curr_book inComponent:0 animated: NO];
+	[self.selectMenu selectRow:(curr_chapter - 1) inComponent:1 animated: NO];
+
+	[self.view addSubview:self.selectMenu];
 
 }
 
