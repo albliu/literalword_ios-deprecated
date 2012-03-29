@@ -15,7 +15,7 @@ int tmp_chapter;
 
 -(UIPickerView *) selectMenu {
 	if (_selectMenu == nil) {
-		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 - 160 , 0, 320, 240)];
+		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 - 160 , 0, 320, 300)];
 		_selectMenu.delegate =self;	
 		_selectMenu.showsSelectionIndicator = YES;
 		_selectMenu.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin); 
@@ -292,6 +292,12 @@ int tmp_chapter;
 		[pickerView setHidden:YES];
 		[self loadPassage];
 	}
+}
+
+- (CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component
+{
+	if (component == 0) return 200.0;
+	else return 80.0;
 }
 
 #pragma mark Button reactions
