@@ -6,20 +6,15 @@
 @synthesize bibleDB=_bibleDB;
 @synthesize webView=_webView;
 @synthesize fontscale=_fontscale;
-@synthesize selectMenu=_selectMenu;
 @synthesize passage=_passage;
+@synthesize selectMenu=_selectMenu;
 
 // used to store temp values for when changing books
-int tmp_book;
-int tmp_chapter;
 
--(UIPickerView *) selectMenu {
-	if (_selectMenu == nil) {
-		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 - 160 , 0, 320, 300)];
-		_selectMenu.delegate =self;	
-		_selectMenu.showsSelectionIndicator = YES;
-		_selectMenu.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin); 
-		[_selectMenu setHidden:YES];
+
+-(PassageSelector *) selectMenu {
+	if (_selectMenu == nil)  {
+		_selectMenu = [[PassageSelector alloc] initWithViewWidth:self.view.bounds.size.width Delegate:self BibleDB:self.bibleDB];
 	}
 	return _selectMenu;
 
@@ -100,7 +95,7 @@ int tmp_chapter;
 
 		
 	[self.view addSubview:self.webView];
-	[self.view addSubview:self.selectMenu];
+	[self.view addSubview:self.selectMenu.view];
 	
 
 }
@@ -214,13 +209,6 @@ int tmp_chapter;
     // we support rotation in this view controller
     return YES;
 }
-
-/*#pragma mark UIWebView delegate
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-	[self changeFontSize];
-
-}
-*/
 #pragma mark Gestures
 
 - (void)pinch:(UIPinchGestureRecognizer *)gesture {
@@ -266,75 +254,24 @@ int tmp_chapter;
     return YES;
 }
 
-#pragma mark UIPickerView Delegate methods
-- (NSInteger) numberOfComponentsInPickerView:(UIPickerView *)pickerView
-{ return 2; }
-
-- (NSInteger)pickerView: (UIPickerView *)pView numberOfRowsInComponent: (NSInteger) component
-{
-	NSInteger ret = 0; 
-	if (component == 0)
-		ret = [self.bibleDB maxBook]; 
-	else if (component == 1)
-		ret = [[self.bibleDB getBookChapterCountAt:tmp_book] intValue];
-	return ret;
-}
-
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
-	NSString * title;
-	if (component == 0 )
-		title =  [self.bibleDB getBookNameAt:row];
-	else if (component == 1)
-		title =  [NSString stringWithFormat:@"%d", row + 1];
-	return title;
-}
-
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow: (NSInteger)row inComponent:(NSInteger)component {
-
-	if (component == 0) {
-		if (curr_book != row) {
-			tmp_book = row;
-			tmp_chapter = 1;
-			[pickerView reloadComponent:1];
-		}
-	}
-	else if (component == 1) {
-		tmp_chapter = row + 1;
-
+#pragma mark selectorView Delegate
+- (void) selectedbook:(int) bk chapter:(int) ch {
 		//commit
-		curr_book = tmp_book;
-		curr_chapter = tmp_chapter;
-		[pickerView setHidden:YES];
+		curr_book = bk;
+		curr_chapter = ch;
 		[self loadPassage];
-	}
-}
 
-- (CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component
-{
-	if (component == 0) return 200.0;
-	else return 80.0;
-}
 
+}
 #pragma mark Button reactions
 
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
-	UIPickerView * pickerView;
-/*	
-	for (UIView *view in self.view.subviews) {
-		if([view isKindOfClass:[UIPickerView class]])
-			pickerView = (UIPickerView *) view;
-	}
-*/	pickerView = self.selectMenu;
-	if (pickerView.hidden == YES) {
-		tmp_book = curr_book;
-		tmp_chapter = curr_chapter;
-		[pickerView selectRow:curr_book inComponent:0 animated: NO];
-		[pickerView reloadComponent:1];
-		[pickerView selectRow:(curr_chapter - 1) inComponent:1 animated: NO];
-		[pickerView setHidden:NO];
+
+	if (self.selectMenu.hidden == YES) {
+		[self.selectMenu showSelector:curr_book withChapter:curr_chapter];
 	} else {
-		[pickerView setHidden:YES];
+		[self.selectMenu hideSelector];
 	}
 }
 

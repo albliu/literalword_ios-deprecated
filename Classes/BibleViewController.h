@@ -5,7 +5,7 @@
 #define WEBVIEW_MIN_SCALE 0.5 
 #define WEBVIEW_MAX_SCALE 3.0
 
-@interface BibleViewController: UIViewController <UIWebViewDelegate,UIGestureRecognizerDelegate,UIPickerViewDelegate> {
+@interface BibleViewController: UIViewController <UIWebViewDelegate,UIGestureRecognizerDelegate> {
 	int curr_book;
 	int curr_chapter;
 }
@@ -14,8 +14,8 @@
 @property (nonatomic, retain) BibleHtmlGenerator *bibleHtml;
 @property (nonatomic, retain) UIWebView *webView;
 @property (nonatomic, retain) UIButton *passage;
-@property (nonatomic, retain) UIPickerView *selectMenu;
 @property (nonatomic, assign) CGFloat fontscale;
-//- (void)pinch:(UIPinchGestureRecognizer *)gesture;
+@property (nonatomic, retain) PassageSelector * selectMenu;
 
+- (void) selectedbook:(int) bk chapter:(int) ch;
 @end
