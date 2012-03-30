@@ -63,7 +63,6 @@ int tmp_chapter;
 	if (_passage == nil) {
 		_passage = [[UIButton alloc] initWithFrame:CGRectMake(0,0,100,30)];
 		[_passage setTitle:@"LiteralWord" forState:UIControlStateNormal];
-		[_passage setTitleColor:[UIColor blueColor] forState: UIControlStateNormal];
     		[_passage addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
 		[_passage sizeToFit];
 	}
@@ -129,7 +128,7 @@ int tmp_chapter;
 - (void) viewDidLoad {
 
 	[super viewDidLoad];
-
+	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
 	self.navigationItem.titleView = self.passage;
 	/* toolbar */
 	UIToolbar * leftButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 70 ,40 )];

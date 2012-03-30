@@ -1,6 +1,7 @@
 #import "BibleUtils/BibleUtils.h"
 #import "UIUtils/UIUtils.h"
 
+#define SHEET_BLUE colorWithRed:0.21 green:0.39 blue:0.545 alpha:1.0
 #define WEBVIEW_MIN_SCALE 0.5 
 #define WEBVIEW_MAX_SCALE 3.0
 

@@ -1,6 +1,6 @@
 {
     CFBundleExecutable = "LiteralWord";
-    CFBundleIconFile = icon.png;
+    CFBundleIconFile = Icon.png;
     CFBundleIdentifier = "com.ebcsv.literalword";
     CFBundleInfoDictionaryVersion = 6.0;
     CFBundlePackageType = APPL;
@@ -14,7 +14,6 @@
 	2
     );
     DTPlatformName = iphoneos;
-    DTSDKName = iphoneos3.0;
-    LSRequiresIPhoneOS = 1;
+    DTSDKName = iphoneos5.0.internal;
     MinimumOSVersion = 3.0;
 }
