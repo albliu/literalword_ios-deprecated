@@ -1,5 +1,4 @@
 #import "BibleViewController.h"
-#import "UIUtils/UIUtils.h"
 
 @implementation BibleViewController
 
@@ -8,6 +7,7 @@
 @synthesize webView=_webView;
 @synthesize fontscale=_fontscale;
 @synthesize selectMenu=_selectMenu;
+@synthesize passage=_passage;
 
 // used to store temp values for when changing books
 int tmp_book;
@@ -58,6 +58,19 @@ int tmp_chapter;
 
 }
 
+-(UIButton *) passage {
+
+	if (_passage == nil) {
+		_passage = [[UIButton alloc] initWithFrame:CGRectMake(0,0,100,30)];
+		[_passage setTitle:@"LiteralWord" forState:UIControlStateNormal];
+		[_passage setTitleColor:[UIColor blueColor] forState: UIControlStateNormal];
+    		[_passage addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
+		[_passage sizeToFit];
+	}
+	return _passage;
+
+}
+
 - (CGFloat)fontscale
 {
     if (!_fontscale) {
@@ -75,7 +88,7 @@ int tmp_chapter;
 - (id)init {
 	self = [super init];
 	if (self) {
-		curr_book = 18;
+		curr_book = 0;
 		curr_chapter = 1;	
 	}
 	return self;
@@ -103,10 +116,13 @@ int tmp_chapter;
 }
 
 - (void) loadPassage {
+
 	NSString * name = [self.bibleDB getBookNameAt:curr_book];
-	UINavbarButton * passage = [[UINavbarButton alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] style:UIBarStyleDefault target:self action:@selector(passagemenu:)];
-	self.navigationItem.titleView = passage;
-	[passage release];
+	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
+	[self.passage sizeToFit];
+
+
+	
 	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
 
@@ -114,15 +130,16 @@ int tmp_chapter;
 
 	[super viewDidLoad];
 
+	self.navigationItem.titleView = self.passage;
 	/* toolbar */
-	UIToolbar * leftButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100 ,40 )];
+	UIToolbar * leftButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 70 ,40 )];
 	leftButtons.barStyle = -1; // clear background
 
-	UIToolbar * rightButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 40)];
+	UIToolbar * rightButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 70, 40)];
 	rightButtons.barStyle = -1; // clear background
 
 	NSMutableArray * lButtons = [[NSMutableArray alloc] initWithCapacity:2];
-	NSMutableArray * rButtons = [[NSMutableArray alloc] initWithCapacity:3];
+	NSMutableArray * rButtons = [[NSMutableArray alloc] initWithCapacity:2];
 
 	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
 	search.style = UIBarButtonItemStyleBordered;
@@ -132,8 +149,8 @@ int tmp_chapter;
 	notes.style = UIBarButtonItemStyleBordered;
 	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(memverse:)];
 	memoryverse.style = UIBarButtonItemStyleBordered;
-	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-	UIBarButtonItem *flex2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+//	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+//	UIBarButtonItem *flex2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 /*
 	UIBarButtonItem *action = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(action:)];
 	action.style = UIBarButtonItemStyleBordered;
@@ -143,13 +160,11 @@ int tmp_chapter;
 	[rButtons addObject:fullscreen];
 */
 
-	[rButtons addObject:flex];
 	[rButtons addObject:notes];
 	[rButtons addObject:search];
 
 	[lButtons addObject:memoryverse];
 	[lButtons addObject:bookmark];
-	[lButtons addObject:flex2];
 
 	[rightButtons setItems:rButtons animated:NO];
 	[leftButtons setItems:lButtons animated:NO];
@@ -190,6 +205,7 @@ int tmp_chapter;
 	[self.webView release];	
 	[self.bibleDB release];	
 	[self.bibleHtml release];	
+	[self.passage release];	
 	[super dealloc];
 }
 

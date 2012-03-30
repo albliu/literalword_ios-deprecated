@@ -1,4 +1,5 @@
 #import "BibleUtils/BibleUtils.h"
+#import "UIUtils/UIUtils.h"
 
 #define WEBVIEW_MIN_SCALE 0.5 
 #define WEBVIEW_MAX_SCALE 3.0
@@ -11,6 +12,7 @@
 @property (nonatomic, retain) BibleDataBaseController *bibleDB;
 @property (nonatomic, retain) BibleHtmlGenerator *bibleHtml;
 @property (nonatomic, retain) UIWebView *webView;
+@property (nonatomic, retain) UIButton *passage;
 @property (nonatomic, retain) UIPickerView *selectMenu;
 @property (nonatomic, assign) CGFloat fontscale;
 //- (void)pinch:(UIPinchGestureRecognizer *)gesture;
