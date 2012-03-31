@@ -17,5 +17,10 @@
 @property (nonatomic, assign) CGFloat fontscale;
 @property (nonatomic, retain) PassageSelector * selectMenu;
 
+- (void) nextPassage;
+- (void) prevPassage;
+- (void) clearhighlights;
 - (void) selectedbook:(int) bk chapter:(int) ch;
+- (void) changeFontSize:(CGFloat) scale; 
+- (void) loadPassage;
 @end

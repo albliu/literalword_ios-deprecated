@@ -100,25 +100,6 @@
 
 }
 
--(void) changeFontSize {
-
-	NSUInteger textFontSize	= (100 * self.fontscale);
-	NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust= '%d%%'", textFontSize];
-	[self.webView stringByEvaluatingJavaScriptFromString:jsString];
-	[jsString release];
-
-}
-
-- (void) loadPassage {
-
-	NSString * name = [self.bibleDB getBookNameAt:curr_book];
-	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
-	[self.passage sizeToFit];
-
-
-	
-	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
-}
 
 - (void) viewDidLoad {
 
@@ -190,6 +171,18 @@
 	swipeLeft.direction = UISwipeGestureRecognizerDirectionLeft;
 	swipeLeft.delegate = self;
 	[self.webView addGestureRecognizer:swipeLeft];
+
+	UITapGestureRecognizer *SingTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+	SingTap.numberOfTapsRequired = 1;
+	SingTap.delegate = self;
+	[self.webView addGestureRecognizer:SingTap];
+
+
+	UITapGestureRecognizer *DoubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+	DoubleTap.numberOfTapsRequired = 2;
+	DoubleTap.delegate = self;
+	[self.webView addGestureRecognizer:DoubleTap];
+
 	[self loadPassage];
 }
 
@@ -215,16 +208,52 @@
 
 	NSLog(@"Pinch");
 
-	self.fontscale *= gesture.scale;
+	[self changeFontSize:gesture.scale];
 	gesture.scale = 1;
-	[self changeFontSize];
 }
 
 
 - (void)swipeLeftAction:(id)ignored
 {
 	NSLog(@"Swipe Left");
+	[self nextPassage];
+}
+ 
+- (void)swipeRightAction:(id)ignored
+{
+	NSLog(@"Swipe Right");
+	[self prevPassage];
+}
+- (void) handleTap:(UIGestureRecognizer *)sender
+{
 
+	if (self.selectMenu.hidden == NO) [self.selectMenu hideSelector];	
+
+}
+- (void) handleDoubleTap:(UIGestureRecognizer *)sender
+{
+	CGPoint tapPoint = [sender locationInView:sender.view.superview];
+	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightPoint(%f,%f);", tapPoint.x, tapPoint.y];
+	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+	NSLog(@"%d\n", [obj intValue]);
+//	[[[[UIAlertView alloc] initWithTitle:jsString message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+//	[obj release];
+
+
+	
+
+}
+#pragma mark GestureRecognizerDelegate
+
+- (BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+
+
+#pragma mark bibleView Delegate
+- (void) nextPassage {
 	int maxBook = [self.bibleDB maxBook];	
 	int max = [[self.bibleDB getBookChapterCountAt:curr_book] intValue];
 	if (curr_chapter >= max) {
@@ -234,11 +263,12 @@
 		}
 	} else curr_chapter++;
 	[self loadPassage];
+
+
 }
- 
-- (void)swipeRightAction:(id)ignored
-{
-	NSLog(@"Swipe Right");
+
+- (void) prevPassage {
+
 	if (curr_chapter == 1) {
 		if (curr_book > 0 ) {
 			curr_book--;
@@ -247,14 +277,20 @@
 	} else curr_chapter--;
 
 	[self loadPassage];
-}
-#pragma mark GestureRecognizerDelegate
 
-- (BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return YES;
+
 }
 
-#pragma mark selectorView Delegate
+
+- (void) clearhighlights {
+
+	NSString * jsString = [[NSString alloc] initWithFormat:@"clearhighlight();"];
+	[self.webView stringByEvaluatingJavaScriptFromString:jsString]; 
+	[jsString release]; 
+
+
+}
+
 - (void) selectedbook:(int) bk chapter:(int) ch {
 		//commit
 		curr_book = bk;
@@ -263,6 +299,27 @@
 
 
 }
+
+-(void) changeFontSize:(CGFloat) scale;  {
+
+	self.fontscale *= scale;
+	NSUInteger textFontSize	= (100 * self.fontscale);
+	NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust= '%d%%'", textFontSize];
+	[self.webView stringByEvaluatingJavaScriptFromString:jsString];
+	[jsString release];
+
+}
+
+- (void) loadPassage {
+
+	NSString * name = [self.bibleDB getBookNameAt:curr_book];
+	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
+	[self.passage sizeToFit];
+
+	
+	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
+}
+
 #pragma mark Button reactions
 
 - (void)passagemenu:(id)ignored {

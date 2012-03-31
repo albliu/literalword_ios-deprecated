@@ -38,18 +38,30 @@ function highlightPoint(x, y) {
 
 	var elem = document.elementFromPoint(x,y);
 	while (elem.tagName != "V") {
-		elem = elem.parentNode;
-	} 
-	
-	if (elem.className == "active") { elem.className = '' } else { elem.className = 'active' };
-	
-	
-	window.verse.clickVerse(elem.id, elem.innerText, elem.className);
-	
+    		elem = elem.parentNode;
+	}
+
+	if (elem.className == "active") {
+		elem.className = '';
+	} else {
+		elem.className = 'active';
+	}
+
 	var dchild = elem.getElementsByTagName('div');
 	for (var i = 0; i < dchild.length; i++) {
 		dchild[i].firstChild.className = elem.className;
-	}
-		 
-	
+	}	
+
+	return elem.id;
+
 }
+
+function clearhighlight() {
+	
+	var elem = document.getElementsByClassName('active');
+	
+	for (var i = 0; i < elem.length;i++) {
+		elem[i].className = '';
+	}
+
+} 
