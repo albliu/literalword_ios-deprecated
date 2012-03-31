@@ -2,6 +2,7 @@
 
 @implementation BibleViewController
 
+@synthesize gestures=_gestures;
 @synthesize bibleHtml=_bibleHtml;
 @synthesize bibleDB=_bibleDB;
 @synthesize webView=_webView;
@@ -9,8 +10,14 @@
 @synthesize passage=_passage;
 @synthesize selectMenu=_selectMenu;
 
-// used to store temp values for when changing books
 
+-(MyGestureRecognizer *) gestures {
+	if (_gestures == nil) {
+		_gestures = [MyGestureRecognizer alloc];
+	}
+	return _gestures; 
+
+}
 
 -(PassageSelector *) selectMenu {
 	if (_selectMenu == nil)  {
@@ -157,31 +164,8 @@
 	[left release];
 	[right release];
 
-	
-	UIPinchGestureRecognizer *myPinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
-	myPinch.delegate = self;
-	[self.webView addGestureRecognizer:myPinch];
 
-	UISwipeGestureRecognizer *swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self  action:@selector(swipeRightAction:)];
-	swipeRight.direction = UISwipeGestureRecognizerDirectionRight;
-	swipeRight.delegate = self;
-	[self.webView addGestureRecognizer:swipeRight];
- 
-	UISwipeGestureRecognizer *swipeLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeLeftAction:)];
-	swipeLeft.direction = UISwipeGestureRecognizerDirectionLeft;
-	swipeLeft.delegate = self;
-	[self.webView addGestureRecognizer:swipeLeft];
-
-	UITapGestureRecognizer *SingTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-	SingTap.numberOfTapsRequired = 1;
-	SingTap.delegate = self;
-	[self.webView addGestureRecognizer:SingTap];
-
-
-	UITapGestureRecognizer *DoubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-	DoubleTap.numberOfTapsRequired = 2;
-	DoubleTap.delegate = self;
-	[self.webView addGestureRecognizer:DoubleTap];
+	[self.gestures initWithDelegate:self View:self.webView];	
 
 	[self loadPassage];
 }
@@ -202,57 +186,19 @@
     // we support rotation in this view controller
     return YES;
 }
-#pragma mark Gestures
 
-- (void)pinch:(UIPinchGestureRecognizer *)gesture {
+#pragma mark bibleView Delegate
 
-	NSLog(@"Pinch");
-
-	[self changeFontSize:gesture.scale];
-	gesture.scale = 1;
-}
-
-
-- (void)swipeLeftAction:(id)ignored
-{
-	NSLog(@"Swipe Left");
-	[self nextPassage];
-}
- 
-- (void)swipeRightAction:(id)ignored
-{
-	NSLog(@"Swipe Right");
-	[self prevPassage];
-}
-- (void) handleTap:(UIGestureRecognizer *)sender
-{
-
-	if (self.selectMenu.hidden == NO) [self.selectMenu hideSelector];	
-
-}
-- (void) handleDoubleTap:(UIGestureRecognizer *)sender
-{
-	CGPoint tapPoint = [sender locationInView:sender.view.superview];
-	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightPoint(%f,%f);", tapPoint.x, tapPoint.y];
+- (void) highlightX:(float) x Y:(float) y {
+	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightPoint(%f,%f);", x, y];
 	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 	NSLog(@"%d\n", [obj intValue]);
 //	[[[[UIAlertView alloc] initWithTitle:jsString message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
-//	[obj release];
 
-
-	
 
 }
-#pragma mark GestureRecognizerDelegate
 
-- (BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return YES;
-}
-
-
-
-#pragma mark bibleView Delegate
 - (void) nextPassage {
 	int maxBook = [self.bibleDB maxBook];	
 	int max = [[self.bibleDB getBookChapterCountAt:curr_book] intValue];
@@ -320,6 +266,10 @@
 	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
 
+- (void) showMainView {
+
+	if (self.selectMenu.hidden == NO) [self.selectMenu hideSelector];	
+}  
 #pragma mark Button reactions
 
 - (void)passagemenu:(id)ignored {
