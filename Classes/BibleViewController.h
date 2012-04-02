@@ -14,6 +14,9 @@
 	BibleDataBaseController *_bibleDB;
 	BibleHtmlGenerator *_bibleHtml;
 	PassageSelector * _selectMenu;
+	UIWebView *_webView;
+	UIButton *_passage;
+	CGFloat _fontscale;
 }
 
 @property (nonatomic, retain) HistoryViewController *history;
