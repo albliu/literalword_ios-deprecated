@@ -51,7 +51,7 @@
 	else 
 		passageHtml = [passageHtml stringByAppendingString:[NSString stringWithUTF8String: "<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />"]];
 	
-	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithFormat:@"<style type=\"text/css\">body {-webkit-text-size-adjust:%d%%;}</style>",font]];
+	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithFormat:@"<meta name = \"viewport\" content = \"width = device-width\"><style type=\"text/css\">body {-webkit-text-size-adjust:%d%%;}</style>",font]];
 	
 	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithUTF8String: "</head><script language=\"javascript\" type=\"text/javascript\" src=\"jumpTo.js\"></script><body>"]];
 

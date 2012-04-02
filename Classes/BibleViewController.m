@@ -127,14 +127,11 @@
 	self.navigationItem.titleView = self.passage;
 
 	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:5];
-	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
-	search.style = UIBarButtonItemStyleBordered;
+	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(search:)];
 	[toolbarItems addObject:search];
 	[search release];
 
-	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmark:)];
-	bookmark.style = UIBarButtonItemStyleBordered;
-
+	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"bookmark.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(bookmark:)];
 	[toolbarItems addObject:bookmark];
 	[bookmark release];
 
@@ -142,17 +139,21 @@
 	notes.style = UIBarButtonItemStyleBordered;
 	[toolbarItems addObject:notes];
 	[notes release];
-	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(memverse:)];
-	memoryverse.style = UIBarButtonItemStyleBordered;
+
+	UIBarButtonItem *history = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(history:)];
+	[toolbarItems addObject:history];
+	[history release];
+
+	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"memory.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(memverse:)];
 	[toolbarItems addObject:memoryverse];
 	[memoryverse release];
-	
-	UIBarButtonItem *action = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(action:)];
+/*	
+	UIBarButtonItem *action = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(action:)];
 	action.style = UIBarButtonItemStyleBordered;
 	[toolbarItems addObject:action];
 	[action release];
 
-/*	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
+	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
 	fullscreen.style = UIBarButtonItemStyleBordered;
 //	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 */
@@ -160,9 +161,7 @@
 	[toolbarItems release];
 	
 
-	UIBarButtonItem *showToolbar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(showToolBar:)];
-	showToolbar.style = UIBarButtonItemStyleBordered;
-
+	UIBarButtonItem *showToolbar = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStylePlain target:self action:@selector(showToolBar:)];
 	self.navigationItem.leftBarButtonItem = showToolbar;
 	[showToolbar release];
 
@@ -187,6 +186,7 @@
     // we support rotation in this view controller
     return YES;
 }
+
 
 #pragma mark bibleView Delegate
 
@@ -231,10 +231,14 @@
 
 - (void) clearhighlights {
 
-	NSString * jsString = [[NSString alloc] initWithFormat:@"clearhighlight();"];
-	[self.webView stringByEvaluatingJavaScriptFromString:jsString]; 
-	[jsString release]; 
+	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightedVerses();"];
+	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
+	jsString = [[NSString alloc] initWithFormat:@"clearhighlight();"];
+	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
 
 }
 
@@ -275,7 +279,7 @@
 -(void) hideToolBar:(BOOL) hide {
 	if (hide) {
 		[self.navigationController setToolbarHidden:YES];
-		self.navigationItem.leftBarButtonItem.style = UIBarButtonItemStyleBordered ;
+		self.navigationItem.leftBarButtonItem.style = UIBarButtonItemStylePlain ;
 	} else {
 		 [self.navigationController setToolbarHidden:NO];
 		self.navigationItem.leftBarButtonItem.style = UIBarButtonItemStyleDone ;
@@ -310,7 +314,7 @@
 
 }
 
-- (void) bookmark:(id)ignored {
+- (void) history:(id)ignored {
 	[self hideToolBar:YES];
 
 	[self.navigationController pushViewController:self.history animated:YES];
@@ -336,17 +340,9 @@
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
-- (void) action:(id)ignored {
+- (void) bookmark:(id)ignored {
 	[self hideToolBar:YES];
-
-	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightedVerses();"];
-	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
-	[jsString release];
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
-
-	jsString = [[NSString alloc] initWithFormat:@"clearhighlight();"];
-	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
-	[jsString release];
+	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
