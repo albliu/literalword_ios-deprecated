@@ -1,5 +1,11 @@
 #import "BibleViewController.h"
 
+@interface BibleViewController(rootView) {
+}
+-(void) hideToolBar:(BOOL) hide;
+- (void) showMainView;
+@end
+
 @implementation BibleViewController
 
 @synthesize history=_history;
@@ -10,6 +16,10 @@
 @synthesize fontscale=_fontscale;
 @synthesize passage=_passage;
 @synthesize selectMenu=_selectMenu;
+
+//function declaration
+
+
 
 -(HistoryViewController *) history {
 	if (_history == nil) {
@@ -264,11 +274,28 @@
 	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
 
+  
+
+#pragma mark -- rootView helpers
+-(void) hideToolBar:(BOOL) hide {
+	if (hide) {
+		[self.navigationController setToolbarHidden:YES];
+		self.navigationItem.leftBarButtonItem.style = UIBarButtonItemStyleBordered ;
+	} else {
+		 [self.navigationController setToolbarHidden:NO];
+		self.navigationItem.leftBarButtonItem.style = UIBarButtonItemStyleDone ;
+
+	}
+
+}
+
 - (void) showMainView {
 
 	if (self.selectMenu.hidden == NO) [self.selectMenu hideSelector];	
-	[self.navigationController setToolbarHidden:YES];
-}  
+
+	[self hideToolBar:YES];
+}
+
 #pragma mark Button reactions
 
 - (void)passagemenu:(id)ignored {
@@ -282,48 +309,52 @@
 }
 
 - (void) search:(id)ignored {
-	[self.navigationController setToolbarHidden:YES];
+	[self hideToolBar:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
 - (void) bookmark:(id)ignored {
-	[self.navigationController setToolbarHidden:YES];
+	[self hideToolBar:YES];
 
 	[self.navigationController pushViewController:self.history animated:YES];
 //	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) notes:(id)ignored {
-	[self.navigationController setToolbarHidden:YES];
+	[self hideToolBar:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) fullscreen:(id)ignored {
-	[self.navigationController setToolbarHidden:YES];
+	[self hideToolBar:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
 - (void) memverse:(id)ignored {
-	[self.navigationController setToolbarHidden:YES];
+	[self hideToolBar:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) action:(id)ignored {
-	[self.navigationController setToolbarHidden:YES];
+	[self hideToolBar:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
+
+
+
 -(void) showToolBar:(id)ignored {
 
-	if (self.navigationController.toolbarHidden == YES) [self.navigationController setToolbarHidden:NO];
-	else [self.navigationController setToolbarHidden:YES];
+	[self hideToolBar:!(self.navigationController.toolbarHidden)];
+	
 }
+
 @end
