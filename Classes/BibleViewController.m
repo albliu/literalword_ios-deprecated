@@ -1,10 +1,5 @@
 #import "BibleViewController.h"
 
-@interface BibleViewController(rootView) {
-}
--(void) hideToolBar:(BOOL) hide;
-- (void) showMainView;
-@end
 
 @implementation BibleViewController
 

@@ -1,6 +1,7 @@
 #define HISTORY_MAX 30
 
 @interface HistoryViewController: UITableViewController {
+	NSMutableArray * _myHistory;
 }
 @property (nonatomic, retain) NSMutableArray * myHistory;
 @property (nonatomic, assign) id delegate;

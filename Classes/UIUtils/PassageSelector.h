@@ -6,6 +6,7 @@
 	int select_book;
 	int select_chapter;
 	int frame_width;
+	UIPickerView *_selectMenu;
 }
 @property (nonatomic, assign) BibleDataBaseController *bibleDB;
 @property (nonatomic, retain) UIPickerView *selectMenu;

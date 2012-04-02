@@ -19,4 +19,11 @@ typedef enum {
 
 // returns books and chapters in the bible
 - (NSArray *) listBibleContents;
+
+//static functions
++ (NSString * ) header:(reading_style) myStyle scale:(CGFloat) myscale;
++ (NSString * ) tail;
++ (NSString * ) passage:(NSArray *) results;
++ (NSString * ) passageMod:(NSString *) passage;
+
 @end

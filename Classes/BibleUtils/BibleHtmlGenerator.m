@@ -1,15 +1,6 @@
 #import "BibleHtmlGenerator.h"
 
 
-@interface BibleHtmlGenerator(HTML_Helper) {
-}
-+ (NSString * ) header:(reading_style) myStyle scale:(CGFloat) myscale;
-+ (NSString * ) tail;
-+ (NSString * ) passage:(NSArray *) results;
-+ (NSString * ) passageMod:(NSString *) passage;
-@end
-
-
 @implementation BibleHtmlGenerator
 
 @synthesize nasbbible = _nasbbible;
