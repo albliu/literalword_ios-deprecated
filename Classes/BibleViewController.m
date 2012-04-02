@@ -339,7 +339,14 @@
 - (void) action:(id)ignored {
 	[self hideToolBar:YES];
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightedVerses();"];
+	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+
+	jsString = [[NSString alloc] initWithFormat:@"clearhighlight();"];
+	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
 
 }
 

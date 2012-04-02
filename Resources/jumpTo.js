@@ -1,3 +1,12 @@
+var selectedVerses=new Array();
+
+function findInArray(arr,val) {
+	for (var i = 0; i < arr.length; i++) {
+		if (arr[i] == val) return i;
+	}
+	return -1;
+}
+
 function jumpToElement(id) {
     var elem = document.getElementById(id);
     var x = 0;
@@ -43,8 +52,12 @@ function highlightPoint(x, y) {
 
 	if (elem.className == "active") {
 		elem.className = '';
+		var exists = findInArray(selectedVerses, elem.id);
+		if (exists != -1) selectedVerses.splice(i, 1); 
+
 	} else {
 		elem.className = 'active';
+		selectedVerses.push(elem.id);	
 	}
 
 	var dchild = elem.getElementsByTagName('div');
@@ -58,10 +71,22 @@ function highlightPoint(x, y) {
 
 function clearhighlight() {
 	
-	var elem = document.getElementsByClassName('active');
 	
-	for (var i = 0; i < elem.length;i++) {
-		elem[i].className = '';
+	for (var i = 0; i < selectedVerses.length;i++) {
+		var elem = document.getElementById(selectedVerses[i]);
+		elem.className = '';
+	}
+	selectedVerses.length = 0;
+}
+
+function highlightedVerses() {
+
+	var retString = '';
+	
+	for (var i = 0; i < selectedVerses.length;i++) {
+		retString += selectedVerses[i] ;
+		if  (i != (selectedVerses.length -1)) retString += ':'; 
 	}
 
-} 
+	return retString;
+}
