@@ -9,6 +9,11 @@
 @interface BibleViewController: UIViewController <UIWebViewDelegate> {
 	int curr_book;
 	int curr_chapter;
+	HistoryViewController *_history;
+	MyGestureRecognizer *_gestures;
+	BibleDataBaseController *_bibleDB;
+	BibleHtmlGenerator *_bibleHtml;
+	PassageSelector * _selectMenu;
 }
 
 @property (nonatomic, retain) HistoryViewController *history;

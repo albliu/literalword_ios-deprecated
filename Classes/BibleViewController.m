@@ -282,40 +282,48 @@
 }
 
 - (void) search:(id)ignored {
+	[self.navigationController setToolbarHidden:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
 - (void) bookmark:(id)ignored {
+	[self.navigationController setToolbarHidden:YES];
 
 	[self.navigationController pushViewController:self.history animated:YES];
 //	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) notes:(id)ignored {
+	[self.navigationController setToolbarHidden:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) fullscreen:(id)ignored {
+	[self.navigationController setToolbarHidden:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
 - (void) memverse:(id)ignored {
+	[self.navigationController setToolbarHidden:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) action:(id)ignored {
+	[self.navigationController setToolbarHidden:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
 -(void) showToolBar:(id)ignored {
-	[self.navigationController setToolbarHidden:NO];
+
+	if (self.navigationController.toolbarHidden == YES) [self.navigationController setToolbarHidden:NO];
+	else [self.navigationController setToolbarHidden:YES];
 }
 @end
