@@ -2,6 +2,7 @@
 
 @implementation BibleViewController
 
+@synthesize history=_history;
 @synthesize gestures=_gestures;
 @synthesize bibleHtml=_bibleHtml;
 @synthesize bibleDB=_bibleDB;
@@ -10,6 +11,12 @@
 @synthesize passage=_passage;
 @synthesize selectMenu=_selectMenu;
 
+-(HistoryViewController *) history {
+	if (_history == nil) {
+		_history = [[HistoryViewController alloc] initWithDelegate:self];
+	}
+	return _history;
+}
 
 -(MyGestureRecognizer *) gestures {
 	if (_gestures == nil) {
@@ -113,57 +120,46 @@
 	[super viewDidLoad];
 	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
 	self.navigationItem.titleView = self.passage;
-	/* toolbar */
-	UIToolbar * leftButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 70 ,40 )];
-	leftButtons.barStyle = -1; // clear background
 
-	UIToolbar * rightButtons = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 70, 40)];
-	rightButtons.barStyle = -1; // clear background
-
-	NSMutableArray * lButtons = [[NSMutableArray alloc] initWithCapacity:2];
-	NSMutableArray * rButtons = [[NSMutableArray alloc] initWithCapacity:2];
-
+	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:5];
 	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(search:)];
 	search.style = UIBarButtonItemStyleBordered;
+	[toolbarItems addObject:search];
+	[search release];
+
 	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmark:)];
 	bookmark.style = UIBarButtonItemStyleBordered;
+
+	[toolbarItems addObject:bookmark];
+	[bookmark release];
+
 	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(notes:)];
 	notes.style = UIBarButtonItemStyleBordered;
+	[toolbarItems addObject:notes];
+	[notes release];
 	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(memverse:)];
 	memoryverse.style = UIBarButtonItemStyleBordered;
-//	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-//	UIBarButtonItem *flex2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-/*
+	[toolbarItems addObject:memoryverse];
+	[memoryverse release];
+	
 	UIBarButtonItem *action = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(action:)];
 	action.style = UIBarButtonItemStyleBordered;
-	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
+	[toolbarItems addObject:action];
+	[action release];
+
+/*	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
 	fullscreen.style = UIBarButtonItemStyleBordered;
-	[lButtons addObject:action];
-	[rButtons addObject:fullscreen];
+//	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 */
-
-	[rButtons addObject:notes];
-	[rButtons addObject:search];
-
-	[lButtons addObject:memoryverse];
-	[lButtons addObject:bookmark];
-
-	[rightButtons setItems:rButtons animated:NO];
-	[leftButtons setItems:lButtons animated:NO];
-
-	[rButtons release];
-	[lButtons release];
-
-	UIBarButtonItem * left = [[UIBarButtonItem alloc] initWithCustomView:leftButtons];
-	UIBarButtonItem * right = [[UIBarButtonItem alloc] initWithCustomView:rightButtons];
-	[leftButtons release];
-	[rightButtons release];
+	[self setToolbarItems:toolbarItems];
+	[toolbarItems release];
 	
-	self.navigationItem.rightBarButtonItem = right;
-	self.navigationItem.leftBarButtonItem = left;
-	[left release];
-	[right release];
 
+	UIBarButtonItem *showToolbar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(showToolBar:)];
+	showToolbar.style = UIBarButtonItemStyleBordered;
+
+	self.navigationItem.leftBarButtonItem = showToolbar;
+	[showToolbar release];
 
 	[self.gestures initWithDelegate:self View:self.webView];	
 
@@ -237,7 +233,7 @@
 
 }
 
-- (void) selectedbook:(int) bk chapter:(int) ch {
+- (void) selectedbook:(int) bk chapter:(int) ch  {
 		//commit
 		curr_book = bk;
 		curr_chapter = ch;
@@ -259,9 +255,11 @@
 - (void) loadPassage {
 
 	NSString * name = [self.bibleDB getBookNameAt:curr_book];
+
+	[self.history addToHistory:name Book:curr_book Chapter:curr_chapter];
+
 	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
 	[self.passage sizeToFit];
-
 	
 	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
@@ -269,6 +267,7 @@
 - (void) showMainView {
 
 	if (self.selectMenu.hidden == NO) [self.selectMenu hideSelector];	
+	[self.navigationController setToolbarHidden:YES];
 }  
 #pragma mark Button reactions
 
@@ -290,7 +289,8 @@
 
 - (void) bookmark:(id)ignored {
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	[self.navigationController pushViewController:self.history animated:YES];
+//	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) notes:(id)ignored {
@@ -313,5 +313,9 @@
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
+}
+
+-(void) showToolBar:(id)ignored {
+	[self.navigationController setToolbarHidden:NO];
 }
 @end

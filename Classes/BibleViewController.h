@@ -11,6 +11,7 @@
 	int curr_chapter;
 }
 
+@property (nonatomic, retain) HistoryViewController *history;
 @property (nonatomic, retain) MyGestureRecognizer *gestures;
 @property (nonatomic, retain) BibleDataBaseController *bibleDB;
 @property (nonatomic, retain) BibleHtmlGenerator *bibleHtml;
@@ -25,7 +26,6 @@
 
 - (void) changeFontSize:(CGFloat) scale; 
 - (void) loadPassage;
-
 - (void) clearhighlights;
 - (void) highlightX:(float) x Y:(float) y;
 
