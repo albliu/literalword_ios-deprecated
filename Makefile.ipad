@@ -1,0 +1,151 @@
+# Makefile for iPhone Application for iPhone gcc compiler (SDK Headers)
+
+PROJECTNAME=LiteralWord
+APPFOLDER=$(PROJECTNAME).app
+MINIMUMVERSION:=3.2
+
+CC=arm-apple-darwin9-gcc
+CPP=arm-apple-darwin9-g++
+LD=$(CC)
+SDK=/var/toolchain/sys32
+DEBUG=DEBUGOFF
+
+LDFLAGS = -arch arm -lobjc
+LDFLAGS += -framework UIKit 
+LDFLAGS += -framework CoreGraphics
+LDFLAGS += -framework Foundation 
+//LDFLAGS += -framework AVFoundation
+//LDFLAGS += -framework AddressBook
+//LDFLAGS += -framework AddressBookUI
+//LDFLAGS += -framework AudioToolbox
+//LDFLAGS += -framework AudioUnit
+//LDFLAGS += -framework CFNetwork
+//LDFLAGS += -framework CoreAudio
+//LDFLAGS += -framework CoreData
+//LDFLAGS += -framework CoreFoundation 
+//LDFLAGS += -framework GraphicsServices
+//LDFLAGS += -framework CoreLocation
+//LDFLAGS += -framework ExternalAccessory
+//LDFLAGS += -framework GameKit
+//LDFLAGS += -framework IOKit
+//LDFLAGS += -framework MapKit
+//LDFLAGS += -framework MediaPlayer
+//LDFLAGS += -framework MessageUI
+//LDFLAGS += -framework MobileCoreServices
+//LDFLAGS += -framework OpenAL
+//LDFLAGS += -framework OpenGLES
+//LDFLAGS += -framework QuartzCore
+//LDFLAGS += -framework Security
+//LDFLAGS += -framework StoreKit
+//LDFLAGS += -framework System
+//LDFLAGS += -framework SystemConfiguration
+//LDFLAGS += -framework CoreSurface
+//LDFLAGS += -framework GraphicsServices
+//LDFLAGS += -framework Celestial
+//LDFLAGS += -framework WebCore
+//LDFLAGS += -framework WebKit
+//LDFLAGS += -framework SpringBoardUI
+//LDFLAGS += -framework TelephonyUI
+//LDFLAGS += -framework JavaScriptCore
+//LDFLAGS += -framework PhotoLibrary
+
+LDFLAGS += -L"$(SDK)/usr/lib" -lsqlite3
+LDFLAGS += -F"$(SDK)/System/Library/Frameworks"
+LDFLAGS += -F"$(SDK)/System/Library/PrivateFrameworks"
+LDFLAGS += -bind_at_load
+LDFLAGS += -multiply_defined suppress
+LDFLAGS += -march=armv6
+LDFLAGS += -mcpu=arm1176jzf-s 
+LDFLAGS += -mmacosx-version-min=10.5
+//LDFLAGS += -dynamiclib
+
+BUILDDIR=./build/$(MINIMUMVERSION)
+SRCDIR=./Classes
+RESDIR=./Resources
+OBJS=$(patsubst %.m,%.o,$(wildcard $(SRCDIR)/*.m))
+OBJS+=$(patsubst %.m,%.o,$(wildcard ./*.m))
+OBJS+=$(patsubst %.m,%.o,$(wildcard $(SRCDIR)/*/*.m))
+PCH=$(wildcard *.pch)
+RESOURCES=$(wildcard ./*.png)
+RESOURCES+=$(wildcard $(RESDIR)/*)
+NIBS=$(patsubst %.xib,%.nib,$(wildcard Xib/*.xib))
+
+CFLAGS += -I"$(SDK)/usr/include" 
+ifeq ($(DEBUG),DEBUGOFF)
+CFLAGS += -O0 -g0
+else
+CFLAGS += -g
+endif
+CFLAGS += -std=gnu99
+CFLAGS += -Diphoneos_version_min=$(MINIMUMVERSION)
+CFLAGS += -Wno-attributes -Wno-trigraphs -Wreturn-type -Wunused-variable
+CFLAGS += $(addprefix -I,$(SRCDIR))
+CFLAGS += -D$(DEBUG)
+
+CPPFLAGS += -I"$(SDK)/usr/include" 
+ifeq ($(DEBUG),DEBUGOFF)
+CPPFLAGS += -g0 -O2
+else
+CPPFLAGS += -g
+endif
+CPPFLAGS += -Diphoneos_version_min=$(MINIMUMVERSION)
+CPPFLAGS += -Wno-attributes -Wno-trigraphs -Wreturn-type -Wunused-variable
+CPPFLAGS += $(addprefix -I,$(SRCDIR))
+CPPFLAGS += -I"$(SDK)/usr/include/c++/4.2.1" 
+CPPFLAGS += -I"$(SDK)/usr/include/c++/4.2.1/armv7-apple-darwin10" 
+CPPFLAGS += -D$(DEBUG)
+
+
+all:	$(PROJECTNAME)
+
+$(PROJECTNAME):	$(OBJS) Makefile.ipad
+	$(LD) $(LDFLAGS) $(filter %.o,$^) -o $@ 
+
+%.o:	%.m %.h $(PCH) $(filter-out $(patsubst %.o,%.h,$(OBJS)), $(wildcard $(SRCDIR)/*.h))
+	$(CC) --include $(PCH) -c $(CFLAGS) $< -o $@
+
+%.o:	%.m
+	$(CC) --include $(PCH) -c $(CFLAGS) $< -o $@
+
+%.o:	%.c %.h $(PCH)
+	$(CC) --include $(PCH) -c $(CFLAGS) $< -o $@
+
+%.o:	%.mm %.h $(PCH) $(filter-out $(patsubst %.o,%.h,$(OBJS)), $(wildcard $(SRCDIR)/*.h))
+	$(CPP) --include $(PCH) -c $(CPPFLAGS) $< -o $@
+
+%.o:	%.cpp %.h $(PCH)
+	$(CPP) --include $(PCH) -c $(CPPFLAGS) $< -o $@
+
+dist:	$(PROJECTNAME) Makefile $(PROJECTNAME)-Info.plist $(RESOURCES)
+	@rm -rf $(BUILDDIR)
+	@mkdir -p $(BUILDDIR)/$(APPFOLDER)
+ifneq ($(RESOURCES),)
+	@-cp -r $(RESOURCES) $(BUILDDIR)/$(APPFOLDER)
+	@-$(foreach DIR, .svn .DS_Store .git* , find $(BUILDDIR)/$(APPFOLDER) -name '$(DIR)' -prune -exec rm -rfv {} \;;)
+endif
+	@cp $(PROJECTNAME)-Info.plist $(BUILDDIR)/$(APPFOLDER)/Info.plist
+	@./plutil -key CFBundleExecutable -value $(PROJECTNAME) $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -key CFBundleDisplayName -value $(PROJECTNAME) $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -key CFBundleName -value $(PROJECTNAME) $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -key CFBundleIdentifier -value com.yourcompany.iphone.$(PROJECTNAME) $(BUILDDIR)/$(APPFOLDER)/Info.plist
+	@./plutil -UIDeviceFamily -array $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -UIDeviceFamily -arrayadd -string 1 $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -UIDeviceFamily -arrayadd -string 2 $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -key NSMainNibFile -remove $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@echo "APPL????" > $(BUILDDIR)/$(APPFOLDER)/PkgInfo
+	ldid -S $(PROJECTNAME)
+	@mv $(PROJECTNAME) $(BUILDDIR)/$(APPFOLDER)/
+
+install: dist
+	./appinstall $(BUILDDIR)/$(APPFOLDER)
+
+distclean:
+	@rm -rf $(BUILDDIR)
+
+clean:
+	@rm -f $(OBJS)
+	@rm -rf $(BUILDDIR)
+	@rm -f $(PROJECTNAME)
+
+.PHONY: all dist install distclean clean
+
