@@ -10,11 +10,18 @@
 @synthesize webView=_webView;
 @synthesize fontscale=_fontscale;
 @synthesize passage=_passage;
+@synthesize hlaction=_hlaction;
 @synthesize selectMenu=_selectMenu;
 
 //function declaration
 
-
+-(UIBarButtonItem *) hlaction {
+	if (_hlaction == nil) {
+		_hlaction = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(action:)];
+		_hlaction.style = UIBarButtonItemStyleBordered;
+	}
+	return _hlaction;
+}
 
 -(HistoryViewController *) history {
 	if (_history == nil) {
@@ -119,12 +126,7 @@
 
 }
 
-
-- (void) viewDidLoad {
-
-	[super viewDidLoad];
-	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
-	self.navigationItem.titleView = self.passage;
+- (void) setUpToolBar {
 
 	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:5];
 	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(search:)];
@@ -148,10 +150,6 @@
 	[toolbarItems addObject:memoryverse];
 	[memoryverse release];
 /*	
-	UIBarButtonItem *action = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(action:)];
-	action.style = UIBarButtonItemStyleBordered;
-	[toolbarItems addObject:action];
-	[action release];
 
 	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
 	fullscreen.style = UIBarButtonItemStyleBordered;
@@ -159,11 +157,25 @@
 */
 	[self setToolbarItems:toolbarItems];
 	[toolbarItems release];
+
+
+}
+
+- (void) viewDidLoad {
+
+	[super viewDidLoad];
+	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
+	self.navigationItem.titleView = self.passage;
 	
+	[self setUpToolBar];
 
 	UIBarButtonItem *showToolbar = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStylePlain target:self action:@selector(showToolBar:)];
 	self.navigationItem.leftBarButtonItem = showToolbar;
 	[showToolbar release];
+
+	
+	//Action Button
+
 
 	[self.gestures initWithDelegate:self View:self.webView];	
 
@@ -194,10 +206,11 @@
 	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightPoint(%f,%f);", x, y];
 	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
-	NSLog(@"%d\n", [obj intValue]);
-//	[[[[UIAlertView alloc] initWithTitle:jsString message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
-
+	if ( [obj length ] != 0) {
+		if ( [obj intValue] > 0) self.navigationItem.rightBarButtonItem = self.hlaction;
+		else if ( [obj intValue] == 0) self.navigationItem.rightBarButtonItem = nil;
+	}
 }
 
 - (void) nextPassage {
@@ -240,6 +253,7 @@
 	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
+	self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void) selectedbook:(int) bk chapter:(int) ch  {
@@ -269,6 +283,8 @@
 
 	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
 	[self.passage sizeToFit];
+
+	self.navigationItem.rightBarButtonItem = nil;
 	
 	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
@@ -318,7 +334,6 @@
 	[self hideToolBar:YES];
 
 	[self.navigationController pushViewController:self.history animated:YES];
-//	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) notes:(id)ignored {
@@ -346,7 +361,11 @@
 
 }
 
+- (void) action:(id)ignored {
+	[self hideToolBar:YES];
 
+	[self clearhighlights];
+}
 
 
 -(void) showToolBar:(id)ignored {

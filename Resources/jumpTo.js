@@ -1,5 +1,10 @@
 var selectedVerses=new Array();
 
+function sortVerse(a,b)
+{
+	return a - b;
+}
+
 function findInArray(arr,val) {
 	for (var i = 0; i < arr.length; i++) {
 		if (arr[i] == val) return i;
@@ -46,6 +51,8 @@ function unhighlight(id) {
 function highlightPoint(x, y) {
 
 	var elem = document.elementFromPoint(x,y);
+	if (elem == null) return selectedVerses.length;
+
 	while (elem.tagName != "V") {
     		elem = elem.parentNode;
 	}
@@ -53,7 +60,7 @@ function highlightPoint(x, y) {
 	if (elem.className == "active") {
 		elem.className = '';
 		var exists = findInArray(selectedVerses, elem.id);
-		if (exists != -1) selectedVerses.splice(i, 1); 
+		if (exists != -1) selectedVerses.splice(exists, 1); 
 
 	} else {
 		elem.className = 'active';
@@ -65,7 +72,7 @@ function highlightPoint(x, y) {
 		dchild[i].firstChild.className = elem.className;
 	}	
 
-	return elem.id;
+	return selectedVerses.length;
 
 }
 
@@ -82,7 +89,8 @@ function clearhighlight() {
 function highlightedVerses() {
 
 	var retString = '';
-	
+
+	selectedVerses.sort(sortVerse);	
 	for (var i = 0; i < selectedVerses.length;i++) {
 		retString += selectedVerses[i] ;
 		if  (i != (selectedVerses.length -1)) retString += ':'; 
@@ -90,3 +98,4 @@ function highlightedVerses() {
 
 	return retString;
 }
+

@@ -16,6 +16,7 @@
 	PassageSelector * _selectMenu;
 	UIWebView *_webView;
 	UIButton *_passage;
+	UIBarButtonItem *_hlaction;
 	CGFloat _fontscale;
 }
 
@@ -26,6 +27,7 @@
 @property (nonatomic, retain) PassageSelector * selectMenu;
 @property (nonatomic, retain) UIWebView *webView;
 @property (nonatomic, retain) UIButton *passage;
+@property (nonatomic, retain) UIBarButtonItem *hlaction;
 @property (nonatomic, assign) CGFloat fontscale;
 
 - (void) nextPassage;
