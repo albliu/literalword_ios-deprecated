@@ -2,7 +2,7 @@
 #import "UIUtils/UIUtils.h"
 #import "MyGestureRecognizer.h"
 
-#define SHEET_BLUE colorWithRed:0.21 green:0.39 blue:0.545 alpha:1.0
+#define SHEET_BLUE colorWithRed:0.0 green:0.0 blue:0.235 alpha:1.0
 #define WEBVIEW_MIN_SCALE 0.5 
 #define WEBVIEW_MAX_SCALE 3.0
 
