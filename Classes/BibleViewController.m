@@ -241,15 +241,20 @@
 
 }
 
-
-- (void) clearhighlights {
+- (NSArray *) gethighlights {
 
 	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightedVerses();"];
 	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
-	jsString = [[NSString alloc] initWithFormat:@"clearhighlight();"];
+	return [obj componentsSeparatedByString: @":"];
+
+
+}
+
+- (void) clearhighlights {
+	NSString *jsString = [[NSString alloc] initWithFormat:@"clearhighlight();"];
 	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
@@ -364,9 +369,29 @@
 - (void) action:(id)ignored {
 	[self hideToolBar:YES];
 
-	[self clearhighlights];
+	[[[UIAlertView alloc] initWithTitle:nil message:nil delegate:self 
+		cancelButtonTitle:@"Cancel" 
+		otherButtonTitles:@ACTION_MEMORY, @ACTION_BOOKMARK, @ACTION_CLEAR, nil] show];
 }
-
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+	NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
+     
+	if([title isEqualToString:@ACTION_MEMORY])
+	{
+		NSLog(@"Added to memory verses");
+		[self clearhighlights];
+	}
+	else if([title isEqualToString:@ACTION_BOOKMARK])
+	{
+		NSLog(@"Added to bookmarks");
+		[self clearhighlights];
+	}	
+        else if([title isEqualToString:@ACTION_CLEAR])
+	{
+		[self clearhighlights];
+	}
+}
 
 -(void) showToolBar:(id)ignored {
 

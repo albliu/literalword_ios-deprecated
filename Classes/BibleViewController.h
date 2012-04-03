@@ -6,7 +6,11 @@
 #define WEBVIEW_MIN_SCALE 0.5 
 #define WEBVIEW_MAX_SCALE 3.0
 
-@interface BibleViewController: UIViewController <UIWebViewDelegate> {
+#define ACTION_CLEAR "Clear Highlights"
+#define ACTION_MEMORY "Add To Memory List"
+#define ACTION_BOOKMARK "Add To Bookmarks"
+
+@interface BibleViewController: UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
 	int curr_book;
 	int curr_chapter;
 	HistoryViewController *_history;
