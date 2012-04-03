@@ -41,6 +41,11 @@
 @synthesize books = _books;
 static int maxBooks;
 
+- (int) getBookIndex:(NSString *)name  {
+	return [self.books indexOfObject:name];
+
+}
+
 - (NSString *) getBookNameAt:(int) idx {
 	BookName* bk = [self.books objectAtIndex:idx];
 	if (bk == nil) return nil;

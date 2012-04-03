@@ -270,6 +270,13 @@
 
 }
 
+- (void) selectedbookname:(NSString *) bk chapter:(int) ch  {
+		//commit
+		[self selectedbook:[self.bibleDB getBookIndex:bk] chapter:ch];
+
+
+}
+
 -(void) changeFontSize:(CGFloat) scale;  {
 
 	self.fontscale *= scale;

@@ -25,6 +25,7 @@
 @property (nonatomic, retain) NSString * dbPath;
 @property (nonatomic, copy) NSArray * books;
 
+- (int) getBookIndex:(NSString *) name;
 - (NSString *) getBookNameAt:(int) idx;
 - (NSNumber *) getBookChapterCountAt:(int) idx;
 - (int) maxBook;

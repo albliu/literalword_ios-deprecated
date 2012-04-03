@@ -23,6 +23,7 @@
 
 @implementation VersesDataBaseController
 @synthesize dbPath = _dbPath;
+@synthesize dbase = _dbase;
 
 - (NSString *) dbPath {
 	if (_dbPath == nil) {
@@ -44,37 +45,35 @@
 
 }
 
-- (id) initDataBase {
+- (id) initDataBase :(const char *) name {
+
+
+	self.dbase = [NSString stringWithFormat:@"%s",name];
+
 	sqlite3 *myDB;
 	BOOL databaseAlreadyExists = [[NSFileManager defaultManager] fileExistsAtPath:self.dbPath];
 
 	if (sqlite3_open([self.dbPath UTF8String], &myDB) == SQLITE_OK) {
 		if (!databaseAlreadyExists) {
-			NSString * createMem = [self.class CreateTableString:DATABASE_MEMVERSE_TABLE];
-			NSString * createBookmark = [self.class CreateTableString:DATABASE_BOOKMARK_TABLE];
+			NSString * create = [self.class CreateTableString:name];
 			char * error;
 
-			if (sqlite3_exec(myDB, [createMem UTF8String], NULL, NULL, &error) == SQLITE_OK) {
+			if (sqlite3_exec(myDB, [create UTF8String], NULL, NULL, &error) == SQLITE_OK) {
 
-				if (sqlite3_exec(myDB, [createBookmark UTF8String], NULL, NULL, &error) == SQLITE_OK) {
-					NSLog(@"Database and tables created.");
-				} else {
-					NSLog(@"error creating memory table\n");
-				}
+				NSLog(@"Database and tables created.");
 			} else {
 				NSLog(@"error creating bookmark table\n");
 			}
 
-			[createMem release];
-			[createBookmark release];
+			[create release];
 		}
 		sqlite3_close(myDB);
 	}
 	return self;
 }
 
-- (void) addVerseTo:(NSString *) dbase Book:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
-	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")",dbase,
+- (void) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
+	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")",self.dbase,
 				VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID,
 				book, chap, ver, text] UTF8String];
 
@@ -100,7 +99,7 @@
 
 }
 
-- (NSArray *) findVersesFrom:(NSString *)dbase {
+- (NSArray *) findAllVerses {
 
 	NSMutableArray *result = nil;
 	sqlite3 *database = nil;
@@ -111,7 +110,7 @@
 		const char * select_sql = [[NSString stringWithFormat:
 			@"SELECT %s, %s, %s, %s, %s FROM %@", 
 			VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID, KEY_ROWID,
-			dbase] UTF8String];
+			self.dbase] UTF8String];
 
 		NSLog(@"%s", select_sql);
 
@@ -137,7 +136,7 @@
 	}
 	return result;
 }
-- (VerseEntry *) findVerse:(NSString *)dbase Row:(int) row_id {
+- (VerseEntry *) findVerse:(int) row_id {
 
 
 	VerseEntry *result = nil;
@@ -149,7 +148,7 @@
 		const char * select_sql = [[NSString stringWithFormat:
 			@"SELECT %s, %s, %s, %s, %s FROM %@ WHERE %s = %d", 
 			VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID, KEY_ROWID,
-			dbase, KEY_ROWID, row_id] UTF8String];
+			self.dbase, KEY_ROWID, row_id] UTF8String];
 
 		NSLog(@"%s", select_sql);
 
@@ -172,7 +171,7 @@
 	return result;
 }
 
-- (void) deleteVerse:(NSString *)dbase Row:(int) row_id {
+- (void) deleteVerse:(int) row_id {
 
 	sqlite3 *database = nil;
 	sqlite3_stmt    *statement;
@@ -181,7 +180,7 @@
 
 		const char * delete_sql = [[NSString stringWithFormat:
 			@"DELETE FROM %@ WHERE %s = %d", 
-			dbase, KEY_ROWID, row_id ] UTF8String];
+			self.dbase, KEY_ROWID, row_id ] UTF8String];
 
 		NSLog(@"%s", delete_sql);
 
@@ -197,18 +196,17 @@
 
 }
 
-- (void) deleteAllVerses:(NSString *)dbase {
+- (void) deleteAllVerses {
 
 	sqlite3 *database = nil;
-	sqlite3_stmt    *statement;
 	char * error;
 
 
 	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
-		const char * delete_cmd = [[NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", dbase] UTF8String];
+		const char * delete_cmd = [[NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", self.dbase] UTF8String];
 		if (sqlite3_exec(database, delete_cmd, NULL, NULL, &error) == SQLITE_OK) {
-			NSString * createTable = [self.class CreateTableString:[dbase UTF8String]];
+			NSString * createTable = [self.class CreateTableString:[self.dbase UTF8String]];
 			if (sqlite3_exec(database, [createTable UTF8String], NULL, NULL, &error) == SQLITE_OK) {
 				NSLog(@"Database and tables cleared.");
 			} else {
@@ -224,47 +222,4 @@
 
 }
 
-#pragma mark --
-#pragma mark Memory table 
-- (void) addVerseToMemory:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
-	[self addVerseTo:@DATABASE_MEMVERSE_TABLE Book:book Chapter:chap Verses:ver Text:text];
-}
-
-- (NSArray *) findAllMemoryVerses {
-	return [self findVersesFrom:@DATABASE_MEMVERSE_TABLE];
-}
-
-- (void) deleteMemoryVerse: (int) row_id {
-	[self deleteVerse:@DATABASE_MEMVERSE_TABLE Row:row_id];
-}
-
-- (void) deleteAllMemoryVerse {
-	[self deleteAllVerses:@DATABASE_MEMVERSE_TABLE];
-}
-- (VerseEntry *) findMemoryVerse: (int) row_id {
-	return [self findVerse:@DATABASE_MEMVERSE_TABLE Row:row_id];
-}
-
-
-#pragma mark BOokmark table 
-- (void) addVerseToBookMark:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
-	[self addVerseTo:@DATABASE_BOOKMARK_TABLE Book:book Chapter:chap Verses:ver Text:text];
-}
-
-- (NSArray *) findAllBookmarks {
-	return [self findVersesFrom:@DATABASE_BOOKMARK_TABLE];
-}
-
-- (void) deleteBookmarkVerse: (int) row_id {
-	[self deleteVerse:@DATABASE_BOOKMARK_TABLE Row:row_id];
-}
-
-- (void) deleteAllBookmarkVerse {
-	[self deleteAllVerses:@DATABASE_BOOKMARK_TABLE];
-}
-
-- (VerseEntry *) findBookmarkVerse: (int) row_id {
-	return [self findVerse:@DATABASE_BOOKMARK_TABLE Row:row_id];
-
-}
 @end 

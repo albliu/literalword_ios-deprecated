@@ -37,6 +37,7 @@
 - (void) nextPassage;
 - (void) prevPassage;
 - (void) selectedbook:(int) bk chapter:(int) ch;
+- (void) selectedbookname:(NSString *) bk chapter:(int) ch;
 
 - (void) changeFontSize:(CGFloat) scale; 
 - (void) loadPassage;
