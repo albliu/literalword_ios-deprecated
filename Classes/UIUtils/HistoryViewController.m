@@ -24,7 +24,7 @@
     self = [ super initWithStyle: UITableViewStylePlain];
 
     if (self != nil) {
-        self.title = @"History";
+	self.title = @"History";
     }
     self.delegate = bibleView;
     return self;
@@ -66,8 +66,8 @@
 	NSArray * tmp;
 	for ( i = 0; i < [self.myHistory count]; i++ ) {
 		tmp = [self.myHistory objectAtIndex:i];
-		if (( [entry objectAtIndex:2] == [tmp objectAtIndex:2]) &&
-			([entry objectAtIndex:1] == [tmp objectAtIndex:1])) return i;
+		if (( [[entry objectAtIndex:2] intValue] == [[tmp objectAtIndex:2] intValue]) &&
+			([[entry objectAtIndex:1] intValue] == [[tmp objectAtIndex:1] intValue])) return i;
 
 	}
 
