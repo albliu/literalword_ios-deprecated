@@ -31,9 +31,10 @@
 @interface VersesDataBaseController: NSObject {
 
 	NSString * _dbPath;
+	NSString * _dbase;
 }
 @property (nonatomic, retain) NSString * dbPath;
-@property (nonatomic, copy) NSString * dbase;
+@property (nonatomic, retain) NSString * dbase;
 
 - (id) initDataBase:(const char *) name;
 

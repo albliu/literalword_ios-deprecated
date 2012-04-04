@@ -48,7 +48,7 @@
 - (id) initDataBase :(const char *) name {
 
 
-	self.dbase = [NSString stringWithFormat:@"%s",name];
+	self.dbase = [[NSString alloc] initWithFormat:@"%s",name];
 
 	sqlite3 *myDB;
 	BOOL databaseAlreadyExists = [[NSFileManager defaultManager] fileExistsAtPath:self.dbPath];
@@ -73,19 +73,19 @@
 }
 
 - (void) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
-	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")",self.dbase,
+	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")", self.dbase,
 				VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID,
 				book, chap, ver, text] UTF8String];
 
 
 	sqlite3 *database = nil;
-	sqlite3_stmt    *statement;
+	sqlite3_stmt	*statement;
 
 	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 		if(sqlite3_prepare_v2(database, insert_sql, -1, &statement, NULL) == SQLITE_OK) { 
 
 			if (sqlite3_step(statement) != SQLITE_DONE) {
-				NSAssert1(0, @"Error while inserting data. '%s'", sqlite3_errmsg(database));
+				NSLog(@"Error while inserting data. '%s'", sqlite3_errmsg(database));
 			}
 			sqlite3_finalize(statement);
 		} else {
@@ -103,7 +103,7 @@
 
 	NSMutableArray *result = nil;
 	sqlite3 *database = nil;
-	sqlite3_stmt    *statement;
+	sqlite3_stmt	*statement;
 
 	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
@@ -116,7 +116,7 @@
 
 		if(sqlite3_prepare_v2(database, select_sql, -1, &statement, NULL) == SQLITE_OK) { 
 
-			result = [NSMutableArray array];
+			result = [[NSMutableArray alloc] initWithCapacity:1];
 			while(sqlite3_step(statement) == SQLITE_ROW) {
 				
 				VerseEntry * entry = [[VerseEntry alloc] 
@@ -132,7 +132,7 @@
 			}
 			sqlite3_finalize(statement);
 		}
-        	sqlite3_close(database);
+		sqlite3_close(database);
 	}
 	return result;
 }
@@ -141,7 +141,7 @@
 
 	VerseEntry *result = nil;
 	sqlite3 *database = nil;
-	sqlite3_stmt    *statement;
+	sqlite3_stmt	*statement;
 
 	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
@@ -166,7 +166,7 @@
 			}
 			sqlite3_finalize(statement);
 		}
-        	sqlite3_close(database);
+		sqlite3_close(database);
 	}
 	return result;
 }
@@ -174,7 +174,7 @@
 - (void) deleteVerse:(int) row_id {
 
 	sqlite3 *database = nil;
-	sqlite3_stmt    *statement;
+	sqlite3_stmt	*statement;
 
 	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
@@ -191,7 +191,7 @@
 			}
 			sqlite3_finalize(statement);
 		}
-        	sqlite3_close(database);
+		sqlite3_close(database);
 	}
 
 }

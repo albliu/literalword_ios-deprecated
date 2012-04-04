@@ -1,16 +1,10 @@
-#import <BibleUtils/BibleUtils.h>
-
-#define HISTORY_MAX 30
+#import "HistoryData.h"
 
 @interface HistoryViewController: UITableViewController {
-	NSMutableArray * _myHistory;
-	VersesDataBaseController * _myDB;
+	HistoryData * _myData;
 }
-@property (nonatomic, copy) NSMutableArray * myHistory;
 @property (nonatomic, assign) id delegate;
-@property (nonatomic, retain) VersesDataBaseController * myDB;
+@property (nonatomic, retain) HistoryData * myData;
 
-- (id) initWithDelegate:(id) bibleView;
--(void) addToHistory:(NSString *) bookname Book:(int) book Chapter:(int) chap;
-
+- (id) initWithDelegate:(id) bibleView Data:(HistoryData *) data;
 @end

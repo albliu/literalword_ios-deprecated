@@ -42,8 +42,12 @@
 static int maxBooks;
 
 - (int) getBookIndex:(NSString *)name  {
-	return [self.books indexOfObject:name];
-
+	for (int i = 0; i < [self.books count]; i++) {
+		BookName * tmp = [self.books objectAtIndex:i];
+		if ([name isEqualToString:tmp.name]) return i;
+	}
+	
+	return 0;
 }
 
 - (NSString *) getBookNameAt:(int) idx {
@@ -84,7 +88,7 @@ static int maxBooks;
 
 		const char *query_stmt = [querySQL UTF8String];
 		if(sqlite3_prepare_v2(bibleDB, query_stmt, -1, &statement, NULL) == SQLITE_OK) {
-			result = [NSMutableArray array];
+			result = [[NSMutableArray alloc] initWithCapacity:1];
 			while(sqlite3_step(statement) == SQLITE_ROW) {
 				const unsigned char *text = sqlite3_column_text(statement, 0);
 				int nChap = sqlite3_column_int(statement, 1);

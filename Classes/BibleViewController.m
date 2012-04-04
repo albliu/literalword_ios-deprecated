@@ -23,9 +23,9 @@
 	return _hlaction;
 }
 
--(HistoryViewController *) history {
+-(HistoryData *) history {
 	if (_history == nil) {
-		_history = [[HistoryViewController alloc] initWithDelegate:self];
+		_history = [[HistoryData alloc] init];
 	}
 	return _history;
 }
@@ -84,7 +84,7 @@
 	if (_passage == nil) {
 		_passage = [[UIButton alloc] initWithFrame:CGRectMake(0,0,100,30)];
 		[_passage setTitle:@"LiteralWord" forState:UIControlStateNormal];
-    		[_passage addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
+		[_passage addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
 		[_passage sizeToFit];
 	}
 	return _passage;
@@ -94,7 +94,7 @@
 - (CGFloat)fontscale
 {
     if (!_fontscale) {
-        _fontscale = 1.0;
+	_fontscale = 1.0;
     } 
     return _fontscale;
 }
@@ -142,9 +142,9 @@
 	[toolbarItems addObject:notes];
 	[notes release];
 
-	UIBarButtonItem *history = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(history:)];
-	[toolbarItems addObject:history];
-	[history release];
+	UIBarButtonItem *myhistory = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(showhistory:)];
+	[toolbarItems addObject:myhistory];
+	[myhistory release];
 
 	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"memory.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(memverse:)];
 	[toolbarItems addObject:memoryverse];
@@ -185,10 +185,11 @@
 
 - (void)dealloc {
 	[self.selectMenu release];	
-	[self.webView release];	
-	[self.bibleDB release];	
+	[self.webView release]; 
+	[self.bibleDB release]; 
 	[self.bibleHtml release];	
-	[self.passage release];	
+	[self.passage release]; 
+	[self.history release]; 
 	[super dealloc];
 }
 
@@ -270,9 +271,10 @@
 
 }
 
-- (void) selectedbookname:(NSString *) bk chapter:(int) ch  {
+- (void) selectedbookname:(const char *) bk chapter:(int) ch  {
 		//commit
-		[self selectedbook:[self.bibleDB getBookIndex:bk] chapter:ch];
+		int i = [self.bibleDB getBookIndex:[NSString stringWithFormat:@"%s", bk]];
+		[self selectedbook:i chapter:ch];
 
 
 }
@@ -280,7 +282,7 @@
 -(void) changeFontSize:(CGFloat) scale;  {
 
 	self.fontscale *= scale;
-	NSUInteger textFontSize	= (100 * self.fontscale);
+	NSUInteger textFontSize = (100 * self.fontscale);
 	NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust= '%d%%'", textFontSize];
 	[self.webView stringByEvaluatingJavaScriptFromString:jsString];
 	[jsString release];
@@ -342,10 +344,11 @@
 
 }
 
-- (void) history:(id)ignored {
+- (void) showhistory:(id)ignored {
 	[self hideToolBar:YES];
 
-	[self.navigationController pushViewController:self.history animated:YES];
+	HistoryViewController * historyView = [[[HistoryViewController alloc] initWithDelegate: self Data:self.history] autorelease];
+	[self.navigationController pushViewController:historyView animated:YES];
 
 }
 - (void) notes:(id)ignored {
@@ -394,7 +397,7 @@
 		NSLog(@"Added to bookmarks");
 		[self clearhighlights];
 	}	
-        else if([title isEqualToString:@ACTION_CLEAR])
+	else if([title isEqualToString:@ACTION_CLEAR])
 	{
 		[self clearhighlights];
 	}
