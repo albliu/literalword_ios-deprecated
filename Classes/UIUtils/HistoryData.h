@@ -5,11 +5,10 @@
 
 @interface HistoryData : NSObject {
 	NSMutableArray * _myHistory;
-	VersesDataBaseController * _myDB;
+	VersesDataBaseController * myDB;
 }
 
 @property (nonatomic, retain) NSMutableArray * myHistory;
-@property (nonatomic, retain) VersesDataBaseController * myDB;
 
 - (void) addToHistory:(NSString *) bookname Book:(int) book Chapter:(int) chap;
 - (void) addToList:(VerseEntry *) ver; 

@@ -13,7 +13,7 @@
 @interface BibleViewController: UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
 	int curr_book;
 	int curr_chapter;
-	HistoryData *_history;
+	HistoryData * history;
 	MyGestureRecognizer *_gestures;
 	BibleDataBaseController *_bibleDB;
 	BibleHtmlGenerator *_bibleHtml;
@@ -24,7 +24,6 @@
 	CGFloat _fontscale;
 }
 
-@property (nonatomic, retain) HistoryData *history;
 @property (nonatomic, retain) MyGestureRecognizer *gestures;
 @property (nonatomic, retain) BibleDataBaseController *bibleDB;
 @property (nonatomic, retain) BibleHtmlGenerator *bibleHtml;

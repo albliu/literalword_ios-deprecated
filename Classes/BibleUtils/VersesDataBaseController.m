@@ -22,15 +22,9 @@
 
 
 @implementation VersesDataBaseController
-@synthesize dbPath = _dbPath;
-@synthesize dbase = _dbase;
 
-- (NSString *) dbPath {
-	if (_dbPath == nil) {
-		_dbPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@VERSES_DB];
-	}
-	return _dbPath;
-}
+static sqlite3 *database = nil;
+
 
 + (NSString *) CreateTableString:(const char *) table {
 
@@ -45,43 +39,66 @@
 
 }
 
-- (id) initDataBase :(const char *) name {
++ (void) openDataBase {
 
+	NSString * dbPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@VERSES_DB];
 
-	self.dbase = [[NSString alloc] initWithFormat:@"%s",name];
+	BOOL databaseAlreadyExists = [[NSFileManager defaultManager] fileExistsAtPath:dbPath];
 
-	sqlite3 *myDB;
-	BOOL databaseAlreadyExists = [[NSFileManager defaultManager] fileExistsAtPath:self.dbPath];
-
-	if (sqlite3_open([self.dbPath UTF8String], &myDB) == SQLITE_OK) {
+	if (sqlite3_open([dbPath UTF8String], &database) == SQLITE_OK) {
 		if (!databaseAlreadyExists) {
-			NSString * create = [self.class CreateTableString:name];
+			NSString * createHist = [self.class CreateTableString:DATABASE_HISTORY_TABLE];
+			NSString * createMem = [self.class CreateTableString:DATABASE_MEMVERSE_TABLE];
+			NSString * createBMark = [self.class CreateTableString:DATABASE_BOOKMARK_TABLE];
 			char * error;
 
-			if (sqlite3_exec(myDB, [create UTF8String], NULL, NULL, &error) == SQLITE_OK) {
-
+			if (sqlite3_exec(database, [createHist UTF8String], NULL, NULL, &error) == SQLITE_OK) {
 				NSLog(@"Database and tables created.");
 			} else {
-				NSLog(@"error creating bookmark table\n");
+				NSLog(@"error creating history table %s\n", error);
 			}
 
-			[create release];
+			if (sqlite3_exec(database, [createBMark UTF8String], NULL, NULL, &error) == SQLITE_OK) {
+				NSLog(@"Database and tables created.");
+			} else {
+				NSLog(@"error creating Bookmark table %s\n", error);
+			}
+
+			if (sqlite3_exec(database, [createMem UTF8String], NULL, NULL, &error) == SQLITE_OK) {
+				NSLog(@"Database and tables created.");
+			} else {
+				NSLog(@"error creating Memory Verse table %s\n", error);
+			}
+			[createHist release];
+			[createMem release];
+			[createBMark release];
 		}
-		sqlite3_close(myDB);
+	} else {
+		sqlite3_close(database);
 	}
+
+}
+
++ (void) closeDataBase {
+	if(database) sqlite3_close(database);
+}
+
+- (id) initDataBase :(const char *) name {
+
+	[super init];
+	dbase = [[NSString alloc] initWithFormat:@"%s",name];
+
 	return self;
 }
 
 - (void) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
-	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")", self.dbase,
+	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")", dbase,
 				VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID,
 				book, chap, ver, text] UTF8String];
 
 
-	sqlite3 *database = nil;
-	sqlite3_stmt	*statement;
+		sqlite3_stmt	*statement;
 
-	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 		if(sqlite3_prepare_v2(database, insert_sql, -1, &statement, NULL) == SQLITE_OK) { 
 
 			if (sqlite3_step(statement) != SQLITE_DONE) {
@@ -91,26 +108,19 @@
 		} else {
 			NSLog(@"error preparing statement : %s\n", sqlite3_errmsg(database));
 		}
-		sqlite3_close(database);
-	} else {
-		NSLog(@"error opening database\n");
-	}
-	NSLog(@"addVerse");
 
 }
 
 - (NSArray *) findAllVerses {
 
 	NSMutableArray *result = nil;
-	sqlite3 *database = nil;
 	sqlite3_stmt	*statement;
 
-	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
 		const char * select_sql = [[NSString stringWithFormat:
 			@"SELECT %s, %s, %s, %s, %s FROM %@", 
 			VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID, KEY_ROWID,
-			self.dbase] UTF8String];
+			dbase] UTF8String];
 
 		NSLog(@"%s", select_sql);
 
@@ -132,23 +142,18 @@
 			}
 			sqlite3_finalize(statement);
 		}
-		sqlite3_close(database);
-	}
 	return result;
 }
 - (VerseEntry *) findVerse:(int) row_id {
 
 
 	VerseEntry *result = nil;
-	sqlite3 *database = nil;
 	sqlite3_stmt	*statement;
-
-	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
 		const char * select_sql = [[NSString stringWithFormat:
 			@"SELECT %s, %s, %s, %s, %s FROM %@ WHERE %s = %d", 
 			VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID, KEY_ROWID,
-			self.dbase, KEY_ROWID, row_id] UTF8String];
+			dbase, KEY_ROWID, row_id] UTF8String];
 
 		NSLog(@"%s", select_sql);
 
@@ -166,21 +171,17 @@
 			}
 			sqlite3_finalize(statement);
 		}
-		sqlite3_close(database);
-	}
 	return result;
 }
 
 - (void) deleteVerse:(int) row_id {
 
-	sqlite3 *database = nil;
 	sqlite3_stmt	*statement;
 
-	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
 		const char * delete_sql = [[NSString stringWithFormat:
 			@"DELETE FROM %@ WHERE %s = %d", 
-			self.dbase, KEY_ROWID, row_id ] UTF8String];
+			dbase, KEY_ROWID, row_id ] UTF8String];
 
 		NSLog(@"%s", delete_sql);
 
@@ -191,22 +192,18 @@
 			}
 			sqlite3_finalize(statement);
 		}
-		sqlite3_close(database);
-	}
 
 }
 
 - (void) deleteAllVerses {
 
-	sqlite3 *database = nil;
 	char * error;
 
 
-	if (sqlite3_open([self.dbPath UTF8String], &database) == SQLITE_OK) {
 
-		const char * delete_cmd = [[NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", self.dbase] UTF8String];
+		const char * delete_cmd = [[NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", dbase] UTF8String];
 		if (sqlite3_exec(database, delete_cmd, NULL, NULL, &error) == SQLITE_OK) {
-			NSString * createTable = [self.class CreateTableString:[self.dbase UTF8String]];
+			NSString * createTable = [self.class CreateTableString:[dbase UTF8String]];
 			if (sqlite3_exec(database, [createTable UTF8String], NULL, NULL, &error) == SQLITE_OK) {
 				NSLog(@"Database and tables cleared.");
 			} else {
@@ -217,9 +214,15 @@
 			NSLog(@"error deleting table\n");
 		}
 
-		sqlite3_close(database);
-	}
 
 }
+
+
+- (void) dealloc {
+
+        [dbase release];
+        [super dealloc];
+}
+
 
 @end 

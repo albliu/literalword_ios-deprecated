@@ -3,7 +3,6 @@
 
 @implementation BibleViewController
 
-@synthesize history=_history;
 @synthesize gestures=_gestures;
 @synthesize bibleHtml=_bibleHtml;
 @synthesize bibleDB=_bibleDB;
@@ -23,12 +22,7 @@
 	return _hlaction;
 }
 
--(HistoryData *) history {
-	if (_history == nil) {
-		_history = [[HistoryData alloc] init];
-	}
-	return _history;
-}
+
 
 -(MyGestureRecognizer *) gestures {
 	if (_gestures == nil) {
@@ -164,6 +158,9 @@
 - (void) viewDidLoad {
 
 	[super viewDidLoad];
+
+	history = [[HistoryData alloc] init];
+
 	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
 	self.navigationItem.titleView = self.passage;
 	
@@ -189,7 +186,7 @@
 	[self.bibleDB release]; 
 	[self.bibleHtml release];	
 	[self.passage release]; 
-	[self.history release]; 
+	[history release]; 
 	[super dealloc];
 }
 
@@ -293,7 +290,7 @@
 
 	NSString * name = [self.bibleDB getBookNameAt:curr_book];
 
-	[self.history addToHistory:name Book:curr_book Chapter:curr_chapter];
+	[history addToHistory:name Book:curr_book Chapter:curr_chapter];
 
 	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
 	[self.passage sizeToFit];
@@ -347,7 +344,7 @@
 - (void) showhistory:(id)ignored {
 	[self hideToolBar:YES];
 
-	HistoryViewController * historyView = [[[HistoryViewController alloc] initWithDelegate: self Data:self.history] autorelease];
+	HistoryViewController * historyView = [[HistoryViewController alloc] initWithDelegate: self Data:history] ;
 	[self.navigationController pushViewController:historyView animated:YES];
 
 }

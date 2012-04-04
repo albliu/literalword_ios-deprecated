@@ -29,14 +29,13 @@
 @end
 
 @interface VersesDataBaseController: NSObject {
-
-	NSString * _dbPath;
-	NSString * _dbase;
+	NSString * dbase;
 }
-@property (nonatomic, retain) NSString * dbPath;
-@property (nonatomic, retain) NSString * dbase;
+
 
 - (id) initDataBase:(const char *) name;
++ (void) openDataBase;
++ (void) closeDataBase;
 
 - (void) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text; 
 - (NSArray *) findAllVerses; 

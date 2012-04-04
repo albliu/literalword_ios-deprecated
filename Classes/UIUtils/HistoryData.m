@@ -2,7 +2,6 @@
 
 @implementation HistoryData
 @synthesize myHistory=_myHistory;
-@synthesize myDB=_myDB;
 
 - (int) existsInHistory:(VerseEntry *) entry {
 
@@ -19,9 +18,11 @@
 }
 
 - (id) init {
-    self.myDB = [[VersesDataBaseController alloc] initDataBase:DATABASE_HISTORY_TABLE];
+
+    myDB = [[VersesDataBaseController alloc] initDataBase:DATABASE_HISTORY_TABLE];
+
     self.myHistory = [[NSMutableArray alloc] initWithCapacity: HISTORY_MAX];
-    NSArray * tmp =  [self.myDB findAllVerses];
+    NSArray * tmp =  [myDB findAllVerses];
 
     // we need to reverse the inital array since most recently added should be on top		    
     int i = [tmp count] - 1;
@@ -31,7 +32,7 @@
     return self;
 }
 - (void) clear {
-	[self.myDB deleteAllVerses];
+	[myDB deleteAllVerses];
 	[self.myHistory removeAllObjects];
 }
 
@@ -39,13 +40,13 @@
 
 	VerseEntry * ver = [self.myHistory objectAtIndex:index];
 	[self.myHistory removeObjectAtIndex:index];
-	[self.myDB deleteVerse:ver.rowid];	
+	[myDB deleteVerse:ver.rowid];	
 }
 
 - (void) addToList:(VerseEntry *) ver {
 
 	[self.myHistory insertObject:ver atIndex:0];
-	[self.myDB addVerse:ver.book Chapter:[NSString stringWithFormat:@"%d", ver.chapter] Verses:ver.verses Text:ver.text];
+	[myDB addVerse:ver.book Chapter:[NSString stringWithFormat:@"%d", ver.chapter] Verses:ver.verses Text:ver.text];
 }
 
 
@@ -63,6 +64,7 @@
 }
 
 - (void) dealloc {
+	[myDB release];	
 	[self.myHistory release];
 	[super dealloc];
 }

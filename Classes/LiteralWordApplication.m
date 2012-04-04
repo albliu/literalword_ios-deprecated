@@ -36,10 +36,20 @@
 }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+
+	[VersesDataBaseController openDataBase];
 	application.statusBarHidden = YES;	
 	[self.window addSubview: self.rootview.view];
 	[self.window makeKeyAndVisible];
 }
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+        // Save data if appropriate
+
+        [VersesDataBaseController closeDataBase];
+}
+
+
 
 - (void)dealloc {
 	[self.window release];
