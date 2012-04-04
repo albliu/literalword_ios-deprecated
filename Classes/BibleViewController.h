@@ -1,5 +1,6 @@
 #import "BibleUtils/BibleUtils.h"
 #import "UIUtils/UIUtils.h"
+#import "VersesDataBase/VersesDataBase.h"
 #import "MyGestureRecognizer.h"
 
 #define SHEET_BLUE colorWithRed:0.0 green:0.0 blue:0.235 alpha:1.0
@@ -14,6 +15,10 @@
 	int curr_book;
 	int curr_chapter;
 	HistoryData * history;
+	BookmarkData * bookmarks;
+	MemoryVersesData * memory;
+
+
 	MyGestureRecognizer *_gestures;
 	BibleDataBaseController *_bibleDB;
 	BibleHtmlGenerator *_bibleHtml;

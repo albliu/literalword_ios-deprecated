@@ -1,5 +1,5 @@
 #import "BibleViewController.h"
-
+#import <ViewControllers/ViewControllers.h>
 
 @implementation BibleViewController
 
@@ -160,6 +160,8 @@
 	[super viewDidLoad];
 
 	history = [[HistoryData alloc] init];
+	bookmarks = [[BookmarkData alloc] init];
+	memory = [[MemoryVersesData alloc] init];
 
 	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
 	self.navigationItem.titleView = self.passage;
@@ -366,7 +368,9 @@
 - (void) memverse:(id)ignored {
 	[self hideToolBar:YES];
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	MemoryVerseViewController * myView = [[MemoryVerseViewController alloc] initWithDelegate: self Data:memory] ;
+	myView.title = @"Memory Verses"; 
+	[self.navigationController pushViewController:myView animated:YES];
 
 }
 - (void) bookmark:(id)ignored {
@@ -389,11 +393,13 @@
 	if([title isEqualToString:@ACTION_MEMORY])
 	{
 		NSLog(@"Added to memory verses");
+		[memory addToMemoryVerses:[self.bibleDB getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
 		[self clearhighlights];
 	}
 	else if([title isEqualToString:@ACTION_BOOKMARK])
 	{
 		NSLog(@"Added to bookmarks");
+		[bookmarks addToBookmarks:[self.bibleDB getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
 		[self clearhighlights];
 	}	
 	else if([title isEqualToString:@ACTION_CLEAR])

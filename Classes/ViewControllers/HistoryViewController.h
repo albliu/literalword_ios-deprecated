@@ -1,4 +1,4 @@
-#import "HistoryData.h"
+#import "VersesDataBase/HistoryData.h"
 
 @interface HistoryViewController: UITableViewController {
 	HistoryData * _myData;
