@@ -12,12 +12,13 @@
 @synthesize hlaction=_hlaction;
 @synthesize selectMenu=_selectMenu;
 
-//function declaration
-
--(UIBarButtonItem *) hlaction {
+-(UIButton *) hlaction {
 	if (_hlaction == nil) {
-		_hlaction = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(action:)];
-		_hlaction.style = UIBarButtonItemStyleBordered;
+		_hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
+		[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
+		_hlaction.frame = CGRectMake(self.view.bounds.size.width - 55, self.view.bounds.size.height - 55, 50, 50);
+		_hlaction.hidden = YES;
+		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
 	}
 	return _hlaction;
 }
@@ -35,6 +36,7 @@
 -(PassageSelector *) selectMenu {
 	if (_selectMenu == nil)  {
 		_selectMenu = [[PassageSelector alloc] initWithViewWidth:self.view.bounds.size.width Delegate:self BibleDB:self.bibleDB];
+		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleRightMargin);	
 	}
 	return _selectMenu;
 
@@ -112,33 +114,27 @@
 - (void)loadView {
 
 	[super loadView];
-
+	
 		
 	[self.view addSubview:self.webView];
 	[self.view addSubview:self.selectMenu.view];
-	
+	[self.view addSubview:self.hlaction];	
+
 
 }
 
 - (void) setUpToolBar {
 
-	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:5];
+	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
 	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(search:)];
 	[toolbarItems addObject:search];
 	[search release];
 
-	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"bookmark.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(bookmark:)];
-	[toolbarItems addObject:bookmark];
-	[bookmark release];
 
 	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(notes:)];
 	notes.style = UIBarButtonItemStyleBordered;
 	[toolbarItems addObject:notes];
 	[notes release];
-
-	UIBarButtonItem *myhistory = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(showhistory:)];
-	[toolbarItems addObject:myhistory];
-	[myhistory release];
 
 	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"memory.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(memverse:)];
 	[toolbarItems addObject:memoryverse];
@@ -152,7 +148,37 @@
 	[self setToolbarItems:toolbarItems];
 	[toolbarItems release];
 
+	UIBarButtonItem *showToolbar = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStylePlain target:self action:@selector(showToolBar:)];
+	self.navigationItem.rightBarButtonItem = showToolbar;
+	[showToolbar release];
 
+
+	// Show 2 buttons
+
+	UIToolbar *tools = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 80.0f, 44.01f)];
+	tools.clearsContextBeforeDrawing = NO;
+	tools.clipsToBounds = NO;
+	tools.barStyle = -1;
+	tools.autoresizingMask = (UIViewAutoresizingFlexibleHeight);	
+
+	toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
+
+	UIBarButtonItem *myhistory = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showhistory:)];
+	[toolbarItems addObject:myhistory];
+	[myhistory release];
+
+	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"bookmark.png"] style:UIBarButtonItemStylePlain target:self action:@selector(bookmark:)];
+	[toolbarItems addObject:bookmark];
+	[bookmark release];
+
+	[tools setItems:toolbarItems animated:NO]; 
+	[toolbarItems release];
+	
+	UIBarButtonItem *twoButtons = [[UIBarButtonItem alloc] initWithCustomView:tools];
+	[tools release];
+
+	self.navigationItem.leftBarButtonItem = twoButtons;
+	[twoButtons release];
 }
 
 - (void) viewDidLoad {
@@ -167,17 +193,10 @@
 	self.navigationItem.titleView = self.passage;
 	
 	[self setUpToolBar];
-
-	UIBarButtonItem *showToolbar = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStylePlain target:self action:@selector(showToolBar:)];
-	self.navigationItem.leftBarButtonItem = showToolbar;
-	[showToolbar release];
-
 	
-	//Action Button
-
-
 	[self.gestures initWithDelegate:self View:self.webView];	
 
+	// load last passage
 	VerseEntry * last = [history lastPassage];
 	if (last) [self selectedbookname:[last.book UTF8String] chapter:last.chapter];
 	else [self loadPassage];
@@ -210,8 +229,8 @@
 	[jsString release];
 
 	if ( [obj length ] != 0) {
-		if ( [obj intValue] > 0) self.navigationItem.rightBarButtonItem = self.hlaction;
-		else if ( [obj intValue] == 0) self.navigationItem.rightBarButtonItem = nil;
+		if ( [obj intValue] > 0) self.hlaction.hidden = NO;
+		else if ( [obj intValue] == 0) self.hlaction.hidden = YES;
 	}
 }
 
@@ -260,7 +279,8 @@
 	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-	self.navigationItem.rightBarButtonItem = nil;
+	self.hlaction.hidden = YES;
+
 }
 
 - (void) selectedbook:(int) bk chapter:(int) ch  {
@@ -299,8 +319,6 @@
 	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
 	[self.passage sizeToFit];
 
-	self.navigationItem.rightBarButtonItem = nil;
-	
 	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
 
@@ -310,10 +328,10 @@
 -(void) hideToolBar:(BOOL) hide {
 	if (hide) {
 		[self.navigationController setToolbarHidden:YES];
-		self.navigationItem.leftBarButtonItem.style = UIBarButtonItemStylePlain ;
+		self.navigationItem.rightBarButtonItem.style = UIBarButtonItemStylePlain ;
 	} else {
 		 [self.navigationController setToolbarHidden:NO];
-		self.navigationItem.leftBarButtonItem.style = UIBarButtonItemStyleDone ;
+		self.navigationItem.rightBarButtonItem.style = UIBarButtonItemStyleDone ;
 
 	}
 
