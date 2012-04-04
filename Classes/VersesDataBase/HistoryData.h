@@ -1,19 +1,11 @@
-#import <BibleUtils/BibleUtils.h>
-#import "sqlite3.h"
+#import "VersesData.h"
 
 #define HISTORY_MAX 30
 
-@interface HistoryData : NSObject {
-	NSMutableArray * _myHistory;
-	VersesDataBaseController * myDB;
+@interface HistoryData : VersesData {
 }
 
-@property (nonatomic, retain) NSMutableArray * myHistory;
-
 - (void) addToHistory:(NSString *) bookname Book:(int) book Chapter:(int) chap;
-- (void) addToList:(VerseEntry *) ver; 
-- (void) removeFromList:(int) index; 
-- (void) clear;
 - (VerseEntry *) lastPassage; 
 @end
 

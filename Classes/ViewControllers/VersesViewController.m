@@ -1,18 +1,15 @@
-#import "HistoryViewController.h"
+#import "VersesViewController.h"
 #import "BibleViewController.h"
 
 
-@implementation HistoryViewController
+@implementation VersesViewController
 @synthesize delegate=_delegate;
 @synthesize myData=_myData;
 
 
-- (id) initWithDelegate:(id) bibleView Data:(HistoryData *) data {
+- (id) initWithDelegate:(id) bibleView Data:(VersesData *) data {
     self = [ super initWithStyle: UITableViewStylePlain];
 
-    if (self != nil) {
-	self.title = @"History";
-    }
     self.delegate = bibleView;
     self.myData = data;
     return self;
@@ -58,7 +55,7 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [self.myData.myHistory count]; 
+	return [self.myData.myVerses count]; 
 }
 
 // Customize the appearance of table view cells.
@@ -71,7 +68,7 @@
 		cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:MyIdentifier] autorelease];
 	}
 	
-	VerseEntry * entry = [self.myData.myHistory objectAtIndex:[indexPath row]];
+	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
 	cell.textLabel.text = [NSString stringWithFormat:@"%@ %d", entry.book, entry.chapter ];
 	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -81,7 +78,7 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	VerseEntry * entry = [self.myData.myHistory objectAtIndex:[indexPath row]];
+	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
 	[self.delegate selectedbookname:[entry.book UTF8String] chapter:entry.chapter];
 

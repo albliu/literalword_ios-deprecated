@@ -1,10 +1,5 @@
-#import "VersesDataBase/VersesData.h"
+#import "VersesViewController.h"
 
-@interface MemoryVerseViewController: UITableViewController {
-	VersesData * _myData;
+@interface MemoryVerseViewController: VersesViewController {
 }
-@property (nonatomic, assign) id delegate;
-@property (nonatomic, retain) VersesData * myData;
-
-- (id) initWithDelegate:(id) bibleView Data:(VersesData *) data;
 @end

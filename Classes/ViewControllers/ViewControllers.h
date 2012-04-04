@@ -1,2 +1,2 @@
-#import "HistoryViewController.h"
+#import "VersesViewController.h"
 #import "MemoryVerseViewController.h"

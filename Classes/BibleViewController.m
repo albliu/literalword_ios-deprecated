@@ -348,7 +348,8 @@
 - (void) showhistory:(id)ignored {
 	[self hideToolBar:YES];
 
-	HistoryViewController * historyView = [[HistoryViewController alloc] initWithDelegate: self Data:history] ;
+	VersesViewController * historyView = [[VersesViewController alloc] initWithDelegate: self Data:history] ;
+	historyView.title = @"History"; 
 	[self.navigationController pushViewController:historyView animated:YES];
 
 }
@@ -375,7 +376,10 @@
 }
 - (void) bookmark:(id)ignored {
 	[self hideToolBar:YES];
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+
+	VersesViewController * myView = [[VersesViewController alloc] initWithDelegate: self Data:bookmarks] ;
+	myView.title = @"Bookmarks"; 
+	[self.navigationController pushViewController:myView animated:YES];
 
 }
 
