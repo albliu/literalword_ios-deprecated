@@ -17,6 +17,7 @@
 	return -1;
 }
 
+
 - (id) init {
 
     myDB = [[VersesDataBaseController alloc] initDataBase:DATABASE_HISTORY_TABLE];
@@ -45,8 +46,8 @@
 
 - (void) addToList:(VerseEntry *) ver {
 
+	ver.rowid = [myDB addVerse:ver.book Chapter:[NSString stringWithFormat:@"%d", ver.chapter] Verses:ver.verses Text:ver.text];
 	[self.myHistory insertObject:ver atIndex:0];
-	[myDB addVerse:ver.book Chapter:[NSString stringWithFormat:@"%d", ver.chapter] Verses:ver.verses Text:ver.text];
 }
 
 
@@ -67,6 +68,11 @@
 	[myDB release];	
 	[self.myHistory release];
 	[super dealloc];
+}
+
+- (VerseEntry *) lastPassage {
+	if ([self.myHistory count] == 0) return nil;
+	return [self.myHistory objectAtIndex:0];
 }
 
 @end

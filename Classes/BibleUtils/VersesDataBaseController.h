@@ -37,7 +37,7 @@
 + (void) openDataBase;
 + (void) closeDataBase;
 
-- (void) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text; 
+- (int) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text; 
 - (NSArray *) findAllVerses; 
 - (void) deleteVerse: (int) row_id;
 - (void) deleteAllVerses;

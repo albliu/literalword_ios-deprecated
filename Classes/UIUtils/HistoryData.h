@@ -14,5 +14,6 @@
 - (void) addToList:(VerseEntry *) ver; 
 - (void) removeFromList:(int) index; 
 - (void) clear;
+- (VerseEntry *) lastPassage; 
 @end
 

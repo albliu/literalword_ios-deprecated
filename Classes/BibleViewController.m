@@ -176,7 +176,9 @@
 
 	[self.gestures initWithDelegate:self View:self.webView];	
 
-	[self loadPassage];
+	VerseEntry * last = [history lastPassage];
+	if (last) [self selectedbookname:[last.book UTF8String] chapter:last.chapter];
+	else [self loadPassage];
 }
 
 

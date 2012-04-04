@@ -91,24 +91,28 @@ static sqlite3 *database = nil;
 	return self;
 }
 
-- (void) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
+- (int) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
 	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")", dbase,
 				VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID,
 				book, chap, ver, text] UTF8String];
 
+	int ret_id = -1;
+	sqlite3_stmt	*statement;
 
-		sqlite3_stmt	*statement;
+	if(sqlite3_prepare_v2(database, insert_sql, -1, &statement, NULL) == SQLITE_OK) { 
 
-		if(sqlite3_prepare_v2(database, insert_sql, -1, &statement, NULL) == SQLITE_OK) { 
-
-			if (sqlite3_step(statement) != SQLITE_DONE) {
-				NSLog(@"Error while inserting data. '%s'", sqlite3_errmsg(database));
-			}
-			sqlite3_finalize(statement);
+		if (sqlite3_step(statement) != SQLITE_DONE) {
+			NSLog(@"Error while inserting data. '%s'", sqlite3_errmsg(database));
 		} else {
-			NSLog(@"error preparing statement : %s\n", sqlite3_errmsg(database));
+			ret_id = sqlite3_last_insert_rowid(database);	
 		}
 
+		sqlite3_finalize(statement);
+	} else {
+		NSLog(@"error preparing statement : %s\n", sqlite3_errmsg(database));
+	}
+
+	return ret_id;
 }
 
 - (NSArray *) findAllVerses {
