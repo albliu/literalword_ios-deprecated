@@ -1,6 +1,7 @@
 #import "BibleUtils/BibleUtils.h"
+
 #define PASSAGESELECTOR_WIDTH 320 
-#define PASSAGESELECTOR_HEIGHT 300
+#define PASSAGESELECTOR_HEIGHT 216
 
 @interface PassageSelector: NSObject <UIPickerViewDelegate>{
 	int select_book;

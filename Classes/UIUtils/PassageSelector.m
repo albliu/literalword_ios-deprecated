@@ -15,7 +15,7 @@
 		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake((frame_width/2) - (PASSAGESELECTOR_WIDTH/2) , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT)];
 		_selectMenu.delegate =self;	
 		_selectMenu.showsSelectionIndicator = YES;
-		_selectMenu.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin); 
+		_selectMenu.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin) ; 
 	}
 	return _selectMenu;
 
@@ -29,7 +29,6 @@
 	frame_width = width;
 	self.delegate = del;
 	[self.selectMenu setHidden:YES];
-	self.view = self.selectMenu;
 	self.bibleDB = db;	
 	return self;
 }

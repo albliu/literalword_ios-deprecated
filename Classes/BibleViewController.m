@@ -117,7 +117,7 @@
 	
 		
 	[self.view addSubview:self.webView];
-	[self.view addSubview:self.selectMenu.view];
+	[self.view addSubview:self.selectMenu.selectMenu];
 	[self.view addSubview:self.hlaction];	
 
 
@@ -164,10 +164,12 @@
 	toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
 
 	UIBarButtonItem *myhistory = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showhistory:)];
+	myhistory.width = 35.0f;
 	[toolbarItems addObject:myhistory];
 	[myhistory release];
 
 	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"bookmark.png"] style:UIBarButtonItemStylePlain target:self action:@selector(bookmark:)];
+	bookmark.width = 35.0f;
 	[toolbarItems addObject:bookmark];
 	[bookmark release];
 
