@@ -2,13 +2,13 @@
 
 @implementation HistoryData
 
-- (int) existsInHistory:(NSString *) bookname Chapter:(int) chapter {
+- (int) existsInHistory:(int) book Chapter:(int) chapter {
 
 	int i;
 	VerseEntry * tmp;
 	for ( i = 0; i < [self.myVerses count]; i++ ) {
 		tmp = [self.myVerses objectAtIndex:i];
-		if (([tmp.book isEqualToString:bookname]) &&
+		if ((tmp.book_index == book ) &&
 			(tmp.chapter == chapter)) return i;
 
 	}
@@ -18,7 +18,7 @@
 
 - (void) addToList:(VerseEntry *) ver {
 
-	ver.rowid = [self.myDB addVerse:ver.book Chapter:[NSString stringWithFormat:@"%d", ver.chapter] Verses:ver.verses Text:ver.text];
+	ver.rowid = [self.myDB addVerse:ver.book_index Chapter:ver.chapter Verses:ver.verses Text:ver.text];
 	[self.myVerses insertObject:ver atIndex:0];
 }
 
@@ -37,12 +37,12 @@
     return self;
 }
 
-- (void) addToHistory:(NSString *) bookname Book:(int) book Chapter:(int) chap {
+- (void) addToHistory:(int) book Chapter:(int) chap {
 		
-	int exist = [self existsInHistory:bookname Chapter:chap];
+	int exist = [self existsInHistory:book Chapter:chap];
 	if (exist != -1) [self removeFromList:exist];
 
-	[self addToVerses:bookname Book:book Chapter:chap Verses:nil Text:nil];	
+	[self addToVerses:book Chapter:chap Verses:nil Text:nil];	
 
 	if ([self.myVerses count] > HISTORY_MAX) [self removeFromList:HISTORY_MAX]; 
 

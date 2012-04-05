@@ -3,17 +3,21 @@
 
 @implementation BibleHtmlGenerator
 
-
-+ (NSString *) loadHtmlBook:(const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle {
++ (NSString *) loadHtmlBookWithVerse: (int)ver Highlights:(NSArray *) hlights Book: (const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle {
 	NSString * passageHtml = [self.class header:myStyle scale:myScale];
+	passageHtml = [passageHtml stringByAppendingString:[self.class bodyHeader:ver Highlights:hlights]];
 	passageHtml = [passageHtml stringByAppendingString:[self.class  
 		passageMod:[self.class passage:[BibleDataBaseController findBook:book chapter:chap]]]]; 
 
 	passageHtml = [passageHtml stringByAppendingString:[self.class tail]];
 	
 	return passageHtml;	
+}
 
 
++ (NSString *) loadHtmlBook:(const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle {
+
+	return [self.class loadHtmlBookWithVerse: -1 Highlights:nil Book:book chapter:chap scale:myScale style:myStyle];
 }
 
 #pragma mark -- HTML Helper class
@@ -32,10 +36,21 @@
 	
 	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithFormat:@"<meta name = \"viewport\" content = \"width = device-width\"><style type=\"text/css\">body {-webkit-text-size-adjust:%d%%;}</style>",font]];
 	
-	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithUTF8String: "</head><script language=\"javascript\" type=\"text/javascript\" src=\"jumpTo.js\"></script><script>window.onload=jumpToElement(5);</script><body>"]];
+	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithUTF8String: "</head><script language=\"javascript\" type=\"text/javascript\" src=\"jumpTo.js\"></script>"]];
 
 	return passageHtml;
 
+}
++ (NSString * ) bodyHeader: (int) ver Highlights:(NSArray *) hlights {
+	NSString * body = [NSString stringWithFormat:@"<body onload=\"jumpToElement('%d');", ver];
+
+	if (hlights) {
+		for (int i = 0; i < [hlights count]; i++) {
+			body = [body stringByAppendingString:[NSString stringWithFormat:@"highlight('%d');", [[hlights objectAtIndex:i] intValue]]];
+		}
+	}
+	body = [body stringByAppendingString:[NSString stringWithUTF8String:"\">"]];
+	return body;	
 }
 
 + (NSString * ) tail {

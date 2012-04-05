@@ -1,19 +1,22 @@
 #import "VersesDataBaseController.h"
+#import "BibleDataBaseController.h"
 
 @implementation VerseEntry 
 
 @synthesize book = _book;
+@synthesize book_index = _book_index;
 @synthesize chapter = _chapter;
 @synthesize verses = _verses;
 @synthesize text = _text;
 @synthesize rowid = _rowid;
 
-- (id) initWithBook:(NSString *) bk Chapter:(int) chp Verses:(NSString *) ver Text:(NSString *)txt ID:(int) rid {
-	self.book = bk;
+- (id) initWithBook:(int) bk Chapter:(int) chp Verses:(NSString *) ver Text:(NSString *)txt ID:(int) rid {
 	self.text = txt;
 	self.rowid = rid;
 	self.verses = ver;
 	self.chapter = chp;
+	self.book_index = bk; 
+	self.book = [BibleDataBaseController getBookNameAt:bk];
 
 	return self;
 }
@@ -28,7 +31,7 @@ static sqlite3 *database = nil;
 
 + (NSString *) CreateTableString:(const char *) table {
 
-	return [[NSString alloc] initWithFormat:@"CREATE TABLE IF NOT EXISTS %s (%s  integer primary key autoincrement, %s text, %s text not null, %s integer, %s text not null, %s text not null);",
+	return [[NSString alloc] initWithFormat:@"CREATE TABLE IF NOT EXISTS %s (%s  integer primary key autoincrement, %s text, %s integer, %s integer, %s text not null, %s text not null);",
 		table,
 		KEY_ROWID, 
 		VERSES_TITLE, 
@@ -91,8 +94,8 @@ static sqlite3 *database = nil;
 	return self;
 }
 
-- (int) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text {
-	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (\"%@\",%@,\"%@\",\"%@\")", dbase,
+- (int) addVerse:(int) book Chapter:(int) chap Verses:(NSString *) ver Text:(NSString *) text {
+	const char * insert_sql = [[NSString stringWithFormat:@"INSERT INTO %@ (%s, %s, %s, %s) Values (%d,%d,\"%@\",\"%@\")", dbase,
 				VERSES_BOOK_ROWID,VERSES_CHAPTERS_ROWID, VERSES_NUM_ROWID, VERSES_TEXT_ROWID,
 				book, chap, ver, text] UTF8String];
 
@@ -134,7 +137,7 @@ static sqlite3 *database = nil;
 			while(sqlite3_step(statement) == SQLITE_ROW) {
 				
 				VerseEntry * entry = [[VerseEntry alloc] 
-					initWithBook:[NSString stringWithFormat:@"%s", sqlite3_column_text(statement, 0)] 
+					initWithBook: sqlite3_column_int(statement, 0) 
 					Chapter: sqlite3_column_int(statement, 1) 
 					Verses: [NSString stringWithFormat:@"%s", sqlite3_column_text(statement,2)] 
 					Text: [NSString stringWithFormat:@"%s", sqlite3_column_text(statement,3)] 
@@ -166,7 +169,7 @@ static sqlite3 *database = nil;
 			while(sqlite3_step(statement) == SQLITE_ROW) {
 				
 				result = [[VerseEntry alloc] 
-					initWithBook:[NSString stringWithFormat:@"%s", sqlite3_column_text(statement, 0)] 
+					initWithBook: sqlite3_column_int(statement, 0) 
 					Chapter: sqlite3_column_int(statement, 1) 
 					Verses: [NSString stringWithFormat:@"%s", sqlite3_column_text(statement,2)] 
 					Text: [NSString stringWithFormat:@"%s", sqlite3_column_text(statement,3)] 

@@ -37,7 +37,6 @@
 - (void) nextPassage;
 - (void) prevPassage;
 - (void) selectedbook:(int) bk chapter:(int) ch;
-- (void) selectedbookname:(const char *) bk chapter:(int) ch;
 
 - (void) changeFontSize:(CGFloat) scale; 
 - (void) loadPassage;

@@ -21,9 +21,9 @@
 	return nil;
 }
 
-- (void) addToMemoryVerses:(NSString *) bookname Book:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {
+- (void) addToMemoryVerses:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {
 
-	[self addToVerses:bookname Book:book Chapter:chap Verses:[self formatVerses:ver] Text:txt];	
+	[self addToVerses:book Chapter:chap Verses:[self formatVerses:ver] Text:txt];	
 }
 
 @end

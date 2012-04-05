@@ -21,9 +21,9 @@
 	return nil;
 }
 
-- (void) addToBookmarks:(NSString *) bookname Book:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {
+- (void) addToBookmarks:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {
 
-	[self addToVerses:bookname Book:book Chapter:chap Verses:[self formatVerses:ver] Text:txt];	
+	[self addToVerses:book Chapter:chap Verses:[self formatVerses:ver] Text:txt];	
 }
 
 @end

@@ -174,7 +174,7 @@
 
 	// load last passage
 	VerseEntry * last = [history lastPassage];
-	if (last) [self selectedbookname:[last.book UTF8String] chapter:last.chapter];
+	if (last) [self selectedbook:last.book_index chapter:last.chapter];
 	else [self loadPassage];
 }
 
@@ -266,13 +266,6 @@
 
 }
 
-- (void) selectedbookname:(const char *) bk chapter:(int) ch  {
-		//commit
-		int i = [BibleDataBaseController getBookIndex:[NSString stringWithFormat:@"%s", bk]];
-		[self selectedbook:i chapter:ch];
-
-
-}
 
 -(void) changeFontSize:(CGFloat) scale;  {
 
@@ -286,10 +279,9 @@
 
 - (void) loadPassage {
 
+	[history addToHistory:curr_book Chapter:curr_chapter];
+
 	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
-
-	[history addToHistory:name Book:curr_book Chapter:curr_chapter];
-
 	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
 	[self.passage sizeToFit];
 
@@ -391,13 +383,13 @@
 	if([title isEqualToString:@ACTION_MEMORY])
 	{
 		NSLog(@"Added to memory verses");
-		[memory addToMemoryVerses:[BibleDataBaseController getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
+		[memory addToMemoryVerses:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
 		[self clearhighlights];
 	}
 	else if([title isEqualToString:@ACTION_BOOKMARK])
 	{
 		NSLog(@"Added to bookmarks");
-		[bookmarks addToBookmarks:[BibleDataBaseController getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
+		[bookmarks addToBookmarks:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
 		[self clearhighlights];
 	}	
 	else if([title isEqualToString:@ACTION_CLEAR])

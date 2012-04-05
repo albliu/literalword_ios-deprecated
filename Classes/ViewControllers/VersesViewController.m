@@ -80,7 +80,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
-	[self.delegate selectedbookname:[entry.book UTF8String] chapter:entry.chapter];
+	[self.delegate selectedbook:entry.book_index chapter:entry.chapter];
 
 	[self.navigationController popToRootViewControllerAnimated:YES];
 }

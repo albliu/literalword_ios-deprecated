@@ -10,7 +10,7 @@
 @property (nonatomic, retain) NSMutableArray * myVerses;
 @property (nonatomic, retain) VersesDataBaseController * myDB;
 
-- (void) addToVerses:(NSString *) bookname Book:(int) book Chapter:(int) chap Verses:(NSString *) ver Text:(NSString *) txt; 
+- (void) addToVerses:(int) book Chapter:(int) chap Verses:(NSString *) ver Text:(NSString *) txt; 
 - (void) addToList:(VerseEntry *) ver; 
 - (void) removeFromList:(int) index; 
 - (void) clear;

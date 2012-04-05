@@ -9,10 +9,12 @@ typedef enum {
 @interface BibleHtmlGenerator: NSObject {
 }
 
++ (NSString *) loadHtmlBookWithVerse: (int)ver Highlights:(NSArray *) hlights Book: (const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle; 
 + (NSString *) loadHtmlBook:(const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle;
 
 
 //static functions
++ (NSString * ) bodyHeader: (int) ver Highlights:(NSArray *) hlights; 
 + (NSString * ) header:(reading_style) myStyle scale:(CGFloat) myscale;
 + (NSString * ) tail;
 + (NSString * ) passage:(NSArray *) results;

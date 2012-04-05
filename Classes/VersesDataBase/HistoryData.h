@@ -5,7 +5,7 @@
 @interface HistoryData : VersesData {
 }
 
-- (void) addToHistory:(NSString *) bookname Book:(int) book Chapter:(int) chap;
+- (void) addToHistory:(int) book Chapter:(int) chap;
 - (VerseEntry *) lastPassage; 
 @end
 

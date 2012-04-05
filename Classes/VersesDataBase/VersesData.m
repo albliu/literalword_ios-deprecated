@@ -5,11 +5,8 @@
 @synthesize myDB=_myDB;
 
 - (id) init {
-
-    self.myDB = [[VersesDataBaseController alloc] initDataBase:DATABASE_MEMVERSE_TABLE];
-    NSArray * tmp =  [self.myDB findAllVerses];
-    self.myVerses = [tmp mutableCopy];
-    [tmp release];
+    self.myDB = nil;
+    self.myVerses = [[NSMutableArray alloc] initWithCapacity:10];
 		
     return self;
 }
@@ -29,14 +26,14 @@
 
 - (void) addToList:(VerseEntry *) ver {
 
-	ver.rowid = [self.myDB addVerse:ver.book Chapter:[NSString stringWithFormat:@"%d", ver.chapter] Verses:ver.verses Text:ver.text];
+	ver.rowid = [self.myDB addVerse:ver.book_index Chapter:ver.chapter Verses:ver.verses Text:ver.text];
 	[self.myVerses addObject:ver];
 }
 
 
-- (void) addToVerses:(NSString *) bookname Book:(int) book Chapter:(int) chap Verses:(NSString *) ver Text:(NSString *) txt {
+- (void) addToVerses:(int) book Chapter:(int) chap Verses:(NSString *) ver Text:(NSString *) txt {
 		
-	VerseEntry * entry = [[VerseEntry alloc] initWithBook:bookname 
+	VerseEntry * entry = [[VerseEntry alloc] initWithBook:book 
 						Chapter:chap Verses:ver Text:txt ID:-1];
 	[self addToList:entry];
 	[entry release];	

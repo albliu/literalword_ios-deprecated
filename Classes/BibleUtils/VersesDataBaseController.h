@@ -21,11 +21,12 @@
 }
 
 @property (nonatomic, copy) NSString * book;
+@property (nonatomic) int book_index;
 @property (nonatomic) int chapter;
 @property (nonatomic) int rowid;
 @property (nonatomic, copy) NSString * text;
 @property (nonatomic, copy) NSString * verses;
-- (id) initWithBook:(NSString *) bk Chapter:(int) chp Verses:(NSString *) ver Text:(NSString *)txt ID:(int) rid;
+- (id) initWithBook:(int) bk Chapter:(int) chp Verses:(NSString *) ver Text:(NSString *)txt ID:(int) rid;
 @end
 
 @interface VersesDataBaseController: NSObject {
@@ -37,7 +38,7 @@
 + (void) openDataBase;
 + (void) closeDataBase;
 
-- (int) addVerse:(NSString *) book Chapter:(NSString *) chap Verses:(NSString *) ver Text:(NSString *) text; 
+- (int) addVerse:(int) book Chapter:(int) chap Verses:(NSString *) ver Text:(NSString *) text; 
 - (NSArray *) findAllVerses; 
 - (void) deleteVerse: (int) row_id;
 - (void) deleteAllVerses;
