@@ -20,8 +20,6 @@
 
 
 	MyGestureRecognizer *_gestures;
-	BibleDataBaseController *_bibleDB;
-	BibleHtmlGenerator *_bibleHtml;
 	PassageSelector * _selectMenu;
 	UIWebView *_webView;
 	UIButton *_passage;
@@ -30,8 +28,6 @@
 }
 
 @property (nonatomic, retain) MyGestureRecognizer *gestures;
-@property (nonatomic, retain) BibleDataBaseController *bibleDB;
-@property (nonatomic, retain) BibleHtmlGenerator *bibleHtml;
 @property (nonatomic, retain) PassageSelector * selectMenu;
 @property (nonatomic, retain) UIWebView *webView;
 @property (nonatomic, retain) UIButton *passage;

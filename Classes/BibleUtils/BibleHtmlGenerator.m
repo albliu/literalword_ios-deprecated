@@ -3,19 +3,11 @@
 
 @implementation BibleHtmlGenerator
 
-@synthesize nasbbible = _nasbbible;
 
-- (BibleHtmlGenerator *) initWithDB: (BibleDataBaseController *) db Scale:(CGFloat) s {
-	self.nasbbible = db;
-	_scale = s;
-	return self;
-}
-
-
-- (NSString *) loadHtmlBook:(const char *) book chapter:(int) chap style:(reading_style) myStyle {
-	NSString * passageHtml = [self.class header:myStyle scale:_scale];
++ (NSString *) loadHtmlBook:(const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle {
+	NSString * passageHtml = [self.class header:myStyle scale:myScale];
 	passageHtml = [passageHtml stringByAppendingString:[self.class  
-		passageMod:[self.class passage:[self.nasbbible findBook:book chapter:chap]]]]; 
+		passageMod:[self.class passage:[BibleDataBaseController findBook:book chapter:chap]]]]; 
 
 	passageHtml = [passageHtml stringByAppendingString:[self.class tail]];
 	
@@ -23,19 +15,6 @@
 
 
 }
-
-- (CGFloat) getScale {
-	return _scale;
-}
-
--(void) setScale:(CGFloat) scale {
-	_scale = scale;
-}
-
-- (NSArray *) listBibleContents {
-	return [self.nasbbible listBibleContents];
-}
-
 
 #pragma mark -- HTML Helper class
 
@@ -53,7 +32,7 @@
 	
 	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithFormat:@"<meta name = \"viewport\" content = \"width = device-width\"><style type=\"text/css\">body {-webkit-text-size-adjust:%d%%;}</style>",font]];
 	
-	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithUTF8String: "</head><script language=\"javascript\" type=\"text/javascript\" src=\"jumpTo.js\"></script><body>"]];
+	passageHtml = [passageHtml stringByAppendingString:[NSString stringWithUTF8String: "</head><script language=\"javascript\" type=\"text/javascript\" src=\"jumpTo.js\"></script><script>window.onload=jumpToElement(5);</script><body>"]];
 
 	return passageHtml;
 

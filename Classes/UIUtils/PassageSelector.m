@@ -8,7 +8,6 @@
 @synthesize delegate=_delegate;
 @synthesize hidden=_hidden;
 @synthesize view=_view;
-@synthesize bibleDB=_bibleDB;
 
 -(UIPickerView *) selectMenu {
 	if (_selectMenu == nil) {
@@ -25,11 +24,10 @@
 	return self.selectMenu.hidden;
 }
 
--(PassageSelector *) initWithViewWidth:(int) width Delegate: del BibleDB:(BibleDataBaseController *)db {
+-(PassageSelector *) initWithViewWidth:(int) width Delegate: del  {
 	frame_width = width;
 	self.delegate = del;
 	[self.selectMenu setHidden:YES];
-	self.bibleDB = db;	
 	return self;
 }
 
@@ -59,16 +57,16 @@
 {
 	NSInteger ret = 0; 
 	if (component == 0)
-		ret = [self.bibleDB maxBook]; 
+		ret = [BibleDataBaseController maxBook]; 
 	else if (component == 1)
-		ret = [[self.bibleDB getBookChapterCountAt:select_book] intValue];
+		ret = [[BibleDataBaseController getBookChapterCountAt:select_book] intValue];
 	return ret;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
 	NSString * title;
 	if (component == 0 )
-		title =  [self.bibleDB getBookNameAt:row];
+		title =  [BibleDataBaseController getBookNameAt:row];
 	else if (component == 1)
 		title =  [NSString stringWithFormat:@"%d", row + 1];
 	return title;

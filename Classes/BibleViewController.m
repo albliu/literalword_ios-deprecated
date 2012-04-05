@@ -4,8 +4,6 @@
 @implementation BibleViewController
 
 @synthesize gestures=_gestures;
-@synthesize bibleHtml=_bibleHtml;
-@synthesize bibleDB=_bibleDB;
 @synthesize webView=_webView;
 @synthesize fontscale=_fontscale;
 @synthesize passage=_passage;
@@ -35,7 +33,7 @@
 
 -(PassageSelector *) selectMenu {
 	if (_selectMenu == nil)  {
-		_selectMenu = [[PassageSelector alloc] initWithViewWidth:self.view.bounds.size.width Delegate:self BibleDB:self.bibleDB];
+		_selectMenu = [[PassageSelector alloc] initWithViewWidth:self.view.bounds.size.width Delegate:self ];
 		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleRightMargin);	
 	}
 	return _selectMenu;
@@ -49,29 +47,6 @@
 	}
 	[_webView setDelegate:self];
 	return _webView;
-
-}
-
--(BibleHtmlGenerator *) bibleHtml {
-
-	if (_bibleHtml== nil) {
-		 _bibleHtml = [[BibleHtmlGenerator alloc] initWithDB: self.bibleDB Scale:self.fontscale]; 
-	
-	}
-	return _bibleHtml;
-
-
-}
-
--(BibleDataBaseController *) bibleDB {
-
-	if (_bibleDB == nil) {
-		NSString *path = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"nasb.db"];
-		 _bibleDB = [[BibleDataBaseController alloc] initDataBase: [path UTF8String]];
-	}
-
-	return _bibleDB;
-
 
 }
 
@@ -98,7 +73,6 @@
 - (void) setFontscale:(CGFloat) newscale {
 
 	_fontscale = (_fontscale < WEBVIEW_MIN_SCALE) ? WEBVIEW_MIN_SCALE : (_fontscale > WEBVIEW_MAX_SCALE ) ? WEBVIEW_MAX_SCALE : newscale;
-	[self.bibleHtml setScale:_fontscale];
 }
 
 - (id)init {
@@ -208,8 +182,6 @@
 - (void)dealloc {
 	[self.selectMenu release];	
 	[self.webView release]; 
-	[self.bibleDB release]; 
-	[self.bibleHtml release];	
 	[self.passage release]; 
 	[history release]; 
 	[super dealloc];
@@ -237,8 +209,8 @@
 }
 
 - (void) nextPassage {
-	int maxBook = [self.bibleDB maxBook];	
-	int max = [[self.bibleDB getBookChapterCountAt:curr_book] intValue];
+	int maxBook = [BibleDataBaseController maxBook];	
+	int max = [[BibleDataBaseController getBookChapterCountAt:curr_book] intValue];
 	if (curr_chapter >= max) {
 		if (curr_book < maxBook ) {
 			curr_chapter = 1;
@@ -255,7 +227,7 @@
 	if (curr_chapter == 1) {
 		if (curr_book > 0 ) {
 			curr_book--;
-			curr_chapter = [[self.bibleDB getBookChapterCountAt:curr_book] intValue];
+			curr_chapter = [[BibleDataBaseController getBookChapterCountAt:curr_book] intValue];
 		}
 	} else curr_chapter--;
 
@@ -296,7 +268,7 @@
 
 - (void) selectedbookname:(const char *) bk chapter:(int) ch  {
 		//commit
-		int i = [self.bibleDB getBookIndex:[NSString stringWithFormat:@"%s", bk]];
+		int i = [BibleDataBaseController getBookIndex:[NSString stringWithFormat:@"%s", bk]];
 		[self selectedbook:i chapter:ch];
 
 
@@ -314,7 +286,7 @@
 
 - (void) loadPassage {
 
-	NSString * name = [self.bibleDB getBookNameAt:curr_book];
+	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
 
 	[history addToHistory:name Book:curr_book Chapter:curr_chapter];
 
@@ -323,7 +295,7 @@
 
 	self.hlaction.hidden = YES;
 
-	[self.webView loadHTMLString:[self.bibleHtml loadHtmlBook:[name UTF8String] chapter:curr_chapter style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
+	[self.webView loadHTMLString:[BibleHtmlGenerator loadHtmlBook:[name UTF8String] chapter:curr_chapter scale: self.fontscale style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
 
   
@@ -419,13 +391,13 @@
 	if([title isEqualToString:@ACTION_MEMORY])
 	{
 		NSLog(@"Added to memory verses");
-		[memory addToMemoryVerses:[self.bibleDB getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
+		[memory addToMemoryVerses:[BibleDataBaseController getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
 		[self clearhighlights];
 	}
 	else if([title isEqualToString:@ACTION_BOOKMARK])
 	{
 		NSLog(@"Added to bookmarks");
-		[bookmarks addToBookmarks:[self.bibleDB getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
+		[bookmarks addToBookmarks:[BibleDataBaseController getBookNameAt:curr_book] Book:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
 		[self clearhighlights];
 	}	
 	else if([title isEqualToString:@ACTION_CLEAR])

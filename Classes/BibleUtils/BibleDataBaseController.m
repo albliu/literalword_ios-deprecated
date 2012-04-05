@@ -37,49 +37,56 @@
 @end
 
 @implementation BibleDataBaseController
-@synthesize dbPath = _dbPath;
-@synthesize books = _books;
+static NSArray * books;
 static int maxBooks;
+static sqlite3 *bibleDB;
 
-- (int) getBookIndex:(NSString *)name  {
-	for (int i = 0; i < [self.books count]; i++) {
-		BookName * tmp = [self.books objectAtIndex:i];
++ (int) getBookIndex:(NSString *)name  {
+	for (int i = 0; i < [books count]; i++) {
+		BookName * tmp = [books objectAtIndex:i];
 		if ([name isEqualToString:tmp.name]) return i;
 	}
 	
 	return 0;
 }
 
-- (NSString *) getBookNameAt:(int) idx {
-	BookName* bk = [self.books objectAtIndex:idx];
++ (NSString *) getBookNameAt:(int) idx {
+	BookName* bk = [books objectAtIndex:idx];
 	if (bk == nil) return nil;
 	return bk.name; 
 }
 
-- (NSNumber *) getBookChapterCountAt:(int) idx {
-	BookName* bk = [self.books objectAtIndex:idx];
++ (NSNumber *) getBookChapterCountAt:(int) idx {
+	BookName* bk = [books objectAtIndex:idx];
 	if (bk == nil) return nil;
 	return bk.count; 
 
 }
-- (id) initDataBase:(const char *) dbpath {
-	self.dbPath = [NSString stringWithFormat:@"%s", dbpath]; 
-	self.books = [self listBibleContents];
-	maxBooks = [self.books count];
-	return self;
++ (void) initBibleDataBase {
+	NSString *path = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"nasb.db"];
+
+
+	if (sqlite3_open([path UTF8String], &bibleDB) != SQLITE_OK)
+	{
+
+		[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Error!"] message:[NSString stringWithFormat:@"Cannot open nasb database"] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+        	sqlite3_close(bibleDB);
+	}
+
+
+
+	books = [self.class listBibleContents];
+	maxBooks = [books count];
 }
 
--(int) maxBook {
++(int) maxBook {
 	return maxBooks;
 }
-- (NSArray *) listBibleContents {
++ (NSArray *) listBibleContents {
 
 	sqlite3_stmt    *statement;
-	sqlite3 *bibleDB;
 	NSMutableArray *result = nil;
 
-	if (sqlite3_open([self.dbPath UTF8String], &bibleDB) == SQLITE_OK)
-	{
 		NSString *querySQL = [NSString stringWithFormat: 
 			@"SELECT %@,%@ FROM %@",
 			@BOOK_HUMAN_ROWID, @BOOK_CHAPTERS_ROWID,
@@ -99,22 +106,17 @@ static int maxBooks;
 			}
 			sqlite3_finalize(statement);
 		}
-        	sqlite3_close(bibleDB);
-	} 
 
 
 	return result;
 
 }
 
-- (NSArray *) findBook: (const char *) book chapter: (int) chap {
++ (NSArray *) findBook: (const char *) book chapter: (int) chap {
 
 	sqlite3_stmt    *statement;
-	sqlite3 *bibleDB;
 	NSMutableArray *result = nil;
-	if (sqlite3_open([self.dbPath UTF8String], &bibleDB) == SQLITE_OK)
-	{
-		NSString *querySQL = [NSString stringWithFormat: 
+	NSString *querySQL = [NSString stringWithFormat: 
 			@"SELECT %@,%@,%@,%@ FROM %@ WHERE %@ = \"%@\" AND %@ = %@",
 			@KEY_ROWID, @VERSES_HEADER_TAG, @VERSES_NUM_ROWID, @VERSES_TEXT_ROWID, 
 			@VERSES_TABLE, 
@@ -154,16 +156,18 @@ static int maxBooks;
 			}
 			sqlite3_finalize(statement);
 		}
-        	sqlite3_close(bibleDB);
-	} 
 
 
 	return result;
 }
 
-- (NSArray *) findString:(const char *) string {
++ (NSArray *) findString:(const char *) string {
 
 	return nil;
 }
 
++ (void) closeBibleDataBase{ 
+	if (bibleDB) sqlite3_close(bibleDB);
+	[books release];
+}
 @end 

@@ -22,22 +22,21 @@
 @interface BibleDataBaseController: NSObject {
 
 }
-@property (nonatomic, retain) NSString * dbPath;
-@property (nonatomic, retain) NSArray * books;
 
-- (int) getBookIndex:(NSString *) name;
-- (NSString *) getBookNameAt:(int) idx;
-- (NSNumber *) getBookChapterCountAt:(int) idx;
-- (int) maxBook;
++ (int) getBookIndex:(NSString *) name;
++ (NSString *) getBookNameAt:(int) idx;
++ (NSNumber *) getBookChapterCountAt:(int) idx;
++ (int) maxBook;
 
-- (id) initDataBase:(const char *) dbpath;
++ (void) initBibleDataBase;
++ (void) closeBibleDataBase;
 
 // returns books and chapters in the bible
-- (NSArray *) listBibleContents;
++ (NSArray *) listBibleContents;
 
 // finds a passage given bookname and chapter
-- (NSArray *) findBook: (const char *) book chapter: (int) chap; 
++ (NSArray *) findBook: (const char *) book chapter: (int) chap; 
 
 // returns passage that inlucde the string
-- (NSArray *) findString:(const char *) string; 
++ (NSArray *) findString:(const char *) string; 
 @end
