@@ -241,7 +241,6 @@
 	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightedVerses();"];
 	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:obj delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 	return [obj componentsSeparatedByString: @":"];
 
@@ -334,7 +333,7 @@
 - (void) showhistory:(id)ignored {
 	[self hideToolBar:YES];
 
-	VersesViewController * historyView = [[VersesViewController alloc] initWithDelegate: self Data:history] ;
+	HistoryViewController * historyView = [[HistoryViewController alloc] initWithDelegate: self Data:history] ;
 	historyView.title = @"History"; 
 	[self.navigationController pushViewController:historyView animated:YES];
 
@@ -355,7 +354,7 @@
 - (void) memverse:(id)ignored {
 	[self hideToolBar:YES];
 
-	MemoryVerseViewController * myView = [[MemoryVerseViewController alloc] initWithDelegate: self Data:memory] ;
+	VersesViewController * myView = [[VersesViewController alloc] initWithDelegate: self Data:memory] ;
 	myView.title = @"Memory Verses"; 
 	[self.navigationController pushViewController:myView animated:YES];
 
@@ -383,13 +382,13 @@
 	if([title isEqualToString:@ACTION_MEMORY])
 	{
 		NSLog(@"Added to memory verses");
-		[memory addToMemoryVerses:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
+		[memory addToMemoryVerses:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:nil];   
 		[self clearhighlights];
 	}
 	else if([title isEqualToString:@ACTION_BOOKMARK])
 	{
 		NSLog(@"Added to bookmarks");
-		[bookmarks addToBookmarks:curr_book Chapter:curr_chapter Verses:nil Text:nil];   
+		[bookmarks addToBookmarks:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:nil];   
 		[self clearhighlights];
 	}	
 	else if([title isEqualToString:@ACTION_CLEAR])

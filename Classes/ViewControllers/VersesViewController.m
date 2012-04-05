@@ -70,20 +70,20 @@
 	
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
-	cell.textLabel.text = [NSString stringWithFormat:@"%@ %d", entry.book, entry.chapter ];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses ];
 	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
     return cell;
 }
 
 
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
-	[self.delegate selectedbook:entry.book_index chapter:entry.chapter];
-
-	[self.navigationController popToRootViewControllerAnimated:YES];
+	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"MemoryVerses"] message: [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 }
+
 
 
 - (void)dealloc {

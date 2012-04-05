@@ -1,9 +1,8 @@
-#import "MemoryVerseViewController.h"
+#import "HistoryViewController.h"
 #import "BibleViewController.h"
 
 
-@implementation MemoryVerseViewController
-
+@implementation HistoryViewController
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *MyIdentifier = @"MyIdentifier";
@@ -16,18 +15,19 @@
 	
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
-	cell.textLabel.text = [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses ];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@ %d", entry.book, entry.chapter ];
 	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
     return cell;
 }
 
 
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"MemoryVerses"] message: [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	[self.delegate selectedbook:entry.book_index chapter:entry.chapter];
+
+	[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 @end

@@ -18,7 +18,7 @@
 
 
 - (NSString *) formatVerses:(NSArray *) arr {
-	return nil;
+	return [VerseEntry VerseArrayToString:arr];
 }
 
 - (void) addToBookmarks:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {

@@ -18,7 +18,7 @@
 
 
 - (NSString *) formatVerses:(NSArray *) arr {
-	return nil;
+	return [VerseEntry VerseArrayToString:arr];
 }
 
 - (void) addToMemoryVerses:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {
