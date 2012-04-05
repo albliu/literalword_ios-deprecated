@@ -1,28 +1,4 @@
 #import "VersesDataBaseController.h"
-#import "BibleDataBaseController.h"
-
-@implementation VerseEntry 
-
-@synthesize book = _book;
-@synthesize book_index = _book_index;
-@synthesize chapter = _chapter;
-@synthesize verses = _verses;
-@synthesize text = _text;
-@synthesize rowid = _rowid;
-
-- (id) initWithBook:(int) bk Chapter:(int) chp Verses:(NSString *) ver Text:(NSString *)txt ID:(int) rid {
-	self.text = txt;
-	self.rowid = rid;
-	self.verses = ver;
-	self.chapter = chp;
-	self.book_index = bk; 
-	self.book = [BibleDataBaseController getBookNameAt:bk];
-
-	return self;
-}
-
-@end
-
 
 @implementation VersesDataBaseController
 

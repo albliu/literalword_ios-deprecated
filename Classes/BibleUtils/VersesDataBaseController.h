@@ -1,4 +1,4 @@
-#import <Foundation/Foundation.h>
+#import "VerseEntry.h"
 #import "sqlite3.h"
 
 
@@ -17,17 +17,6 @@
 #define VERSES_CHAPTERS_ROWID "chapter"
 #define VERSES_HEADER_TAG "header"
 
-@interface VerseEntry : NSObject {
-}
-
-@property (nonatomic, copy) NSString * book;
-@property (nonatomic) int book_index;
-@property (nonatomic) int chapter;
-@property (nonatomic) int rowid;
-@property (nonatomic, copy) NSString * text;
-@property (nonatomic, copy) NSString * verses;
-- (id) initWithBook:(int) bk Chapter:(int) chp Verses:(NSString *) ver Text:(NSString *)txt ID:(int) rid;
-@end
 
 @interface VersesDataBaseController: NSObject {
 	NSString * dbase;
