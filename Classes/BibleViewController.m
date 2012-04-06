@@ -85,7 +85,7 @@
 	[self.view addSubview:self.hlaction];	
 	// verse button
 	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
-	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchDown];
+	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchUpInside];
 	[verse setImage:[UIImage imageNamed:@"verse.png"] forState:UIControlStateNormal]; 
 	verse.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin);	
 	[self.view addSubview:verse];
@@ -370,8 +370,7 @@
 
 }
 - (void) verseselector:(id) ignored {
-
-
+	
 	if (verseMenu == nil) {
 		verseMenu = [[VerseSelector alloc] initWithViewFrame:self.view.bounds Delegate:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
 		[self.view addSubview:verseMenu.tableView];
@@ -382,8 +381,6 @@
 		verseMenu = nil;
 
 	}
-
-
 }
 
 

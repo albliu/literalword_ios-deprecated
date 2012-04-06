@@ -103,7 +103,6 @@
 	[self.selectMenu removeFromSuperview];
 }
 - (void) dealloc {
-	[self.selectMenu release];
 	
 	[super dealloc];
 

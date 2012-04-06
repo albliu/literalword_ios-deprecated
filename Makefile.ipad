@@ -130,7 +130,8 @@ endif
 	@./plutil -key CFBundleIdentifier -value com.yourcompany.iphone.$(PROJECTNAME) $(BUILDDIR)/$(APPFOLDER)/Info.plist
 	@./plutil -UIDeviceFamily -array $(BUILDDIR)/$(APPFOLDER)/Info.plist 
 	@./plutil -UIDeviceFamily -arrayadd -string 1 $(BUILDDIR)/$(APPFOLDER)/Info.plist 
-#	@./plutil -UIDeviceFamily -arrayadd -string 2 $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -UIDeviceFamily -arrayadd -string 2 $(BUILDDIR)/$(APPFOLDER)/Info.plist 
+	@./plutil -key SignerIdentity -value "Apple iPhone OS Application Signing" $(BUILDDIR)/$(APPFOLDER)/Info.plist 
 	@./plutil -key NSMainNibFile -remove $(BUILDDIR)/$(APPFOLDER)/Info.plist 
 	@echo "APPL????" > $(BUILDDIR)/$(APPFOLDER)/PkgInfo
 	ldid -S $(PROJECTNAME)
