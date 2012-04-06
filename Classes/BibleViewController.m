@@ -91,6 +91,22 @@
 	[self.view addSubview:verse];
 	[verse release];	
 
+	UIButton * leftpassage = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
+	[leftpassage addTarget:self action:@selector(prevPassage) forControlEvents:UIControlEventTouchUpInside];
+	[leftpassage setBackgroundColor:[UIColor clearColor]];
+	leftpassage.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 
+	[self.view addSubview:leftpassage];
+	[leftpassage release];	      
+
+
+	UIButton * rightpassage = [[UIButton alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - TOUCH_WIDTH, self.view.bounds.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
+	[rightpassage addTarget:self action:@selector(nextPassage) forControlEvents:UIControlEventTouchUpInside];
+	[rightpassage setBackgroundColor:[UIColor clearColor]];
+	rightpassage.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 
+	[self.view addSubview:rightpassage];
+	[rightpassage release];        
+
+
 
 }
 
@@ -422,7 +438,7 @@
 
 - (void) showMainView {
 
-	if (selectMenu) [self passagemenu:nil];	
+	if (selectMenu) [self passagemenu:nil]; 
 	if (verseMenu) [self verseselector:nil];
 
 	[self hideToolBar:YES];

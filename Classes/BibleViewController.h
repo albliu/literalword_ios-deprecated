@@ -3,6 +3,8 @@
 #import "VersesDataBase/VersesDataBase.h"
 #import "MyGestureRecognizer.h"
 
+#define TOUCH_HEIGHT 100
+#define TOUCH_WIDTH 50
 #define SHEET_BLUE colorWithRed:0.0 green:0.0 blue:0.235 alpha:1.0
 #define WEBVIEW_MIN_SCALE 0.5 
 #define WEBVIEW_MAX_SCALE 3.0
