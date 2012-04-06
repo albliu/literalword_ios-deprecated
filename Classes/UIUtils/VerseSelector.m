@@ -1,77 +1,82 @@
 #import "VerseSelector.h"
-#import "BibleViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation VerseSelector
 
-@synthesize rootview=_rootview;
-@synthesize tableView=_tableView;
 
 
--(UITableView *) tableView {
-	if (_tableView == nil) {
+- (void) setMyFrames {
+	
+	if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+		myWidth = VERSES_TABLE_LONG;
+		myHeight = VERSES_TABLE_SHORT;
+	} else { 
+		myWidth = VERSES_TABLE_SHORT;
+		myHeight = VERSES_TABLE_LONG;
+	}
 
-		int myheight = ( VERSES_TABLE_HEIGHT > ( rows * VERSES_CELL_SIDE) ) ? (rows * VERSES_CELL_SIDE) : VERSES_TABLE_HEIGHT;	
+	cols = myWidth / VERSES_CELL_SIDE;
+	rows = ver / cols;
+	if ( (ver % cols) != 0) rows += 1;
 
-		_tableView = [[UITableView alloc] initWithFrame:CGRectMake(frame.size.width / 2 - VERSES_TABLE_WIDTH / 2 - VERSES_TABLE_BORDER, frame.size.height / 2 - myheight / 2 - VERSES_TABLE_BORDER, VERSES_TABLE_WIDTH + 2*VERSES_TABLE_BORDER, myheight + 2*VERSES_TABLE_BORDER) style:UITableViewStylePlain];
-		[_tableView setDataSource:self];
-		[_tableView setDelegate:self];
-		_tableView.layer.borderWidth = VERSES_TABLE_BORDER;
-		_tableView.layer.borderColor = [[UIColor grayColor] CGColor];
-		_tableView.separatorColor = [UIColor clearColor];
-		_tableView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin| UIViewAutoresizingFlexibleBottomMargin) ; 
-
-	}	
-	return _tableView;
 
 }
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // we support rotation in this view controller
-    return YES;
-}
-
-
--(VerseSelector *) initWithViewFrame:(CGRect) rect Delegate: del Verses:(int) v {
+-(VerseSelector *) initWithRootView:(id) del Verses:(int) v {
 
 	ver = v;
+	frame = [[UIScreen mainScreen] bounds];
 
-	int col = VERSES_TABLE_WIDTH / VERSES_CELL_SIDE;
-	rows = ver / col;
-	if ( (ver % col) != 0) rows += 1;
-
-	frame = rect;
-	self.rootview = del;
-	return self;
+	return [self initWithRootView:del];
 }
 
 - (void) loadView {
 
 	[super loadView];
 
-	[self.view addSubview:self.tableView];
-	
+	[self setMyFrames];
+
+	UIView * clearBackground = [[UIView alloc] initWithFrame:frame];
+	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.332f green:0.332f blue:0.332f alpha:0.4f]];
+	clearBackground.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ) ; 
+	[self.view addSubview:clearBackground];
+	[clearBackground release];
+
+	int myheight = ( myHeight > ( rows * VERSES_CELL_SIDE) ) ? (rows * VERSES_CELL_SIDE) : myHeight;	
+
+
+	UIView * viewFrame = [[UIView alloc] initWithFrame:CGRectMake(frame.size.width / 2 - myWidth / 2 - VERSES_TABLE_BORDER, frame.size.height / 2 - myheight / 2 - VERSES_TABLE_BORDER, myWidth + 2*VERSES_TABLE_BORDER, myheight + 2*VERSES_TABLE_BORDER)];
+	viewFrame.autoresizingMask = ( UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin| UIViewAutoresizingFlexibleBottomMargin) ; 
+	[viewFrame setBackgroundColor: [UIColor SHEET_BLUE]];
+
+	[viewFrame.layer setCornerRadius:8.0f];
+	[viewFrame.layer setMasksToBounds:YES];
+
+	[self.view addSubview:viewFrame];
+	[viewFrame release];
+
+	UITableView * tableView = [[UITableView alloc] initWithFrame:CGRectMake(frame.size.width / 2 - myWidth / 2, frame.size.height / 2 - myheight / 2, myWidth, myheight) style:UITableViewStylePlain] ;
+	[tableView setDataSource:self];
+	[tableView setDelegate:self];
+	[tableView setBackgroundColor: [UIColor clearColor]];
+	tableView.separatorColor = [UIColor clearColor];
+	tableView.autoresizingMask = ( UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin| UIViewAutoresizingFlexibleBottomMargin) ; 
+	[tableView reloadData];
+
+	[self.view addSubview:tableView];	
+	[tableView release];
+
+	// allow backBUtton to work
+	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
+	[verse addTarget:self action:@selector(dismissMyView) forControlEvents:UIControlEventTouchUpInside];
+	[verse setBackgroundColor:[UIColor clearColor]];
+	verse.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin);	
+	[self.view addSubview:verse];
+	[verse release];	
+
+
+
 }
 
-- (void) viewDidLoad {
-	[self.tableView reloadData];
-}
-
--(void) showMyView {
-	[self viewDidLoad];
-
-}
-
--(void) dismissMyView {
-
-	[self.tableView removeFromSuperview];
-}
-
--(void) dealloc {
-	[super dealloc];
-
-}
 
 #pragma mark Table View Methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -95,12 +100,13 @@
 
 	int row = indexPath.row;
 	UITableViewCell * cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MyIdentifier] autorelease];
-
-	for (int i = 0; i < (VERSES_TABLE_WIDTH / VERSES_CELL_SIDE); i++) {
-		int value = (row * (VERSES_TABLE_WIDTH / VERSES_CELL_SIDE)) + i + 1;	
+	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+	[cell setBackgroundColor: [UIColor clearColor]];
+	for (int i = 0; i < cols; i++) {
+		int value = (row * cols) + i + 1;	
 		if (value > ver) break;
 		UIButton * tmp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-		tmp.frame = CGRectMake(i*VERSES_CELL_SIDE + VERSES_TABLE_BORDER, 0, VERSES_CELL_SIDE, VERSES_CELL_SIDE);
+		tmp.frame = CGRectMake(i*VERSES_CELL_SIDE, 0, VERSES_CELL_SIDE, VERSES_CELL_SIDE);
 		tmp.tag = value; 
 		[tmp setTitle:[NSString stringWithFormat:@"%d", value] forState: UIControlStateNormal];	
 		[tmp setTitleColor:[UIColor blackColor] forState: UIControlStateNormal];	
@@ -122,7 +128,7 @@
 	UIButton * buttonView = (UIButton *) sender;
 	int verse = buttonView.tag;
 	[self.rootview gotoVerse:verse];
-	[self.rootview showMainView];
+	[self dismissMyView];
 
 }
 

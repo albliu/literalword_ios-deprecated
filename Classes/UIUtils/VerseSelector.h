@@ -1,18 +1,19 @@
-#define VERSES_TABLE_WIDTH 250
-#define VERSES_TABLE_HEIGHT 300
-#define VERSES_CELL_SIDE 50
+#import "SelectorViewController.h"
+#import "BibleViewController.h"
+
+#define VERSES_TABLE_SHORT 200 
+#define VERSES_TABLE_LONG 200
+#define VERSES_CELL_SIDE 40
 #define VERSES_TABLE_BORDER 5
 
-@interface VerseSelector: UIViewController <UITableViewDelegate, UITableViewDataSource> {
+@interface VerseSelector: SelectorViewController <UITableViewDelegate, UITableViewDataSource> {
 	CGRect frame;
+	int myHeight;
+	int myWidth;
+	int cols;
 	int rows;
 	int ver;
-	UITableView * _tableView;
 }
-@property (nonatomic, assign) id rootview;
-@property (nonatomic, retain) UITableView * tableView;
 
--(VerseSelector *) initWithViewFrame:(CGRect) rect Delegate:(id) del Verses:(int) v;
--(void) showMyView; 
--(void) dismissMyView;
+-(VerseSelector *) initWithRootView:(id) del Verses:(int) v;
 @end

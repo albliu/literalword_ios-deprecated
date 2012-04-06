@@ -327,18 +327,9 @@
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
 
+	PassageSelector * selectMenu = [[PassageSelector alloc] initWithBook:curr_book Chapter:curr_chapter View:self Width:self.view.bounds.size.width]; 
+	[self.view addSubview:selectMenu.view];
 
-	if (selectMenu == nil) {
-		selectMenu = [[PassageSelector alloc] initWithBook:curr_book Chapter:curr_chapter View:self Width:self.view.bounds.size.width]; 
-
-		[self.view addSubview:selectMenu.selectMenu];
-		[selectMenu viewDidLoad];
-	} else {
-		[selectMenu dismiss];
-		[selectMenu release];
-		selectMenu = nil;
-
-	}
 }
 
 - (void) search:(id)ignored {
@@ -387,16 +378,10 @@
 }
 - (void) verseselector:(id) ignored {
 	
-	if (verseMenu == nil) {
-		verseMenu = [[VerseSelector alloc] initWithViewFrame:self.view.bounds Delegate:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
-		[self.view addSubview:verseMenu.tableView];
-		[verseMenu showMyView];
-	} else {
-		[verseMenu dismissMyView];
-		[verseMenu release];
-		verseMenu = nil;
+	VerseSelector *	verseMenu = [[VerseSelector alloc] initWithRootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
+	[self.view addSubview:verseMenu.view];
+	// verseMenu will autorelease when we remove from SUper View, so we shoudln't release here
 
-	}
 }
 
 
@@ -436,10 +421,14 @@
 	
 }
 
-- (void) showMainView {
+-(void) allowNavigationController:(BOOL) b {
+	if (b) 
+		self.navigationController.navigationBar.userInteractionEnabled = YES;
+	else
+		self.navigationController.navigationBar.userInteractionEnabled = NO;
 
-	if (selectMenu) [self passagemenu:nil]; 
-	if (verseMenu) [self verseselector:nil];
+}
+- (void) showMainView {
 
 	[self hideToolBar:YES];
 }

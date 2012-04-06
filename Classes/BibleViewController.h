@@ -23,9 +23,6 @@
 	BookmarkData * bookmarks;
 	MemoryVersesData * memory;
 
-	PassageSelector * selectMenu;
-	VerseSelector * verseMenu;
-
 	MyGestureRecognizer *_gestures;
 	UIWebView *_webView;
 	UIButton *_passage;
@@ -50,4 +47,5 @@
 - (void) highlightX:(float) x Y:(float) y;
 
 - (void) showMainView;
+- (void) allowNavigationController:(BOOL) b; 
 @end

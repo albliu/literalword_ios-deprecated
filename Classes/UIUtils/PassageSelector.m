@@ -1,27 +1,8 @@
 #import "PassageSelector.h"
 #import "BibleViewController.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation PassageSelector
-
-@synthesize selectMenu=_selectMenu;
-@synthesize bibleview=_bibleview;
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // we support rotation in this view controller
-    return YES;
-}
-
--(UIPickerView *) selectMenu {
-	if (_selectMenu == nil) {
-		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(frame_width / 2 - PASSAGESELECTOR_WIDTH / 2 , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT)];
-		_selectMenu.delegate =self;	
-		_selectMenu.showsSelectionIndicator = YES;
-		_selectMenu.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin) ; 
-	}
-	return _selectMenu;
-
-}
 
 -(id) initWithBook:(int) book Chapter:(int) chapter View:(id) v Width:(int)width {
 		
@@ -30,26 +11,45 @@
 
 	frame_width = width;
 	self.modalPresentationStyle = UIModalPresentationFormSheet;
-	self.bibleview = v;
-	return [self init];
+	return [self initWithRootView:v];
 }
 
 - (void) loadView {
 
 	[super loadView];
 
-	[self.view addSubview:self.selectMenu];
+	[self loadClearView];
+
+	UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(frame_width / 2 - PASSAGESELECTOR_WIDTH / 2 , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT + MYBUTTON_HEIGHT)];
+
+	UIPickerView * _selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(0, 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT)];
+	_selectMenu.delegate =self;	
+	_selectMenu.showsSelectionIndicator = YES;
+
+	[_selectMenu.layer setCornerRadius:8.0f];
+	[_selectMenu.layer setMasksToBounds:YES];
+
+	[_selectMenu selectRow:select_book inComponent:0 animated: NO];
+	[_selectMenu reloadComponent:1];
+	[_selectMenu selectRow:(select_chapter - 1) inComponent:1 animated: NO];
+
+
+	[myView addSubview:_selectMenu];
+	[_selectMenu release];
+
+	UIButton * select = [self generateButton:"Select" selector:@selector(verseselected)
+		frame:CGRectMake(PASSAGESELECTOR_WIDTH/2, PASSAGESELECTOR_HEIGHT, PASSAGESELECTOR_WIDTH/2,MYBUTTON_HEIGHT)];
+	[myView addSubview:select];
+
+	UIButton * cancel = [self generateButton:"Cancel" selector:@selector(versecanceled) 
+		frame:CGRectMake(0, PASSAGESELECTOR_HEIGHT, PASSAGESELECTOR_WIDTH/2,MYBUTTON_HEIGHT)];
+	[myView addSubview:cancel];
+
+	myView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin) ; 
 	
+	[self.view addSubview:myView];
+	[myView release];
 }
-
-- (void) viewDidLoad{
-
-	[self.selectMenu selectRow:select_book inComponent:0 animated: NO];
-	[self.selectMenu reloadComponent:1];
-	[self.selectMenu selectRow:(select_chapter - 1) inComponent:1 animated: NO];
-
-}
-
 
 #pragma mark UIPickerView Delegate methods
 
@@ -86,10 +86,6 @@
 	}
 	else if (component == 1) {
 		select_chapter = row + 1;
-		
-		//commit 
-		[self.bibleview selectedbook:select_book chapter:select_chapter];
-		[self.bibleview showMainView];
 	}
 }
 
@@ -99,13 +95,14 @@
 	else return 80.0;
 }
 
-- (void) dismiss {
-	[self.selectMenu removeFromSuperview];
-}
-- (void) dealloc {
-	
-	[super dealloc];
-
+-(void) verseselected {
+	//commit 
+	[self.rootview selectedbook:select_book chapter:select_chapter];
+	[self dismissMyView];
 }
 
+-(void) versecanceled {
+	//commit 
+	[self dismissMyView];
+}
 @end

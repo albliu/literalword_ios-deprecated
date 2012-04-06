@@ -14,7 +14,7 @@ OBJS+= $(wildcard Classes/*/*.m)
 LiteralWord_FILES = $(OBJS)
 
 LiteralWord_FRAMEWORKS = UIKit
-#LiteralWord_FRAMEWORKS+= Foundation 
+LiteralWord_FRAMEWORKS+= Foundation 
 #LiteralWord_FRAMEWORKS+= AVFoundation
 #LiteralWord_FRAMEWORKS+= AddressBook
 #LiteralWord_FRAMEWORKS+= AddressBookUI
@@ -36,7 +36,7 @@ LiteralWord_FRAMEWORKS+= CoreGraphics
 #LiteralWord_FRAMEWORKS+= MobileCoreServices
 #LiteralWord_FRAMEWORKS+= OpenAL
 #LiteralWord_FRAMEWORKS+= OpenGLES
-#LiteralWord_FRAMEWORKS+= QuartzCore
+LiteralWord_FRAMEWORKS+= QuartzCore
 #LiteralWord_FRAMEWORKS+= Security
 #LiteralWord_FRAMEWORKS+= StoreKit
 #LiteralWord_FRAMEWORKS+= System
