@@ -13,9 +13,9 @@
 	if (_hlaction == nil) {
 		_hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
 		[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
-		_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
+		_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
 		_hlaction.hidden = YES;
-		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
+		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin);	
 	}
 	return _hlaction;
 }
