@@ -80,7 +80,6 @@
 	if (component == 0) {
 		if (select_book != row) {
 			select_book = row;
-			select_chapter = 1;
 			[pickerView reloadComponent:1];
 		}
 	}
