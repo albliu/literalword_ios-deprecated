@@ -8,13 +8,12 @@
 @synthesize fontscale=_fontscale;
 @synthesize passage=_passage;
 @synthesize hlaction=_hlaction;
-@synthesize selectMenu=_selectMenu;
 
 -(UIButton *) hlaction {
 	if (_hlaction == nil) {
 		_hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
 		[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
-		_hlaction.frame = CGRectMake(self.view.bounds.size.width - 55, self.view.bounds.size.height - 55, 50, 50);
+		_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
 		_hlaction.hidden = YES;
 		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
 	}
@@ -31,14 +30,6 @@
 
 }
 
--(PassageSelector *) selectMenu {
-	if (_selectMenu == nil)  {
-		_selectMenu = [[PassageSelector alloc] initWithViewWidth:self.view.bounds.size.width Delegate:self ];
-		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleRightMargin);	
-	}
-	return _selectMenu;
-
-}
 
 -(UIWebView *) webView{
 	if (_webView == nil) { 
@@ -91,8 +82,14 @@
 	
 		
 	[self.view addSubview:self.webView];
-	[self.view addSubview:self.selectMenu.selectMenu];
 	[self.view addSubview:self.hlaction];	
+	// verse button
+	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
+	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchDown];
+	[verse setImage:[UIImage imageNamed:@"verse.png"] forState:UIControlStateNormal]; 
+	verse.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin);	
+	[self.view addSubview:verse];
+	[verse release];	
 
 
 }
@@ -180,7 +177,6 @@
 
 
 - (void)dealloc {
-	[self.selectMenu release];	
 	[self.webView release]; 
 	[self.passage release]; 
 	[history release]; 
@@ -196,6 +192,12 @@
 
 
 #pragma mark bibleView Delegate
+- (void) gotoVerse:(int) v {
+	NSString *jsString = [[NSString alloc] initWithFormat:@"jumpToElement('%d');", v];
+	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+
+}
 
 - (void) highlightX:(float) x Y:(float) y {
 	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightPoint(%f,%f);", x, y];
@@ -289,8 +291,6 @@
 	[self.webView loadHTMLString:[BibleHtmlGenerator loadHtmlBook:[name UTF8String] chapter:curr_chapter scale: self.fontscale style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
 
-  
-
 #pragma mark -- rootView helpers
 -(void) hideToolBar:(BOOL) hide {
 	if (hide) {
@@ -304,22 +304,24 @@
 
 }
 
-- (void) showMainView {
 
-	if (self.selectMenu.hidden == NO) [self.selectMenu hideSelector];	
-
-	[self hideToolBar:YES];
-}
 
 #pragma mark Button reactions
 
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
 
-	if (self.selectMenu.hidden == YES) {
-		[self.selectMenu showSelector:curr_book withChapter:curr_chapter];
+
+	if (selectMenu == nil) {
+		selectMenu = [[PassageSelector alloc] initWithBook:curr_book Chapter:curr_chapter View:self Width:self.view.bounds.size.width]; 
+
+		[self.view addSubview:selectMenu.selectMenu];
+		[selectMenu viewDidLoad];
 	} else {
-		[self.selectMenu hideSelector];
+		[selectMenu dismiss];
+		[selectMenu release];
+		selectMenu = nil;
+
 	}
 }
 
@@ -367,6 +369,24 @@
 	[self.navigationController pushViewController:myView animated:YES];
 
 }
+- (void) verseselector:(id) ignored {
+
+
+	if (verseMenu == nil) {
+		verseMenu = [[VerseSelector alloc] initWithViewFrame:self.view.bounds Delegate:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
+		[self.view addSubview:verseMenu.tableView];
+		[verseMenu showMyView];
+	} else {
+		[verseMenu dismissMyView];
+		[verseMenu release];
+		verseMenu = nil;
+
+	}
+
+
+}
+
+
 
 - (void) action:(id)ignored {
 	[self hideToolBar:YES];
@@ -403,4 +423,11 @@
 	
 }
 
+- (void) showMainView {
+
+	if (selectMenu) [self passagemenu:nil];	
+	if (verseMenu) [self verseselector:nil];
+
+	[self hideToolBar:YES];
+}
 @end

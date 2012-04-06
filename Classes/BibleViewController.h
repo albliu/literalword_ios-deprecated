@@ -7,6 +7,9 @@
 #define WEBVIEW_MIN_SCALE 0.5 
 #define WEBVIEW_MAX_SCALE 3.0
 
+#define BUTTON_SIZE 45 
+#define BUTTON_OFFSET 5
+
 #define ACTION_CLEAR "Clear Highlights"
 #define ACTION_MEMORY "Add To Memory List"
 #define ACTION_BOOKMARK "Add To Bookmarks"
@@ -18,9 +21,10 @@
 	BookmarkData * bookmarks;
 	MemoryVersesData * memory;
 
+	PassageSelector * selectMenu;
+	VerseSelector * verseMenu;
 
 	MyGestureRecognizer *_gestures;
-	PassageSelector * _selectMenu;
 	UIWebView *_webView;
 	UIButton *_passage;
 	UIButton *_hlaction;
@@ -28,7 +32,6 @@
 }
 
 @property (nonatomic, retain) MyGestureRecognizer *gestures;
-@property (nonatomic, retain) PassageSelector * selectMenu;
 @property (nonatomic, retain) UIWebView *webView;
 @property (nonatomic, retain) UIButton *passage;
 @property (nonatomic, retain) UIButton *hlaction;
@@ -37,6 +40,7 @@
 - (void) nextPassage;
 - (void) prevPassage;
 - (void) selectedbook:(int) bk chapter:(int) ch;
+- (void) gotoVerse:(int) v; 
 
 - (void) changeFontSize:(CGFloat) scale; 
 - (void) loadPassage;

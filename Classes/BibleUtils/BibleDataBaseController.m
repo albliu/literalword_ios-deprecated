@@ -161,6 +161,28 @@ static sqlite3 *bibleDB;
 	return result;
 }
 
++(int) getVerseCount:(const char *) book chapter: (int) chap {
+//SELECT COUNT(*) FROM verses WHERE book='Revelation' AND chapter = 3 AND header = 0
+	int result = -1;
+	sqlite3_stmt    *statement;
+	NSString *querySQL = [NSString stringWithFormat: 
+		@"SELECT COUNT (*) FROM %s WHERE %s = '%s' AND %s = %d AND %s = 0",
+		VERSES_TABLE, 
+		VERSES_BOOK_ROWID, book,
+		VERSES_CHAPTERS_ROWID, chap,
+		VERSES_HEADER_TAG ];
+
+	const char *query_stmt = [querySQL UTF8String];
+	if(sqlite3_prepare_v2(bibleDB, query_stmt, -1, &statement, NULL) == SQLITE_OK) {
+		while(sqlite3_step(statement) == SQLITE_ROW) {
+			result = sqlite3_column_int(statement, 0);
+		}
+		sqlite3_finalize(statement);
+	}
+
+	return result;
+}
+
 + (NSArray *) findString:(const char *) string {
 
 	return nil;

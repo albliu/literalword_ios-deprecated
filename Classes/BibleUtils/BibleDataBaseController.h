@@ -26,6 +26,7 @@
 + (int) getBookIndex:(NSString *) name;
 + (NSString *) getBookNameAt:(int) idx;
 + (NSNumber *) getBookChapterCountAt:(int) idx;
++ (int) getVerseCount:(const char *) book chapter: (int) chap;
 + (int) maxBook;
 
 + (void) initBibleDataBase;

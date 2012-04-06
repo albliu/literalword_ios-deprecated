@@ -3,15 +3,18 @@
 
 @implementation PassageSelector
 
-
 @synthesize selectMenu=_selectMenu;
-@synthesize delegate=_delegate;
-@synthesize hidden=_hidden;
-@synthesize view=_view;
+@synthesize bibleview=_bibleview;
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    // we support rotation in this view controller
+    return YES;
+}
 
 -(UIPickerView *) selectMenu {
 	if (_selectMenu == nil) {
-		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake((frame_width/2) - (PASSAGESELECTOR_WIDTH/2) , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT)];
+		_selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(frame_width / 2 - PASSAGESELECTOR_WIDTH / 2 , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT)];
 		_selectMenu.delegate =self;	
 		_selectMenu.showsSelectionIndicator = YES;
 		_selectMenu.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin) ; 
@@ -20,33 +23,33 @@
 
 }
 
--(BOOL) hidden {
-	return self.selectMenu.hidden;
-}
-
--(PassageSelector *) initWithViewWidth:(int) width Delegate: del  {
-	frame_width = width;
-	self.delegate = del;
-	[self.selectMenu setHidden:YES];
-	return self;
-}
-
-
--(void) showSelector:(int) book withChapter:(int) chapter {
-
+-(id) initWithBook:(int) book Chapter:(int) chapter View:(id) v Width:(int)width {
+		
 	select_book = book;
 	select_chapter = chapter;	
-	[self.selectMenu selectRow:book inComponent:0 animated: NO];
+
+	frame_width = width;
+	self.modalPresentationStyle = UIModalPresentationFormSheet;
+	self.bibleview = v;
+	return [self init];
+}
+
+- (void) loadView {
+
+	[super loadView];
+
+	[self.view addSubview:self.selectMenu];
+	
+}
+
+- (void) viewDidLoad{
+
+	[self.selectMenu selectRow:select_book inComponent:0 animated: NO];
 	[self.selectMenu reloadComponent:1];
-	[self.selectMenu selectRow:(chapter - 1) inComponent:1 animated: NO];
-	[self.selectMenu setHidden:NO];
+	[self.selectMenu selectRow:(select_chapter - 1) inComponent:1 animated: NO];
 
 }
 
--(void) hideSelector {
-	[self.selectMenu setHidden:YES];
-
-}
 
 #pragma mark UIPickerView Delegate methods
 
@@ -83,10 +86,10 @@
 	}
 	else if (component == 1) {
 		select_chapter = row + 1;
-		[pickerView setHidden:YES];
 		
 		//commit 
-		[self.delegate selectedbook:select_book chapter:select_chapter];
+		[self.bibleview selectedbook:select_book chapter:select_chapter];
+		[self.bibleview showMainView];
 	}
 }
 
@@ -96,10 +99,13 @@
 	else return 80.0;
 }
 
-- (oneway void) release {
+- (void) dismiss {
+	[self.selectMenu removeFromSuperview];
+}
+- (void) dealloc {
 	[self.selectMenu release];
 	
-	[super release];
+	[super dealloc];
 
 }
 
