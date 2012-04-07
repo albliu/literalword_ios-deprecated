@@ -21,12 +21,10 @@
 
 
 }
--(VerseSelector *) initWithRootView:(id) del Verses:(int) v {
+-(VerseSelector *) initWithFrame:(CGRect) f RootView:(id) del Verses:(int) v { 
 
 	ver = v;
-	frame = [[UIScreen mainScreen] bounds];
-
-	return [self initWithRootView:del];
+	return [self initWithFrame: f RootView:del];
 }
 
 - (void) loadView {
@@ -35,16 +33,11 @@
 
 	[self setMyFrames];
 
-	UIView * clearBackground = [[UIView alloc] initWithFrame:frame];
-	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.332f green:0.332f blue:0.332f alpha:0.4f]];
-	clearBackground.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ) ; 
-	[self.view addSubview:clearBackground];
-	[clearBackground release];
-
+	[self loadClearView];
 	int myheight = ( myHeight > ( rows * VERSES_CELL_SIDE) ) ? (rows * VERSES_CELL_SIDE) : myHeight;	
 
 
-	UIView * viewFrame = [[UIView alloc] initWithFrame:CGRectMake(frame.size.width / 2 - myWidth / 2 - VERSES_TABLE_BORDER, frame.size.height / 2 - myheight / 2 - VERSES_TABLE_BORDER, myWidth + 2*VERSES_TABLE_BORDER, myheight + 2*VERSES_TABLE_BORDER)];
+	UIView * viewFrame = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - myWidth / 2 - VERSES_TABLE_BORDER, self.view.frame.size.height / 2 - myheight / 2 - VERSES_TABLE_BORDER, myWidth + 2*VERSES_TABLE_BORDER, myheight + 2*VERSES_TABLE_BORDER)];
 	viewFrame.autoresizingMask = ( UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin| UIViewAutoresizingFlexibleBottomMargin) ; 
 	[viewFrame setBackgroundColor: [UIColor SHEET_BLUE]];
 
@@ -54,7 +47,7 @@
 	[self.view addSubview:viewFrame];
 	[viewFrame release];
 
-	UITableView * tableView = [[UITableView alloc] initWithFrame:CGRectMake(frame.size.width / 2 - myWidth / 2, frame.size.height / 2 - myheight / 2, myWidth, myheight) style:UITableViewStylePlain] ;
+	UITableView * tableView = [[UITableView alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - myWidth / 2, self.view.frame.size.height / 2 - myheight / 2, myWidth, myheight) style:UITableViewStylePlain] ;
 	[tableView setDataSource:self];
 	[tableView setDelegate:self];
 	[tableView setBackgroundColor: [UIColor clearColor]];

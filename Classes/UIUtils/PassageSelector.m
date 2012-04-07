@@ -4,14 +4,13 @@
 
 @implementation PassageSelector
 
--(id) initWithBook:(int) book Chapter:(int) chapter View:(id) v Width:(int)width {
+-(id) initWithFrame:(CGRect) f RootView:(id) v Book:(int) book Chapter:(int) chapter { 
 		
 	select_book = book;
 	select_chapter = chapter;	
 
-	frame_width = width;
 	self.modalPresentationStyle = UIModalPresentationFormSheet;
-	return [self initWithRootView:v];
+	return [self initWithFrame: f RootView:v];
 }
 
 - (void) loadView {
@@ -20,7 +19,7 @@
 
 	[self loadClearView];
 
-	UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(frame_width / 2 - PASSAGESELECTOR_WIDTH / 2 , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT + MYBUTTON_HEIGHT)];
+	UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - PASSAGESELECTOR_WIDTH / 2 , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT + MYBUTTON_HEIGHT)];
 
 	UIPickerView * _selectMenu = [[UIPickerView alloc] initWithFrame:CGRectMake(0, 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT)];
 	_selectMenu.delegate =self;	

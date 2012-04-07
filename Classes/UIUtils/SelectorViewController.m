@@ -3,7 +3,6 @@
 #import <QuartzCore/QuartzCore.h>
 @implementation SelectorViewController
 
-
 @synthesize rootview=_rootview;
 
 -(UIButton *) generateButton:(const char *) t selector:(SEL) sel frame:(CGRect) f {
@@ -28,15 +27,15 @@
     return YES;
 }
 
-- (id) initWithRootView:(id) view {
-
+-(id) initWithFrame: (CGRect) f RootView:(id) view {
+	self.view.frame = f;
 	self.rootview = view;
-	return [self init];
+	return self;
 }
 
 - (void) loadClearView {
 
-	UIView * clearBackground = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	UIView * clearBackground = [[UIView alloc] initWithFrame:self.view.frame];
 	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.332f green:0.332f blue:0.332f alpha:0.4f]];
 	clearBackground.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ) ; 
 	[self.view addSubview:clearBackground];

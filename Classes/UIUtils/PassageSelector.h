@@ -6,9 +6,8 @@
 @interface PassageSelector: SelectorViewController <UIPickerViewDelegate> {
 	int select_book;
 	int select_chapter;
-	int frame_width;
 }
 
--(id) initWithBook:(int) book Chapter:(int) chapter View:(id) v Width:(int) width; 
+-(id) initWithFrame:(CGRect) f RootView:(id) v Book:(int) book Chapter:(int) chapter; 
 
 @end

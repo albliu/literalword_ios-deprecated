@@ -13,9 +13,9 @@
 	if (_hlaction == nil) {
 		_hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
 		[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
-		_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
+		_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
 		_hlaction.hidden = YES;
-		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin);	
+		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
 	}
 	return _hlaction;
 }
@@ -346,7 +346,7 @@
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
 
-	PassageSelector * selectMenu = [[PassageSelector alloc] initWithBook:curr_book Chapter:curr_chapter View:self Width:self.view.bounds.size.width]; 
+	PassageSelector * selectMenu = [[PassageSelector alloc] initWithFrame: self.view.bounds RootView: self Book:curr_book Chapter:curr_chapter ]; 
 	[self.view addSubview:selectMenu.view];
 
 }
@@ -397,7 +397,7 @@
 }
 - (void) verseselector:(id) ignored {
 	
-	VerseSelector *	verseMenu = [[VerseSelector alloc] initWithRootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
+	VerseSelector *	verseMenu = [[VerseSelector alloc] initWithFrame: self.view.bounds RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
 	[self.view addSubview:verseMenu.view];
 	// verseMenu will autorelease when we remove from SUper View, so we shoudln't release here
 

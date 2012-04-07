@@ -7,7 +7,6 @@
 #define VERSES_TABLE_BORDER 5
 
 @interface VerseSelector: SelectorViewController <UITableViewDelegate, UITableViewDataSource> {
-	CGRect frame;
 	int myHeight;
 	int myWidth;
 	int cols;
@@ -15,5 +14,5 @@
 	int ver;
 }
 
--(VerseSelector *) initWithRootView:(id) del Verses:(int) v;
+-(VerseSelector *) initWithFrame:(CGRect) f RootView:(id) del Verses:(int) v ;
 @end
