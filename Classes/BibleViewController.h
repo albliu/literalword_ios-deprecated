@@ -41,10 +41,13 @@
 - (void) nextPassage;
 - (void) prevPassage;
 - (void) selectedbook:(int) bk chapter:(int) ch;
+- (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver; 
+- (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver highlights:(NSArray *) hlights; 
 - (void) gotoVerse:(int) v; 
 
 - (void) changeFontSize:(CGFloat) scale; 
 - (void) loadPassage;
+- (void) loadPassageWithVerse:(int) ver Highlights:(NSArray *) hlights;
 - (void) clearhighlights;
 - (void) highlightX:(float) x Y:(float) y;
 

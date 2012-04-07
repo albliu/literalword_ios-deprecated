@@ -23,7 +23,14 @@
 
 - (void) addToBookmarks:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {
 
-	[self addToVerses:book Chapter:chap Verses:[self formatVerses:ver] Text:txt];	
+	// if multiple verses are selected, only the first 1 is added to bookmarks
+	NSArray * newArr;
+	if ([ver count] > 1)
+		newArr = [NSArray arrayWithObjects:[ver objectAtIndex:0], nil];
+	else 
+		newArr = ver;
+
+	[self addToVerses:book Chapter:chap Verses:[self formatVerses:newArr] Text:txt];	
 }
 
 @end

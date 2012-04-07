@@ -279,14 +279,23 @@
 
 }
 
-- (void) selectedbook:(int) bk chapter:(int) ch  {
-		//commit
+- (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver highlights:(NSArray *) hlights {
+
 		curr_book = bk;
 		curr_chapter = ch;
-		[self loadPassage];
+		[self loadPassageWithVerse:ver Highlights:hlights];
+}
 
+- (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver {
+		[self selectedbook:bk chapter:ch verse: ver highlights:nil];
 
 }
+
+
+- (void) selectedbook:(int) bk chapter:(int) ch  {
+		[self selectedbook:bk chapter:ch verse: -1];
+}
+
 
 
 -(void) changeFontSize:(CGFloat) scale;  {
@@ -299,7 +308,7 @@
 
 }
 
-- (void) loadPassage {
+- (void) loadPassageWithVerse:(int) ver Highlights:(NSArray *) hlights {
 
 	[history addToHistory:curr_book Chapter:curr_chapter];
 
@@ -309,7 +318,12 @@
 
 	self.hlaction.hidden = YES;
 
-	[self.webView loadHTMLString:[BibleHtmlGenerator loadHtmlBook:[name UTF8String] chapter:curr_chapter scale: self.fontscale style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
+	[self.webView loadHTMLString:[BibleHtmlGenerator loadHtmlBookWithVerse:ver Highlights:hlights Book:[name UTF8String] chapter:curr_chapter scale: self.fontscale style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
+}
+
+- (void) loadPassage {
+	[self loadPassageWithVerse:-1 Highlights:nil];
+
 }
 
 #pragma mark -- rootView helpers
@@ -376,7 +390,7 @@
 - (void) bookmark:(id)ignored {
 	[self hideToolBar:YES];
 
-	VersesViewController * myView = [[VersesViewController alloc] initWithDelegate: self Data:bookmarks] ;
+	BookmarkViewController * myView = [[BookmarkViewController alloc] initWithDelegate: self Data:bookmarks] ;
 	myView.title = @"Bookmarks"; 
 	[self.navigationController pushViewController:myView animated:YES];
 
