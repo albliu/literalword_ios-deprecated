@@ -56,7 +56,11 @@
 - (CGFloat)fontscale
 {
     if (!_fontscale) {
-	_fontscale = 1.0;
+	CGFloat prev = [[NSUserDefaults standardUserDefaults] floatForKey:@SCALE_DEFAULT_TAG]; 
+	if (prev != 0)
+		_fontscale = prev;
+	else
+		_fontscale = 1.0;
     } 
     return _fontscale;
 }
@@ -64,6 +68,7 @@
 - (void) setFontscale:(CGFloat) newscale {
 
 	_fontscale = (_fontscale < WEBVIEW_MIN_SCALE) ? WEBVIEW_MIN_SCALE : (_fontscale > WEBVIEW_MAX_SCALE ) ? WEBVIEW_MAX_SCALE : newscale;
+	[[NSUserDefaults standardUserDefaults] setFloat:newscale forKey:@SCALE_DEFAULT_TAG];
 }
 
 - (id)init {
