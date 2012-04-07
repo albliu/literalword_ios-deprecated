@@ -61,8 +61,10 @@
 	NSInteger ret = 0; 
 	if (component == 0)
 		ret = [BibleDataBaseController maxBook]; 
-	else if (component == 1)
+	else if (component == 1) {
 		ret = [[BibleDataBaseController getBookChapterCountAt:select_book] intValue];
+		if (select_chapter > ret) select_chapter = ret;
+	}
 	return ret;
 }
 
