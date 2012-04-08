@@ -4,7 +4,7 @@
 }
 @property (nonatomic, assign) id rootview;
 
--(id) initWithFrame: (CGRect) f RootView:(id) view; 
+-(id) initWithFrame: (CGRect) f RootView:(id) myview; 
 - (void) dismissMyView;
 
 -(UIButton *) generateButton:(const char *) t selector:(SEL) sel frame:(CGRect) f; 

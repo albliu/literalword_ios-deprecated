@@ -27,10 +27,10 @@
     return YES;
 }
 
--(id) initWithFrame: (CGRect) f RootView:(id) view {
+-(id) initWithFrame: (CGRect) f RootView:(id) myview {
 	self.view.frame = f;
-	self.rootview = view;
-	return self;
+	self.rootview = myview;
+	return [self init];
 }
 
 - (void) loadClearView {
@@ -44,6 +44,7 @@
 }
 
 - (void) viewDidLoad {
+	[super viewDidLoad];
 
 	[self.rootview showMainView];
 	[self.rootview allowNavigationController:NO];

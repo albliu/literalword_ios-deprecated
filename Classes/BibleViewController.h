@@ -18,6 +18,14 @@
 #define ACTION_MEMORY "Add To Memory List"
 #define ACTION_BOOKMARK "Add To Bookmarks"
 
+
+enum {
+	BIBLEWEBVIEW,
+	HLACTIONBUTTON,
+	BOOKMARKBUTTON,
+
+};
+
 @interface BibleViewController: UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
 	int curr_book;
 	int curr_chapter;
@@ -25,17 +33,14 @@
 	BookmarkData * bookmarks;
 	MemoryVersesData * memory;
 
-	MyGestureRecognizer *_gestures;
+	MyGestureRecognizer *gestures;
+
 	UIWebView *_webView;
-	UIButton *_passage;
-	UIButton *_hlaction;
+	UIButton * hlaction;
 	CGFloat _fontscale;
 }
 
-@property (nonatomic, retain) MyGestureRecognizer *gestures;
 @property (nonatomic, retain) UIWebView *webView;
-@property (nonatomic, retain) UIButton *passage;
-@property (nonatomic, retain) UIButton *hlaction;
 @property (nonatomic, assign) CGFloat fontscale;
 
 - (void) nextPassage;

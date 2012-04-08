@@ -3,31 +3,20 @@
 
 @implementation BibleViewController
 
-@synthesize gestures=_gestures;
 @synthesize webView=_webView;
 @synthesize fontscale=_fontscale;
-@synthesize passage=_passage;
-@synthesize hlaction=_hlaction;
 
--(UIButton *) hlaction {
-	if (_hlaction == nil) {
-		_hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
-		[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
-		_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
-		_hlaction.hidden = YES;
-		_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
-	}
+-(UIButton *) hlactionbutton {
+	UIButton * _hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
+	[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
+	_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
+	_hlaction.hidden = YES;
+	_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
+	_hlaction.tag = HLACTIONBUTTON; 
+
+	hlaction = _hlaction;
+
 	return _hlaction;
-}
-
-
-
--(MyGestureRecognizer *) gestures {
-	if (_gestures == nil) {
-		_gestures = [MyGestureRecognizer alloc];
-	}
-	return _gestures; 
-
 }
 
 
@@ -35,23 +24,12 @@
 	if (_webView == nil) { 
 		_webView = [[UIWebView alloc] initWithFrame:[self.view bounds]];
 		_webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+		[_webView setDelegate:self];
 	}
-	[_webView setDelegate:self];
 	return _webView;
 
 }
 
--(UIButton *) passage {
-
-	if (_passage == nil) {
-		_passage = [[UIButton alloc] initWithFrame:CGRectMake(0,0,100,30)];
-		[_passage setTitle:@"LiteralWord" forState:UIControlStateNormal];
-		[_passage addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
-		[_passage sizeToFit];
-	}
-	return _passage;
-
-}
 
 - (CGFloat)fontscale
 {
@@ -87,7 +65,8 @@
 	
 		
 	[self.view addSubview:self.webView];
-	[self.view addSubview:self.hlaction];	
+
+	[self.view addSubview:[self hlactionbutton]];	
 	// verse button
 	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
 	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchUpInside];
@@ -173,6 +152,16 @@
 
 	self.navigationItem.leftBarButtonItem = twoButtons;
 	[twoButtons release];
+
+
+	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
+	UIButton * _passage = [UIButton buttonWithType:UIButtonTypeCustom ];
+	[_passage setTitle:@"LiteralWord" forState:UIControlStateNormal];
+	[_passage addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
+	[_passage sizeToFit];
+
+	self.navigationItem.titleView = _passage;
+
 }
 
 - (void) viewDidLoad {
@@ -183,12 +172,10 @@
 	bookmarks = [[BookmarkData alloc] init];
 	memory = [[MemoryVersesData alloc] init];
 
-	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
-	self.navigationItem.titleView = self.passage;
 	
 	[self setUpToolBar];
 	
-	[self.gestures initWithDelegate:self View:self.webView];	
+	gestures = [[MyGestureRecognizer alloc] initWithDelegate:self View:self.webView];
 
 	// load last passage
 	VerseEntry * last = [history lastPassage];
@@ -199,8 +186,10 @@
 
 - (void)dealloc {
 	[self.webView release]; 
-	[self.passage release]; 
 	[history release]; 
+	[bookmarks release];
+	[memory release];
+	[gestures release];
 	[super dealloc];
 }
 
@@ -226,8 +215,8 @@
 	[jsString release];
 
 	if ( [obj length ] != 0) {
-		if ( [obj intValue] > 0) self.hlaction.hidden = NO;
-		else if ( [obj intValue] == 0) self.hlaction.hidden = YES;
+		if ( [obj intValue] > 0) hlaction.hidden = NO;
+		else if ( [obj intValue] == 0) hlaction.hidden = YES;
 	}
 }
 
@@ -275,7 +264,7 @@
 	[self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-	self.hlaction.hidden = YES;
+	hlaction.hidden = YES;
 
 }
 
@@ -313,10 +302,10 @@
 	[history addToHistory:curr_book Chapter:curr_chapter];
 
 	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
-	[self.passage setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
-	[self.passage sizeToFit];
+	UIButton * passageTitle = (UIButton *) self.navigationItem.titleView;
+	[passageTitle setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
 
-	self.hlaction.hidden = YES;
+	hlaction.hidden = YES;
 
 	[self.webView loadHTMLString:[BibleHtmlGenerator loadHtmlBookWithVerse:ver Highlights:hlights Book:[name UTF8String] chapter:curr_chapter scale: self.fontscale style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
