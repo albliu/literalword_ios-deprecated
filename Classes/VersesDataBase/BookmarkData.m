@@ -2,6 +2,21 @@
 
 @implementation BookmarkData
 
+- (int) existsInData:(int) book Chapter:(int) chapter Verse: (NSString *) ver{
+
+	int i;
+	VerseEntry * tmp;
+	for ( i = 0; i < [self.myVerses count]; i++ ) {
+		tmp = [self.myVerses objectAtIndex:i];
+		if ((tmp.book_index == book ) &&
+			(tmp.chapter == chapter) &&
+			 ([tmp.verses intValue] == [ver intValue])) return i;
+
+	}
+
+	return -1;
+}
+
 - (id) init {
 
     self.myDB = [[VersesDataBaseController alloc] initDataBase:DATABASE_BOOKMARK_TABLE];
@@ -12,25 +27,16 @@
     return self;
 }
 
-- (int) existsInVerses:(VerseEntry *) ver {
-	return -1;
-}
-
-
-- (NSString *) formatVerses:(NSArray *) arr {
-	return [VerseEntry VerseArrayToString:arr];
-}
 
 - (void) addToBookmarks:(int) book Chapter:(int) chap Verses:(NSArray *) ver Text:(NSString *) txt {
 
+	
 	// if multiple verses are selected, only the first 1 is added to bookmarks
-	NSArray * newArr;
-	if ([ver count] > 1)
-		newArr = [NSArray arrayWithObjects:[ver objectAtIndex:0], nil];
-	else 
-		newArr = ver;
 
-	[self addToVerses:book Chapter:chap Verses:[self formatVerses:newArr] Text:txt];	
+	int exist = [self existsInData:book Chapter:chap Verse: [ver objectAtIndex:0]];
+	if (exist != -1) [self removeFromList:exist];  
+
+	[self addToVerses:book Chapter:chap Verses:[ver objectAtIndex:0] Text:txt];	   
 }
 
 @end

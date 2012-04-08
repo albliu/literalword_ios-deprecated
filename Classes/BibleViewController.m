@@ -9,7 +9,7 @@
 -(UIButton *) hlactionbutton {
 	UIButton * _hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
 	[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
-	_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
+	_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
 	_hlaction.hidden = YES;
 	_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
 	_hlaction.tag = HLACTIONBUTTON; 
@@ -24,7 +24,7 @@
 	[_bmaction setImage:[UIImage imageNamed:@"addbookmark.png"] forState:UIControlStateNormal]; 
 	[_bmaction addTarget:self action:@selector(addbookmark:) forControlEvents:UIControlEventTouchDown];
 	_bmaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , 0, BUTTON_SIZE, BUTTON_SIZE);
-	_bmaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin);	
+	_bmaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin); 
 	_bmaction.tag = BOOKMARKBUTTON; 
 
 	bmaction = _bmaction;
@@ -79,7 +79,7 @@
 	[self.view addSubview:self.webView];
 
 	[self.view addSubview:[self hlactionbutton]];	
-	[self.view addSubview:[self bmbutton]];	
+	[self.view addSubview:[self bmbutton]]; 
 	// verse button
 	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
 	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchUpInside];
@@ -317,6 +317,7 @@
 	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
 	UIButton * passageTitle = (UIButton *) self.navigationItem.titleView;
 	[passageTitle setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
+	[passageTitle sizeToFit];
 
 	hlaction.hidden = YES;
 
@@ -349,7 +350,7 @@
 	
 	[self showMainView];
 	[self allowNavigationController:NO];
-	VerseSelector *	verseMenu = [[VerseSelector alloc] initWithFrame: self.view.bounds RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
+	VerseSelector * verseMenu = [[VerseSelector alloc] initWithFrame: self.view.bounds RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
 	[self.view addSubview:verseMenu.view];
 
 }
