@@ -1,6 +1,7 @@
 #define MYBUTTON_HEIGHT 40
 
 @interface SelectorViewController: UIViewController {
+	CGRect myframe;
 }
 @property (nonatomic, assign) id rootview;
 

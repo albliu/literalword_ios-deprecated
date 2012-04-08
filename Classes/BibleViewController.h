@@ -37,6 +37,7 @@ enum {
 
 	UIWebView *_webView;
 	UIButton * hlaction;
+	UIButton * bmaction;
 	CGFloat _fontscale;
 }
 

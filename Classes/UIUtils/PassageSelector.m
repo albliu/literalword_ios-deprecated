@@ -16,7 +16,6 @@
 - (void) loadView {
 
 	[super loadView];
-
 	[self loadClearView];
 
 	UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - PASSAGESELECTOR_WIDTH / 2 , 0, PASSAGESELECTOR_WIDTH, PASSAGESELECTOR_HEIGHT + MYBUTTON_HEIGHT)];

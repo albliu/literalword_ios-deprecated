@@ -28,13 +28,14 @@
 }
 
 -(id) initWithFrame: (CGRect) f RootView:(id) myview {
-	self.view.frame = f;
+	myframe = f;
 	self.rootview = myview;
 	return [self init];
 }
 
 - (void) loadClearView {
 
+	self.view.frame = myframe;
 	UIView * clearBackground = [[UIView alloc] initWithFrame:self.view.frame];
 	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.332f green:0.332f blue:0.332f alpha:0.4f]];
 	clearBackground.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ) ; 
@@ -43,13 +44,8 @@
 
 }
 
-- (void) viewDidLoad {
-	[super viewDidLoad];
 
-	[self.rootview showMainView];
-	[self.rootview allowNavigationController:NO];
 
-}
 
 - (void) dismissMyView {
 	[self.rootview allowNavigationController:YES];

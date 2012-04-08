@@ -19,6 +19,18 @@
 	return _hlaction;
 }
 
+-(UIButton *) bmbutton {
+	UIButton * _bmaction = [UIButton buttonWithType:UIButtonTypeCustom];
+	[_bmaction setImage:[UIImage imageNamed:@"addbookmark.png"] forState:UIControlStateNormal]; 
+	[_bmaction addTarget:self action:@selector(addbookmark:) forControlEvents:UIControlEventTouchDown];
+	_bmaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , 0, BUTTON_SIZE, BUTTON_SIZE);
+	_bmaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin);	
+	_bmaction.tag = BOOKMARKBUTTON; 
+
+	bmaction = _bmaction;
+
+	return _bmaction;
+}
 
 -(UIWebView *) webView{
 	if (_webView == nil) { 
@@ -67,6 +79,7 @@
 	[self.view addSubview:self.webView];
 
 	[self.view addSubview:[self hlactionbutton]];	
+	[self.view addSubview:[self bmbutton]];	
 	// verse button
 	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
 	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchUpInside];
@@ -332,9 +345,20 @@
 
 #pragma mark Button reactions
 
+- (void) verseselector:(id) ignored {
+	
+	[self showMainView];
+	[self allowNavigationController:NO];
+	VerseSelector *	verseMenu = [[VerseSelector alloc] initWithFrame: self.view.bounds RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
+	[self.view addSubview:verseMenu.view];
+
+}
+
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
 
+	[self showMainView];
+	[self allowNavigationController:NO];
 	PassageSelector * selectMenu = [[PassageSelector alloc] initWithFrame: self.view.bounds RootView: self Book:curr_book Chapter:curr_chapter ]; 
 	[self.view addSubview:selectMenu.view];
 
@@ -376,6 +400,15 @@
 	[self.navigationController pushViewController:myView animated:YES];
 
 }
+- (void) addbookmark:(id)ignored {
+	NSLog(@"Added to bookmarks");
+
+	NSString *jsString = [[NSString alloc] initWithFormat:@"getTopElement();"];
+	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+
+	[bookmarks addToBookmarks:curr_book Chapter:curr_chapter Verses: [NSArray arrayWithObject:obj] Text:nil];   
+}
 - (void) bookmark:(id)ignored {
 	[self hideToolBar:YES];
 
@@ -384,22 +417,14 @@
 	[self.navigationController pushViewController:myView animated:YES];
 
 }
-- (void) verseselector:(id) ignored {
-	
-	VerseSelector *	verseMenu = [[VerseSelector alloc] initWithFrame: self.view.bounds RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
-	[self.view addSubview:verseMenu.view];
-	// verseMenu will autorelease when we remove from SUper View, so we shoudln't release here
-
-}
-
-
 
 - (void) action:(id)ignored {
 	[self hideToolBar:YES];
 
 	[[[UIAlertView alloc] initWithTitle:nil message:nil delegate:self 
 		cancelButtonTitle:@"Cancel" 
-		otherButtonTitles:@ACTION_MEMORY, @ACTION_BOOKMARK, @ACTION_CLEAR, nil] show];
+		otherButtonTitles:@ACTION_MEMORY, 
+				@ACTION_CLEAR, nil] show];
 }
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -411,12 +436,6 @@
 		[memory addToMemoryVerses:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:nil];   
 		[self clearhighlights];
 	}
-	else if([title isEqualToString:@ACTION_BOOKMARK])
-	{
-		NSLog(@"Added to bookmarks");
-		[bookmarks addToBookmarks:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:nil];   
-		[self clearhighlights];
-	}	
 	else if([title isEqualToString:@ACTION_CLEAR])
 	{
 		[self clearhighlights];

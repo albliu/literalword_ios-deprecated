@@ -105,7 +105,6 @@ function getTopElement() {
     var elem = document.elementFromPoint(10,x);
 
     while (elem.tagName != "V") {
-	alert(elem.tagName);
        elem = elem.parentNode;
 	if (!elem) {
 		x += 5;
