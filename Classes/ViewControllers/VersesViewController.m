@@ -81,7 +81,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"MemoryVerses"] message: [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	[[[[UIAlertView alloc] initWithTitle: [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses] message:entry.text delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 }
 
 

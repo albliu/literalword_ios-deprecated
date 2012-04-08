@@ -267,7 +267,18 @@
 	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-	return [obj componentsSeparatedByString: @":"];
+	return [obj componentsSeparatedByString: @"++"];
+
+
+}
+
+- (NSString *) gethighlighttexts {
+
+	NSString *jsString = [[NSString alloc] initWithFormat:@"highlightedVersesText();"];
+	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+
+	return obj;
 
 
 }
@@ -434,7 +445,7 @@
 	if([title isEqualToString:@ACTION_MEMORY])
 	{
 		NSLog(@"Added to memory verses");
-		[memory addToMemoryVerses:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:nil];   
+		[memory addToMemoryVerses:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:[self gethighlighttexts]];   
 		[self clearhighlights];
 	}
 	else if([title isEqualToString:@ACTION_CLEAR])

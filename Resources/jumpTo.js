@@ -93,7 +93,22 @@ function highlightedVerses() {
 
 	for (var i = 0; i < selectedVerses.length;i++) {
 		retString += selectedVerses[i] ;
-		if  (i != (selectedVerses.length -1)) retString += ':'; 
+		if  (i != (selectedVerses.length -1)) retString += '++'; 
+	}
+	
+	return retString;
+}
+
+function highlightedVersesText() {
+
+	var retString = '';
+
+	selectedVerses.sort(sortVerse); 
+
+	for (var i = 0; i < selectedVerses.length;i++) {
+
+		var elem = document.getElementById(selectedVerses[i]);
+		retString += elem.innerText ;
 	}
 	
 	return retString;
