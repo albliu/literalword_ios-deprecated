@@ -4,6 +4,7 @@
 
 @synthesize myDelegate;
 @synthesize webView=_webView;
+@synthesize fontscale=_fontscale;
 @synthesize passageTitle = _passageTitle;
 
 
@@ -29,18 +30,21 @@
 }
 
 
-- (float)initFontscale
+- (CGFloat)fontscale
 {
-	float prev = [[NSUserDefaults standardUserDefaults] floatForKey:@SCALE_DEFAULT_TAG]; 
-	if (prev != 0.0)
-		return prev;
+    if (!_fontscale) {
+	CGFloat prev = [[NSUserDefaults standardUserDefaults] floatForKey:@SCALE_DEFAULT_TAG]; 
+	if (prev != 0)
+		_fontscale = prev;
 	else
-		return 1.0;
+		_fontscale = 1.0;
+    } 
+    return _fontscale;
 }
 
-- (void) setFontscale:(float) newscale {
+- (void) setFontscale:(CGFloat) newscale {
 
-	fontscale = (newscale < WEBVIEW_MIN_SCALE) ? WEBVIEW_MIN_SCALE : (newscale > WEBVIEW_MAX_SCALE ) ? WEBVIEW_MAX_SCALE : newscale;
+	_fontscale = (_fontscale < WEBVIEW_MIN_SCALE) ? WEBVIEW_MIN_SCALE : (_fontscale > WEBVIEW_MAX_SCALE ) ? WEBVIEW_MAX_SCALE : newscale;
 	[[NSUserDefaults standardUserDefaults] setFloat:newscale forKey:@SCALE_DEFAULT_TAG];
 }
 
@@ -140,29 +144,6 @@
 
 }
 
-
-- (void) loadPassageWithVerse:(int) ver Highlights:(NSArray *) hlights {
-
-	[[self myDelegate] addToHist:curr_book Chapter:curr_chapter];
-
-	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
-	[self.passageTitle setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
-	[self.passageTitle sizeToFit];
-
-	hlaction.hidden = YES;
-
-	NSString * html = [BibleHtmlGenerator loadHtmlBookWithVerse:ver Highlights:hlights Book:[name UTF8String] chapter:curr_chapter scale:fontscale style:DEFAULT_VIEW];
-	[self.webView loadHTMLString:html baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
-
-}
-
-- (void) loadPassage {
-	[self loadPassageWithVerse:-1 Highlights:nil];
-
-}
-
-
-
 - (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver highlights:(NSArray *) hlights {
 
 		curr_book = bk;
@@ -182,15 +163,34 @@
 
 
 
--(void) changeFontSize:(float) scale;  {
+-(void) changeFontSize:(CGFloat) scale;  {
 
-	[self setFontscale: (scale * fontscale) ];
-	NSUInteger textFontSize = (100 * fontscale);
+	self.fontscale *= scale;
+	NSUInteger textFontSize = (100 * self.fontscale);
 	NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust= '%d%%'", textFontSize];
 	[self.webView stringByEvaluatingJavaScriptFromString:jsString];
 	[jsString release];
 
 }
+
+- (void) loadPassageWithVerse:(int) ver Highlights:(NSArray *) hlights {
+
+	[[self myDelegate] addToHist:curr_book Chapter:curr_chapter];
+
+	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
+	[self.passageTitle setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
+	[self.passageTitle sizeToFit];
+
+	hlaction.hidden = YES;
+
+	[self.webView loadHTMLString:[BibleHtmlGenerator loadHtmlBookWithVerse:ver Highlights:hlights Book:[name UTF8String] chapter:curr_chapter scale: self.fontscale style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
+}
+
+- (void) loadPassage {
+	[self loadPassageWithVerse:-1 Highlights:nil];
+
+}
+
 #pragma mark Selector Views
 
 - (void) SelectorViewDismissed {
@@ -286,6 +286,7 @@
 	[super loadView];
 
 	self.view.frame = myFrame;	
+		
 	[self.view addSubview:self.webView];
 
 	[self.view addSubview:[self hlactionbutton]];	
@@ -322,8 +323,6 @@
 	[super viewDidLoad];
 
 	gestures = [[MyGestureRecognizer alloc] initWithDelegate:self View:self.webView];
-
-	[self setFontscale: [self initFontscale]];
 
 	// load last passage
 	VerseEntry * last = [[self myDelegate] initPassage];

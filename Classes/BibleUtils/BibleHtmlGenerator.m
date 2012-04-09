@@ -3,7 +3,7 @@
 
 @implementation BibleHtmlGenerator
 
-+ (NSString *) loadHtmlBookWithVerse: (int)ver Highlights:(NSArray *) hlights Book: (const char *) book chapter:(int) chap scale:(float)myScale style:(reading_style) myStyle {
++ (NSString *) loadHtmlBookWithVerse: (int)ver Highlights:(NSArray *) hlights Book: (const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle {
 	NSString * passageHtml = [self.class header:myStyle scale:myScale];
 	passageHtml = [passageHtml stringByAppendingString:[self.class bodyHeader:ver Highlights:hlights]];
 	passageHtml = [passageHtml stringByAppendingString:[self.class  
@@ -15,14 +15,14 @@
 }
 
 
-+ (NSString *) loadHtmlBook:(const char *) book chapter:(int) chap scale:(float)myScale style:(reading_style) myStyle {
++ (NSString *) loadHtmlBook:(const char *) book chapter:(int) chap scale:(CGFloat)myScale style:(reading_style) myStyle {
 
 	return [self.class loadHtmlBookWithVerse: -1 Highlights:nil Book:book chapter:chap scale:myScale style:myStyle];
 }
 
 #pragma mark -- HTML Helper class
 
-+ (NSString * ) header:(reading_style) myStyle scale:(float) myscale {
++ (NSString * ) header:(reading_style) myStyle scale:(CGFloat) myscale {
 
 	NSUInteger font = 100 * myscale;
 	NSString * passageHtml = [NSString stringWithUTF8String: "<!DOCTYPE html><head><link href=\"body.css\" rel=\"stylesheet\" type=\"text/css\" />"];

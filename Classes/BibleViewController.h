@@ -2,7 +2,7 @@
 #import "UIUtils/UIUtils.h"
 #import "MyGestureRecognizer.h"
 
-#define SCALE_DEFAULT_TAG "myscale"
+#define SCALE_DEFAULT_TAG "my_scale"
 
 #define TOUCH_HEIGHT 100
 #define TOUCH_WIDTH 50
@@ -38,7 +38,6 @@ enum {
 @interface BibleViewController: UIViewController <SelectorViewDelegate,UIWebViewDelegate, UIAlertViewDelegate> {
 	int curr_book;
 	int curr_chapter;
-	float fontscale;
 	CGRect myFrame;
 	
 	MyGestureRecognizer *gestures;
@@ -47,11 +46,13 @@ enum {
 	UIWebView *_webView;
 	UIButton * hlaction;
 	UIButton * bmaction;
+	CGFloat _fontscale;
 	UIButton * _passageTitle;
 }
 
 @property (nonatomic, retain) UIWebView *webView;
 @property (nonatomic, retain) UIButton * passageTitle;
+@property (nonatomic, assign) CGFloat fontscale;
 @property (nonatomic, assign) id <BibleViewDelegate> myDelegate;
 
 - (id)initWithFrame:(CGRect) f; 
@@ -61,7 +62,7 @@ enum {
 - (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver; 
 - (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver highlights:(NSArray *) hlights; 
 
-- (void) changeFontSize:(float) scale; 
+- (void) changeFontSize:(CGFloat) scale; 
 - (void) loadPassage;
 - (void) loadPassageWithVerse:(int) ver Highlights:(NSArray *) hlights;
 - (void) clearhighlights;
