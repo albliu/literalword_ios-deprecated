@@ -1,6 +1,5 @@
 #import "BibleUtils/BibleUtils.h"
 #import "UIUtils/UIUtils.h"
-#import "VersesDataBase/VersesDataBase.h"
 #import "MyGestureRecognizer.h"
 
 #define SCALE_DEFAULT_TAG "my_scale"
@@ -26,30 +25,42 @@ enum {
 
 };
 
-@interface BibleViewController: UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
+@protocol BibleViewDelegate
+- (VerseEntry *) initPassage;
+- (void) addToHist:(int) book Chapter:(int) chapter;
+- (void) addToMem:(int) book Chapter:(int) chapter Verses:(NSArray *) ver Text:(NSString *) txt;
+- (void) addToBmarks:(int) book Chapter:(int) chapter Verses:(NSArray *) ver;
+- (void) lockScreen;
+- (void) unLockScreen;
+@end
+
+
+@interface BibleViewController: UIViewController <SelectorViewDelegate,UIWebViewDelegate, UIAlertViewDelegate> {
 	int curr_book;
 	int curr_chapter;
-	HistoryData * history;
-	BookmarkData * bookmarks;
-	MemoryVersesData * memory;
-
+	CGRect myFrame;
+	
 	MyGestureRecognizer *gestures;
 
+	id <BibleViewDelegate> myDelegate;
 	UIWebView *_webView;
 	UIButton * hlaction;
 	UIButton * bmaction;
 	CGFloat _fontscale;
+	UIButton * _passageTitle;
 }
 
 @property (nonatomic, retain) UIWebView *webView;
+@property (nonatomic, retain) UIButton * passageTitle;
 @property (nonatomic, assign) CGFloat fontscale;
+@property (nonatomic, assign) id <BibleViewDelegate> myDelegate;
+
+- (id)initWithFrame:(CGRect) f; 
 
 - (void) nextPassage;
 - (void) prevPassage;
-- (void) selectedbook:(int) bk chapter:(int) ch;
 - (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver; 
 - (void) selectedbook:(int) bk chapter:(int) ch verse:(int) ver highlights:(NSArray *) hlights; 
-- (void) gotoVerse:(int) v; 
 
 - (void) changeFontSize:(CGFloat) scale; 
 - (void) loadPassage;
@@ -57,6 +68,4 @@ enum {
 - (void) clearhighlights;
 - (void) highlightX:(float) x Y:(float) y;
 
-- (void) showMainView;
-- (void) allowNavigationController:(BOOL) b; 
 @end

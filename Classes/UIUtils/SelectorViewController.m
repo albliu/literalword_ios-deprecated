@@ -3,7 +3,7 @@
 #import <QuartzCore/QuartzCore.h>
 @implementation SelectorViewController
 
-@synthesize rootview=_rootview;
+@synthesize rootview;
 
 -(UIButton *) generateButton:(const char *) t selector:(SEL) sel frame:(CGRect) f {
 
@@ -48,7 +48,7 @@
 
 
 - (void) dismissMyView {
-	[self.rootview allowNavigationController:YES];
 	[self.view removeFromSuperview];
+	[[self rootview] SelectorViewDismissed];
 }
 @end

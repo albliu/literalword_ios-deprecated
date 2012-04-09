@@ -1,9 +1,16 @@
 #import "LiteralWordApplication.h"
+#import "SplitScreenViewController.h"
 
+@implementation NavViewController
+
+-(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return YES;
+}
+@end
 
 @implementation LiteralWordApplication
 @synthesize window = _window;
-@synthesize rootview = _viewController;
+@synthesize rootview = _rootview;
 
 - (UIWindow *) window {
 	if (_window == nil) 
@@ -14,9 +21,12 @@
 
 
 - (NavViewController *) rootview {
-	if (_viewController == nil) 
-		_viewController = [[NavViewController alloc] initRootView];
-	return _viewController;
+	if (_rootview == nil) { 
+		SplitScreenViewController* bibleView = [[SplitScreenViewController alloc] init];
+		_rootview = [[NavViewController alloc] initWithRootViewController: bibleView];
+		[bibleView release];
+	}
+	return _rootview;
 }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
@@ -24,6 +34,7 @@
 	[VersesDataBaseController openDataBase];
 	[BibleDataBaseController initBibleDataBase];
 	application.statusBarHidden = YES;	
+
 	[self.window addSubview: self.rootview.view];
 	[self.window makeKeyAndVisible];
 }
@@ -38,8 +49,8 @@
 
 
 - (void)dealloc {
-	[self.window release];
 	[self.rootview release];	
+	[self.window release];
 	[super dealloc];
 }
 @end

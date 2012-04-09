@@ -22,11 +22,12 @@
 	swipeLeft.delegate = self;
 	[view addGestureRecognizer:swipeLeft];
 
+/*
 	UITapGestureRecognizer *SingTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 	SingTap.numberOfTapsRequired = 1;
 	SingTap.delegate = self;
 	[view addGestureRecognizer:SingTap];
-
+*/
 
 	UITapGestureRecognizer *DoubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
 	DoubleTap.numberOfTapsRequired = 2;
@@ -58,11 +59,12 @@
 	NSLog(@"Swipe Right");
 	[self.delegate prevPassage];
 }
+/*
 - (void) handleTap:(UIGestureRecognizer *)sender
 {
-
 	[self.delegate showMainView];
 }
+*/
 - (void) handleDoubleTap:(UIGestureRecognizer *)sender
 {
 	CGPoint tapPoint = [sender locationInView:sender.view.superview];

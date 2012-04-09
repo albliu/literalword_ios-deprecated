@@ -1,40 +1,27 @@
 #import "BibleViewController.h"
-#import <ViewControllers/ViewControllers.h>
 
 @implementation BibleViewController
 
+@synthesize myDelegate;
 @synthesize webView=_webView;
 @synthesize fontscale=_fontscale;
+@synthesize passageTitle = _passageTitle;
 
--(UIButton *) hlactionbutton {
-	UIButton * _hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
-	[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
-	_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
-	_hlaction.hidden = YES;
-	_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
-	_hlaction.tag = HLACTIONBUTTON; 
 
-	hlaction = _hlaction;
+-(UIButton *) passageTitle {
 
-	return _hlaction;
+	if (_passageTitle == nil) {
+		_passageTitle = [UIButton buttonWithType:UIButtonTypeCustom ];
+		[_passageTitle setTitle:@"LiteralWord" forState:UIControlStateNormal];
+		[_passageTitle addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
+		[_passageTitle sizeToFit];
+	}	
+	return _passageTitle;
+
 }
-
--(UIButton *) bmbutton {
-	UIButton * _bmaction = [UIButton buttonWithType:UIButtonTypeCustom];
-	[_bmaction setImage:[UIImage imageNamed:@"addbookmark.png"] forState:UIControlStateNormal]; 
-	[_bmaction addTarget:self action:@selector(addbookmark:) forControlEvents:UIControlEventTouchDown];
-	_bmaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , 0, BUTTON_SIZE, BUTTON_SIZE);
-	_bmaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin); 
-	_bmaction.tag = BOOKMARKBUTTON; 
-
-	bmaction = _bmaction;
-
-	return _bmaction;
-}
-
 -(UIWebView *) webView{
 	if (_webView == nil) { 
-		_webView = [[UIWebView alloc] initWithFrame:[self.view bounds]];
+		_webView = [[UIWebView alloc] initWithFrame:self.view.frame];
 		_webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 		[_webView setDelegate:self];
 	}
@@ -61,149 +48,14 @@
 	[[NSUserDefaults standardUserDefaults] setFloat:newscale forKey:@SCALE_DEFAULT_TAG];
 }
 
-- (id)init {
-	self = [super init];
+- (id)initWithFrame:(CGRect) f {
+	self = [self init];
+	myFrame = f;
 	if (self) {
 		curr_book = 0;
 		curr_chapter = 1;	
 	}
 	return self;
-}
-
-
-- (void)loadView {
-
-	[super loadView];
-	
-		
-	[self.view addSubview:self.webView];
-
-	[self.view addSubview:[self hlactionbutton]];	
-	[self.view addSubview:[self bmbutton]]; 
-	// verse button
-	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
-	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchUpInside];
-	[verse setImage:[UIImage imageNamed:@"verse.png"] forState:UIControlStateNormal]; 
-	verse.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin);	
-	[self.view addSubview:verse];
-	[verse release];	
-
-	UIButton * leftpassage = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
-	[leftpassage addTarget:self action:@selector(prevPassage) forControlEvents:UIControlEventTouchUpInside];
-	[leftpassage setBackgroundColor:[UIColor clearColor]];
-	leftpassage.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 
-	[self.view addSubview:leftpassage];
-	[leftpassage release];	      
-
-
-	UIButton * rightpassage = [[UIButton alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - TOUCH_WIDTH, self.view.bounds.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
-	[rightpassage addTarget:self action:@selector(nextPassage) forControlEvents:UIControlEventTouchUpInside];
-	[rightpassage setBackgroundColor:[UIColor clearColor]];
-	rightpassage.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 
-	[self.view addSubview:rightpassage];
-	[rightpassage release];        
-
-
-
-}
-
-- (void) setUpToolBar {
-
-	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
-	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(search:)];
-	[toolbarItems addObject:search];
-	[search release];
-
-
-	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(notes:)];
-	notes.style = UIBarButtonItemStyleBordered;
-	[toolbarItems addObject:notes];
-	[notes release];
-
-	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"memory.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(memverse:)];
-	[toolbarItems addObject:memoryverse];
-	[memoryverse release];
-/*	
-
-	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
-	fullscreen.style = UIBarButtonItemStyleBordered;
-//	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-*/
-	[self setToolbarItems:toolbarItems];
-	[toolbarItems release];
-
-	UIBarButtonItem *showToolbar = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStylePlain target:self action:@selector(showToolBar:)];
-	self.navigationItem.rightBarButtonItem = showToolbar;
-	[showToolbar release];
-
-
-	// Show 2 buttons
-
-	UIToolbar *tools = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 80.0f, 44.01f)];
-	tools.clearsContextBeforeDrawing = NO;
-	tools.clipsToBounds = NO;
-	tools.barStyle = -1;
-	tools.autoresizingMask = (UIViewAutoresizingFlexibleHeight);	
-
-	toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
-
-	UIBarButtonItem *myhistory = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showhistory:)];
-	myhistory.width = 35.0f;
-	[toolbarItems addObject:myhistory];
-	[myhistory release];
-
-	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"bookmark.png"] style:UIBarButtonItemStylePlain target:self action:@selector(bookmark:)];
-	bookmark.width = 35.0f;
-	[toolbarItems addObject:bookmark];
-	[bookmark release];
-
-	[tools setItems:toolbarItems animated:NO]; 
-	[toolbarItems release];
-	
-	UIBarButtonItem *twoButtons = [[UIBarButtonItem alloc] initWithCustomView:tools];
-	[tools release];
-
-	self.navigationItem.leftBarButtonItem = twoButtons;
-	[twoButtons release];
-
-
-	self.navigationController.navigationBar.tintColor = [UIColor SHEET_BLUE ];
-	UIButton * _passage = [UIButton buttonWithType:UIButtonTypeCustom ];
-	[_passage setTitle:@"LiteralWord" forState:UIControlStateNormal];
-	[_passage addTarget:self action:@selector(passagemenu:) forControlEvents:UIControlEventTouchUpInside];
-	[_passage sizeToFit];
-
-	self.navigationItem.titleView = _passage;
-
-}
-
-- (void) viewDidLoad {
-
-	[super viewDidLoad];
-
-	history = [[HistoryData alloc] init];
-	bookmarks = [[BookmarkData alloc] init];
-	memory = [[MemoryVersesData alloc] init];
-
-	
-	[self setUpToolBar];
-	
-	gestures = [[MyGestureRecognizer alloc] initWithDelegate:self View:self.webView];
-
-	// load last passage
-	VerseEntry * last = [history lastPassage];
-	if (last) [self selectedbook:last.book_index chapter:last.chapter];
-	else [self loadPassage];
-}
-
-
-- (void)dealloc {
-	[self.webView release]; 
-	[history release]; 
-	[bookmarks release];
-	[memory release];
-	[gestures release];
-	[super dealloc];
 }
 
 #pragma mark UIViewController delegate
@@ -323,12 +175,11 @@
 
 - (void) loadPassageWithVerse:(int) ver Highlights:(NSArray *) hlights {
 
-	[history addToHistory:curr_book Chapter:curr_chapter];
+	[[self myDelegate] addToHist:curr_book Chapter:curr_chapter];
 
 	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
-	UIButton * passageTitle = (UIButton *) self.navigationItem.titleView;
-	[passageTitle setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
-	[passageTitle sizeToFit];
+	[self.passageTitle setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
+	[self.passageTitle sizeToFit];
 
 	hlaction.hidden = YES;
 
@@ -340,78 +191,33 @@
 
 }
 
-#pragma mark -- rootView helpers
--(void) hideToolBar:(BOOL) hide {
-	if (hide) {
-		[self.navigationController setToolbarHidden:YES];
-		self.navigationItem.rightBarButtonItem.style = UIBarButtonItemStylePlain ;
-	} else {
-		 [self.navigationController setToolbarHidden:NO];
-		self.navigationItem.rightBarButtonItem.style = UIBarButtonItemStyleDone ;
+#pragma mark Selector Views
 
-	}
-
-}
-
-
-
-#pragma mark Button reactions
-
-- (void) verseselector:(id) ignored {
-	
-	[self showMainView];
-	[self allowNavigationController:NO];
-	VerseSelector * verseMenu = [[VerseSelector alloc] initWithFrame: self.view.bounds RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
-	[self.view addSubview:verseMenu.view];
+- (void) SelectorViewDismissed {
+	[[self myDelegate] unLockScreen];
 
 }
 
 - (void)passagemenu:(id)ignored {
 	NSLog(@"switch passage");
 
-	[self showMainView];
-	[self allowNavigationController:NO];
-	PassageSelector * selectMenu = [[PassageSelector alloc] initWithFrame: self.view.bounds RootView: self Book:curr_book Chapter:curr_chapter ]; 
+	[[self myDelegate] lockScreen];
+	PassageSelector * selectMenu = [[PassageSelector alloc] initWithFrame: self.view.frame RootView: self Book:curr_book Chapter:curr_chapter ]; 
 	[self.view addSubview:selectMenu.view];
 
 }
 
-- (void) search:(id)ignored {
-	[self hideToolBar:YES];
-
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
-
-}
-
-- (void) showhistory:(id)ignored {
-	[self hideToolBar:YES];
-
-	HistoryViewController * historyView = [[HistoryViewController alloc] initWithDelegate: self Data:history] ;
-	historyView.title = @"History"; 
-	[self.navigationController pushViewController:historyView animated:YES];
-
-}
-- (void) notes:(id)ignored {
-	[self hideToolBar:YES];
-
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
-
-}
-- (void) fullscreen:(id)ignored {
-	[self hideToolBar:YES];
-
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+- (void) verseselector:(id) ignored {
+	
+	[[self myDelegate] lockScreen];
+	VerseSelector * verseMenu = [[VerseSelector alloc] initWithFrame: self.view.frame RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
+	[self.view addSubview:verseMenu.view];
 
 }
 
-- (void) memverse:(id)ignored {
-	[self hideToolBar:YES];
+#pragma mark Button reactions
 
-	VersesViewController * myView = [[VersesViewController alloc] initWithDelegate: self Data:memory] ;
-	myView.title = @"Memory Verses"; 
-	[self.navigationController pushViewController:myView animated:YES];
 
-}
 - (void) addbookmark:(id)ignored {
 	NSLog(@"Added to bookmarks");
 
@@ -419,19 +225,11 @@
 	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-	[bookmarks addToBookmarks:curr_book Chapter:curr_chapter Verses: [NSArray arrayWithObject:obj] Text:nil];   
+	[[self myDelegate] addToBmarks:curr_book Chapter:curr_chapter Verses: [NSArray arrayWithObject:obj]];   
 }
-- (void) bookmark:(id)ignored {
-	[self hideToolBar:YES];
 
-	BookmarkViewController * myView = [[BookmarkViewController alloc] initWithDelegate: self Data:bookmarks] ;
-	myView.title = @"Bookmarks"; 
-	[self.navigationController pushViewController:myView animated:YES];
-
-}
 
 - (void) action:(id)ignored {
-	[self hideToolBar:YES];
 
 	[[[UIAlertView alloc] initWithTitle:nil message:nil delegate:self 
 		cancelButtonTitle:@"Cancel" 
@@ -445,7 +243,7 @@
 	if([title isEqualToString:@ACTION_MEMORY])
 	{
 		NSLog(@"Added to memory verses");
-		[memory addToMemoryVerses:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:[self gethighlighttexts]];   
+		[[self myDelegate] addToMem:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:[self gethighlighttexts]];   
 		[self clearhighlights];
 	}
 	else if([title isEqualToString:@ACTION_CLEAR])
@@ -454,21 +252,90 @@
 	}
 }
 
--(void) showToolBar:(id)ignored {
+#pragma mark --
+#pragma mark set up Views
 
-	[self hideToolBar:!(self.navigationController.toolbarHidden)];
-	
+-(UIButton *) hlactionbutton {
+	UIButton * _hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
+	[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
+	_hlaction.frame = CGRectMake(self.view.frame.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.frame.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
+	_hlaction.hidden = YES;
+	_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
+	_hlaction.tag = HLACTIONBUTTON; 
+
+	hlaction = _hlaction;
+
+	return _hlaction;
 }
 
--(void) allowNavigationController:(BOOL) b {
-	if (b) 
-		self.navigationController.navigationBar.userInteractionEnabled = YES;
-	else
-		self.navigationController.navigationBar.userInteractionEnabled = NO;
+-(UIButton *) bmbutton {
+	UIButton * _bmaction = [UIButton buttonWithType:UIButtonTypeCustom];
+	[_bmaction setImage:[UIImage imageNamed:@"addbookmark.png"] forState:UIControlStateNormal]; 
+	[_bmaction addTarget:self action:@selector(addbookmark:) forControlEvents:UIControlEventTouchDown];
+	_bmaction.frame = CGRectMake(self.view.frame.size.width - BUTTON_SIZE - BUTTON_OFFSET , 0, BUTTON_SIZE, BUTTON_SIZE);
+	_bmaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin); 
+	_bmaction.tag = BOOKMARKBUTTON; 
+
+	bmaction = _bmaction;
+
+	return _bmaction;
+}
+
+- (void)loadView {
+
+	[super loadView];
+
+	self.view.frame = myFrame;	
+		
+	[self.view addSubview:self.webView];
+
+	[self.view addSubview:[self hlactionbutton]];	
+	[self.view addSubview:[self bmbutton]]; 
+	// verse button
+	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.frame.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
+	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchUpInside];
+	[verse setImage:[UIImage imageNamed:@"verse.png"] forState:UIControlStateNormal]; 
+	verse.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin);	
+	[self.view addSubview:verse];
+	[verse release];	
+
+	UIButton * leftpassage = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
+	[leftpassage addTarget:self action:@selector(prevPassage) forControlEvents:UIControlEventTouchUpInside];
+	[leftpassage setBackgroundColor:[UIColor clearColor]];
+	leftpassage.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 
+	[self.view addSubview:leftpassage];
+	[leftpassage release];	      
+
+
+	UIButton * rightpassage = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - TOUCH_WIDTH, self.view.frame.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
+	[rightpassage addTarget:self action:@selector(nextPassage) forControlEvents:UIControlEventTouchUpInside];
+	[rightpassage setBackgroundColor:[UIColor clearColor]];
+	rightpassage.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 
+	[self.view addSubview:rightpassage];
+	[rightpassage release];        
+
+
 
 }
-- (void) showMainView {
 
-	[self hideToolBar:YES];
+- (void) viewDidLoad {
+
+	[super viewDidLoad];
+
+	gestures = [[MyGestureRecognizer alloc] initWithDelegate:self View:self.webView];
+
+	// load last passage
+	VerseEntry * last = [[self myDelegate] initPassage];
+	if (last) [self selectedbook:last.book_index chapter:last.chapter];
+	else [self loadPassage];
 }
+
+
+- (void)dealloc {
+	[self.webView release]; 
+	[gestures release];
+	[super dealloc];
+}
+
+
 @end
