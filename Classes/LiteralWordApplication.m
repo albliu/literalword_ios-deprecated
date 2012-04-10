@@ -1,5 +1,6 @@
 #import "LiteralWordApplication.h"
 #import "SplitScreenViewController.h"
+#import "SingleScreenViewController.h"
 
 @implementation NavViewController
 
@@ -22,7 +23,14 @@
 
 - (NavViewController *) rootview {
 	if (_rootview == nil) { 
-		SplitScreenViewController* bibleView = [[SplitScreenViewController alloc] init];
+		UIViewController * bibleView;	
+		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+			bibleView = [[SplitScreenViewController alloc] init];
+		}
+		else {
+			bibleView = [[SingleScreenViewController alloc] init];
+		}
+
 		_rootview = [[NavViewController alloc] initWithRootViewController: bibleView];
 		[bibleView release];
 	}
