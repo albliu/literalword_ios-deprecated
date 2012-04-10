@@ -1,6 +1,7 @@
 #import "SplitScreenViewController.h"
 #import "BibleUtils/BibleUtils.h"
 #import <ViewControllers/ViewControllers.h>
+#import <QuartzCore/QuartzCore.h>
 
 @implementation SplitScreenViewController
 
@@ -11,7 +12,7 @@
 
 -(BibleViewController *) bibleView{
 	if (!_bibleView) {
-		_bibleView = [[BibleViewController alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width/2, self.view.bounds.size.height)];
+		_bibleView = [[BibleViewController alloc] initWithFrame:CGRectMake(BORDER_OFFSET,0, self.view.bounds.size.width/2 - 2*BORDER_OFFSET, self.view.bounds.size.height)];
 		_bibleView.myDelegate = self;
 	}
 	return _bibleView;
@@ -19,30 +20,12 @@
 
 -(BibleViewController *) secbibleView{
 	if (!_secbibleView) {
-		_secbibleView = [[BibleViewController alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2, 0, self.view.bounds.size.width/2, self.view.bounds.size.height)];
+		_secbibleView = [[BibleViewController alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2 + BORDER_OFFSET, 0, self.view.bounds.size.width/2 - 2 * BORDER_OFFSET, self.view.bounds.size.height)];
 		_secbibleView.myDelegate = self;
 	}
 	return _secbibleView;
 }
 
-- (id) init {
-
-	history = [[HistoryData alloc] init];
-	bookmarks = [[BookmarkData alloc] init];
-	memory = [[MemoryVersesData alloc] init];
-
-	return [super init];
-}	
-
-- (void)loadView {
-
-	[super loadView];
-	split = YES;
-	[self.view addSubview:self.bibleView.view];
-	self.bibleView.view.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-	[self.view addSubview:self.secbibleView.view];
-	self.secbibleView.view.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-}
 
 - (void) setUpToolBar {
 
@@ -52,13 +35,17 @@
 
 	// Show 4 buttons
 
-	UIToolbar *tools = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 200.0f, 44.01f)];
+	UIToolbar *tools = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 240.0f, 44.01f)];
 	tools.clearsContextBeforeDrawing = NO;
 	tools.clipsToBounds = NO;
 	tools.barStyle = -1;
 	tools.autoresizingMask = (UIViewAutoresizingFlexibleHeight);	
 
 	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
+
+	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	[toolbarItems addObject:flex];
+	[flex release];
 
 	UIBarButtonItem *myhistory = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showhistory:)];
 	myhistory.width = 35.0f;
@@ -70,31 +57,35 @@
 	[toolbarItems addObject:bookmark];
 	[bookmark release];
 
-	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"memory.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(memverse:)];
+	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"memory.png"] style:UIBarButtonItemStylePlain target:self action:@selector(memverse:)];
 	memoryverse.width = 35.0f;
 	[toolbarItems addObject:memoryverse];
 	[memoryverse release];
 	
 	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
-	fullscreen.style = UIBarButtonItemStyleBordered;
+	fullscreen.style = UIBarButtonItemStylePlain;
 	fullscreen.width = 35.0f;
 	[toolbarItems addObject:fullscreen];
 	[fullscreen release];
 
-	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(search:)];
+	UIBarButtonItem *search = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search.png"] style:UIBarButtonItemStylePlain target:self action:@selector(search:)];
 	search.width = 35.0f;
 	[toolbarItems addObject:search];
 	[search release];
 
 
 	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(notes:)];
-	notes.style = UIBarButtonItemStyleBordered;
+	notes.style = UIBarButtonItemStylePlain;
 	notes.width = 35.0f;
 	[toolbarItems addObject:notes];
 	[notes release];
 
+	flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	[toolbarItems addObject:flex];
+	[flex release];
 
 	[tools setItems:toolbarItems animated:NO]; 
+	[tools sizeToFit];
 	[toolbarItems release];
 
 	self.navigationItem.titleView = tools;
@@ -112,47 +103,8 @@
 
 }
 
--(void) viewDidLoad {
-	[super viewDidLoad];
-
-
-	[self setUpToolBar];
-}
-
-- (void)dealloc {
-	[history release]; 
-	[bookmarks release];
-	[memory release];
-	[self.bibleView release];	
-	[self.secbibleView release];	
-	[super dealloc];
-}
-
 
 #pragma mark Navigation Bar functions
--(void) hideToolBar:(BOOL) hide {
-	if (hide) {
-		[self.navigationController setToolbarHidden:YES];
-		self.navigationItem.rightBarButtonItem.style = UIBarButtonItemStylePlain ;
-	} else {
-		 [self.navigationController setToolbarHidden:NO];
-		self.navigationItem.rightBarButtonItem.style = UIBarButtonItemStyleDone ;
-
-	}
-
-}
-
--(void) showToolBar:(id)ignored {
-
-	[self hideToolBar:!(self.navigationController.toolbarHidden)];
-	
-}
-
-- (void) showMainView {
-
-	[self hideToolBar:YES];
-}
-
 
 -(void) allowNavigationController:(BOOL) b {
 	if (b) 
@@ -182,7 +134,6 @@
 }
 
 - (void) lockScreen {
-	[self showMainView];
 	[self allowNavigationController:NO];
 }
 
@@ -192,7 +143,6 @@
 #pragma mark - Button Actions
 
 - (void) bookmark:(id)ignored {
-	[self hideToolBar:YES];
 
 	BookmarkViewController * myView = [[BookmarkViewController alloc] initWithDelegate: self.bibleView Data:bookmarks] ;
 	myView.title = @"Bookmarks"; 
@@ -201,14 +151,12 @@
 }
 
 - (void) search:(id)ignored {
-	[self hideToolBar:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 
 - (void) showhistory:(id)ignored {
-	[self hideToolBar:YES];
 
 	HistoryViewController * historyView = [[HistoryViewController alloc] initWithDelegate: self.bibleView Data:history] ;
 	historyView.title = @"History"; 
@@ -216,21 +164,20 @@
 
 }
 - (void) notes:(id)ignored {
-	[self hideToolBar:YES];
 
 	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 
 }
 - (void) fullscreen:(id)ignored {
-	[self hideToolBar:YES];
 
 	if (split) {
-		self.bibleView.view.frame = CGRectMake(0,0, self.view.bounds.size.width, self.view.bounds.size.height);
+		
+		self.bibleView.view.frame = CGRectMake(BORDER_OFFSET, 0, self.view.bounds.size.width - 2 * BORDER_OFFSET, self.view.bounds.size.height);
 		self.secbibleView.view.hidden = YES;
 		self.secbibleView.passageTitle.hidden = YES;
 		split = NO;
 	} else {
-		self.bibleView.view.frame = CGRectMake(0,0, self.view.bounds.size.width/2, self.view.bounds.size.height);
+		self.bibleView.view.frame = CGRectMake(BORDER_OFFSET, 0, self.view.bounds.size.width/2 - 2 * BORDER_OFFSET, self.view.bounds.size.height);
 		self.secbibleView.view.hidden = NO;
 		self.secbibleView.passageTitle.hidden = NO;
 
@@ -240,7 +187,6 @@
 }
 
 - (void) memverse:(id)ignored {
-	[self hideToolBar:YES];
 
 	VersesViewController * myView = [[VersesViewController alloc] initWithDelegate:self.bibleView Data:memory] ;
 	myView.title = @"Memory Verses"; 
@@ -254,6 +200,49 @@
 {
     // we support rotation in this view controller
     return YES;
+}
+
+- (id) init {
+
+	history = [[HistoryData alloc] init];
+	bookmarks = [[BookmarkData alloc] init];
+	memory = [[MemoryVersesData alloc] init];
+
+	return [super init];
+}	
+
+- (void)loadView {
+
+	[super loadView];
+
+	self.view.backgroundColor = [UIColor SHEET_BLUE];
+
+	[self.view addSubview:self.bibleView.view];
+	self.bibleView.view.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+	[self.bibleView.view.layer setCornerRadius:8.0f];
+	[self.bibleView.view.layer setMasksToBounds:YES];
+
+
+	[self.view addSubview:self.secbibleView.view];
+	self.secbibleView.view.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+	[self.secbibleView.view.layer setCornerRadius:8.0f];
+	[self.secbibleView.view.layer setMasksToBounds:YES];
+}
+-(void) viewDidLoad {
+	[super viewDidLoad];
+
+	split = YES;
+	[self fullscreen:nil];
+	[self setUpToolBar];
+}
+
+- (void)dealloc {
+	[history release]; 
+	[bookmarks release];
+	[memory release];
+	[self.bibleView release];	
+	[self.secbibleView release];	
+	[super dealloc];
 }
 
 
