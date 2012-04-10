@@ -1,6 +1,6 @@
 {
     CFBundleExecutable = "LiteralWord";
-    CFBundleIconFile = Icon.png;
+    CFBundleIconFile = icon_deb.png;
     CFBundleIdentifier = "com.ebcsv.literalword";
     CFBundleInfoDictionaryVersion = 6.0;
     CFBundlePackageType = APPL;
