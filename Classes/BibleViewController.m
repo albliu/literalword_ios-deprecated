@@ -21,7 +21,7 @@
 }
 -(UIWebView *) webView{
 	if (_webView == nil) { 
-		_webView = [[UIWebView alloc] initWithFrame:self.view.frame];
+		_webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
 		_webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 		[_webView setDelegate:self];
 	}
@@ -64,12 +64,12 @@
 }
 
 #pragma mark UIViewController delegate
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+/*- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // we support rotation in this view controller
     return YES;
 }
-
+*/
 
 #pragma mark bibleView Delegate
 - (void) gotoVerse:(int) v {
@@ -207,7 +207,7 @@
 	NSLog(@"switch passage");
 
 	[[self myDelegate] lockScreen];
-	PassageSelector * selectMenu = [[PassageSelector alloc] initWithFrame: self.view.frame RootView: self Book:curr_book Chapter:curr_chapter ]; 
+	PassageSelector * selectMenu = [[PassageSelector alloc] initWithFrame: self.view.bounds RootView: self Book:curr_book Chapter:curr_chapter ]; 
 	[self.view addSubview:selectMenu.view];
 
 }
@@ -215,7 +215,7 @@
 - (void) verseselector:(id) ignored {
 	
 	[[self myDelegate] lockScreen];
-	VerseSelector * verseMenu = [[VerseSelector alloc] initWithFrame: self.view.frame RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
+	VerseSelector * verseMenu = [[VerseSelector alloc] initWithFrame: self.view.bounds RootView:self Verses:[BibleDataBaseController getVerseCount:[[BibleDataBaseController getBookNameAt:curr_book] UTF8String] chapter:curr_chapter]]; 
 	[self.view addSubview:verseMenu.view];
 
 }
@@ -263,7 +263,7 @@
 -(UIButton *) hlactionbutton {
 	UIButton * _hlaction = [UIButton buttonWithType:UIButtonTypeContactAdd];
 	[_hlaction addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchDown];
-	_hlaction.frame = CGRectMake(self.view.frame.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.frame.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
+	_hlaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE, BUTTON_SIZE);
 	_hlaction.hidden = YES;
 	_hlaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin);	
 	_hlaction.tag = HLACTIONBUTTON; 
@@ -277,7 +277,7 @@
 	UIButton * _bmaction = [UIButton buttonWithType:UIButtonTypeCustom];
 	[_bmaction setImage:[UIImage imageNamed:@"addbookmark.png"] forState:UIControlStateNormal]; 
 	[_bmaction addTarget:self action:@selector(addbookmark:) forControlEvents:UIControlEventTouchDown];
-	_bmaction.frame = CGRectMake(self.view.frame.size.width - BUTTON_SIZE - BUTTON_OFFSET , 0, BUTTON_SIZE, BUTTON_SIZE);
+	_bmaction.frame = CGRectMake(self.view.bounds.size.width - BUTTON_SIZE - BUTTON_OFFSET , 0, BUTTON_SIZE, BUTTON_SIZE);
 	_bmaction.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleBottomMargin); 
 	_bmaction.tag = BOOKMARKBUTTON; 
 
@@ -297,14 +297,14 @@
 	[self.view addSubview:[self hlactionbutton]];	
 	[self.view addSubview:[self bmbutton]]; 
 	// verse button
-	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.frame.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
+	UIButton * verse = [[UIButton alloc] initWithFrame:CGRectMake(BUTTON_OFFSET, self.view.bounds.size.height - BUTTON_SIZE - BUTTON_OFFSET, BUTTON_SIZE,BUTTON_SIZE)];
 	[verse addTarget:self action:@selector(verseselector:) forControlEvents:UIControlEventTouchUpInside];
 	[verse setImage:[UIImage imageNamed:@"verse.png"] forState:UIControlStateNormal]; 
 	verse.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin);	
 	[self.view addSubview:verse];
 	[verse release];	
 
-	UIButton * leftpassage = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
+	UIButton * leftpassage = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
 	[leftpassage addTarget:self action:@selector(prevPassage) forControlEvents:UIControlEventTouchUpInside];
 	[leftpassage setBackgroundColor:[UIColor clearColor]];
 	leftpassage.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 
@@ -312,7 +312,7 @@
 	[leftpassage release];	      
 
 
-	UIButton * rightpassage = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - TOUCH_WIDTH, self.view.frame.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
+	UIButton * rightpassage = [[UIButton alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - TOUCH_WIDTH, self.view.bounds.size.height/2 - TOUCH_HEIGHT, TOUCH_WIDTH, TOUCH_HEIGHT * 2)];
 	[rightpassage addTarget:self action:@selector(nextPassage) forControlEvents:UIControlEventTouchUpInside];
 	[rightpassage setBackgroundColor:[UIColor clearColor]];
 	rightpassage.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin) | (UIViewAutoresizingFlexibleTopMargin) | (UIViewAutoresizingFlexibleBottomMargin);	 

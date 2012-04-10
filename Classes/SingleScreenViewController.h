@@ -1,19 +1,17 @@
 #import "BibleViewController.h"
 #import "VersesDataBase/VersesDataBase.h"
 
-@interface SplitScreenViewController: UIViewController <BibleViewDelegate> {
+@interface SingleScreenViewController: UIViewController <BibleViewDelegate> {
 	BibleViewController * _bibleView;
-	BibleViewController * _secbibleView;
 
 
 	HistoryData * history;
 	BookmarkData * bookmarks;
 	MemoryVersesData * memory;
-	BOOL split;
+
 }
 
 @property (nonatomic, retain) BibleViewController * bibleView;
-@property (nonatomic, retain) BibleViewController * secbibleView;
 
 @end
 
