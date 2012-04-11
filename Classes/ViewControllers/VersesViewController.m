@@ -8,11 +8,11 @@
 
 
 - (id) initWithDelegate:(id) bibleView Data:(VersesData *) data {
-    self = [ super initWithStyle: UITableViewStylePlain];
+	self = [ super initWithStyle: UITableViewStylePlain];
 
-    self.delegate = bibleView;
-    self.myData = data;
-    return self;
+	self.delegate = bibleView;
+	self.myData = data;
+	return self;
 }
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
@@ -81,7 +81,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
 
-	[[[[UIAlertView alloc] initWithTitle: [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses] message:entry.text delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	[[[[UIAlertView alloc] initWithTitle: [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter, entry.verses] message:entry.text delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
 }
 
 

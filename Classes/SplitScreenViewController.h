@@ -1,6 +1,7 @@
 #import "BibleViewController.h"
 #import "VersesDataBase/VersesDataBase.h"
 
+
 #define BORDER_OFFSET 2
 @interface SplitScreenViewController: UIViewController <BibleViewDelegate> {
 	BibleViewController * _bibleView;
@@ -10,6 +11,7 @@
 	HistoryData * history;
 	BookmarkData * bookmarks;
 	MemoryVersesData * memory;
+
 	BOOL split;
 }
 

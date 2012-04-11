@@ -37,7 +37,7 @@
 
 	self.view.frame = myframe;
 	UIView * clearBackground = [[UIView alloc] initWithFrame:self.view.frame];
-	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.332f green:0.332f blue:0.332f alpha:0.4f]];
+	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.332f green:0.332f blue:0.332f alpha:0.6f]];
 	clearBackground.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ) ; 
 	[self.view addSubview:clearBackground];
 	[clearBackground release];

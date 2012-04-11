@@ -1,4 +1,5 @@
 #import "BibleDataBaseController.h"
+#import "VerseEntry.h"
 #import "NasbDataBaseHeaders.h"
 
 @implementation QueryResults 
@@ -69,7 +70,6 @@ static sqlite3 *bibleDB;
 	if (sqlite3_open([path UTF8String], &bibleDB) != SQLITE_OK)
 	{
 
-		[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Error!"] message:[NSString stringWithFormat:@"Cannot open nasb database"] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
         	sqlite3_close(bibleDB);
 	}
 
@@ -183,9 +183,46 @@ static sqlite3 *bibleDB;
 	return result;
 }
 
-+ (NSArray *) findString:(const char *) string {
 
-	return nil;
+//query += LiteralWord.VERSES_TEXT_ROWID + " LIKE '%" + text + "%' AND " + LiteralWord.VERSES_HEADER_TAG + "=" + LiteralWord.HEADER_NONE;
++ (NSString *) formatQuerySearchString:(const char *) string {
+
+	return [NSString stringWithFormat:@"%s LIKE '%%%s%%' AND %s = 0", VERSES_TEXT_ROWID, string, VERSES_HEADER_TAG];
+}
+
++ (NSArray *) searchString:(const char *) string {
+
+	sqlite3_stmt    *statement;
+	NSMutableArray *result = nil;
+	NSString *querySQL = [NSString stringWithFormat: 
+			@"SELECT %@,%@,%@,%@ FROM %@ WHERE %@",
+			@VERSES_BOOK_ROWID, @VERSES_CHAPTERS_ROWID, @VERSES_NUM_ROWID, @VERSES_TEXT_ROWID, 
+			@VERSES_TABLE, 
+			[self formatQuerySearchString:string]
+			];
+
+		const char *query_stmt = [querySQL UTF8String];
+		if(sqlite3_prepare_v2(bibleDB, query_stmt, -1, &statement, NULL) == SQLITE_OK) {
+			result = [[NSMutableArray alloc] initWithCapacity:1];
+			while(sqlite3_step(statement) == SQLITE_ROW) {
+				const unsigned char *text = sqlite3_column_text(statement, 3);
+				const unsigned char *book = sqlite3_column_text(statement, 0);
+				int ver = sqlite3_column_int(statement, 2);
+				int chap = sqlite3_column_int(statement, 1);
+				VerseEntry * obj = [[VerseEntry alloc] initWithBook:[self getBookIndex: [NSString stringWithFormat:@"%s",book]]
+						Chapter: chap 
+						Verses: [NSString stringWithFormat:@"%d", ver] 
+						Text:[NSString stringWithFormat:@"%s",text ]
+						ID:-1];
+				[result addObject:obj];
+				[obj release];	
+			}
+			sqlite3_finalize(statement);
+		}
+
+
+	return result;
+
 }
 
 + (void) closeBibleDataBase{ 

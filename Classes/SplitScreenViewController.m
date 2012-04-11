@@ -62,8 +62,7 @@
 	[toolbarItems addObject:memoryverse];
 	[memoryverse release];
 	
-	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(fullscreen:)];
-	fullscreen.style = UIBarButtonItemStylePlain;
+	UIBarButtonItem *fullscreen = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"split.png"] style:UIBarButtonItemStylePlain target:self action:@selector(fullscreen:)];
 	fullscreen.width = 35.0f;
 	[toolbarItems addObject:fullscreen];
 	[fullscreen release];
@@ -74,8 +73,7 @@
 	[search release];
 
 
-	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(notes:)];
-	notes.style = UIBarButtonItemStylePlain;
+	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"edit.png"] style:UIBarButtonItemStylePlain target:self action:@selector(notes:)];
 	notes.width = 35.0f;
 	[toolbarItems addObject:notes];
 	[notes release];
@@ -152,7 +150,9 @@
 
 - (void) search:(id)ignored {
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	SearchViewController * myView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
+	myView.title = @"Search"; 
+	[self.navigationController pushViewController:myView animated:YES];
 
 }
 
@@ -170,6 +170,7 @@
 }
 - (void) fullscreen:(id)ignored {
 
+	
 	if (split) {
 		
 		self.bibleView.view.frame = CGRectMake(BORDER_OFFSET, 0, self.view.bounds.size.width - 2 * BORDER_OFFSET, self.view.bounds.size.height);
@@ -182,6 +183,7 @@
 		self.secbibleView.passageTitle.hidden = NO;
 
 		split = YES;
+	
 	}
 
 }

@@ -39,5 +39,5 @@
 + (NSArray *) findBook: (const char *) book chapter: (int) chap; 
 
 // returns passage that inlucde the string
-+ (NSArray *) findString:(const char *) string; 
++ (NSArray *) searchString:(const char *) string; 
 @end
