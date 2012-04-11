@@ -75,7 +75,6 @@
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:searchBar.text delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
 	[searchData release];
 	searchData = [BibleDataBaseController searchString:[searchBar.text UTF8String]];
 	[self.tableView reloadData];
