@@ -29,6 +29,7 @@
     searchData = [[NSArray alloc] init];
     UISearchBar * mySearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
     mySearchBar.delegate = self;
+    [mySearchBar becomeFirstResponder];
     
     self.tableView.tableHeaderView = mySearchBar;
     [mySearchBar release];
@@ -101,7 +102,7 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+	cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
 
     VerseEntry * entry = nil;
@@ -109,13 +110,13 @@
 
     if (entry == nil)  {
 
-        cell.detailTextLabel.text = nil;
-        cell.textLabel.text = nil;
+	cell.detailTextLabel.text = nil;
+	cell.textLabel.text = nil;
 
     } else  {
 
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter,entry.verses ];
-        cell.textLabel.text = [NSString stringWithFormat:@"%@", entry.text ];
+	cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter,entry.verses ];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@", entry.text ];
 
 
     } 
@@ -135,6 +136,7 @@
 
 	[searchData release];
 	searchData = [BibleDataBaseController searchString:[searchBar.text UTF8String]];
+	[searchBar resignFirstResponder];
 	[self.tableView reloadData];
 }
 
