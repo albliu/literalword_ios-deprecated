@@ -63,7 +63,7 @@
 
 	// Show 2 buttons
 
-	UIToolbar *tools = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 80.0f, 44.01f)];
+	UIToolbar *tools = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 60.0f, 44.01f)];
 	tools.clearsContextBeforeDrawing = NO;
 	tools.clipsToBounds = NO;
 	tools.barStyle = -1;
@@ -72,12 +72,12 @@
 	toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
 
 	UIBarButtonItem *myhistory = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"history.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showhistory:)];
-	myhistory.width = 35.0f;
+	myhistory.width = 30.0f;
 	[toolbarItems addObject:myhistory];
 	[myhistory release];
 
 	UIBarButtonItem *bookmark = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"bookmark.png"] style:UIBarButtonItemStylePlain target:self action:@selector(bookmark:)];
-	bookmark.width = 35.0f;
+	bookmark.width = 30.0f;
 	[toolbarItems addObject:bookmark];
 	[bookmark release];
 
@@ -187,7 +187,9 @@
 - (void) search:(id)ignored {
 	[self hideToolBar:YES];
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	SearchViewController * myView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
+	myView.title = @"Search"; 
+	[self.navigationController pushViewController:myView animated:YES];
 
 }
 

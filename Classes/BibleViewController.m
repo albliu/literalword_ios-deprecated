@@ -185,8 +185,8 @@
 	NSString * name = [BibleDataBaseController getBookNameAt:curr_book];
 	[self.passageTitle setTitle:[NSString stringWithFormat:@"%@ %d", name, curr_chapter] forState:UIControlStateNormal];
 	[self.passageTitle sizeToFit];
-
-	hlaction.hidden = YES;
+	if ( hlights == nil ) hlaction.hidden = YES;
+	else hlaction.hidden = NO;
 
 	[self.webView loadHTMLString:[BibleHtmlGenerator loadHtmlBookWithVerse:ver Highlights:hlights Book:[name UTF8String] chapter:curr_chapter scale: self.fontscale style:DEFAULT_VIEW] baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]]];
 }
@@ -230,7 +230,7 @@
 	NSString *obj = [self.webView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-	[[self myDelegate] addToBmarks:curr_book Chapter:curr_chapter Verses: [NSArray arrayWithObject:obj]];   
+	[[self myDelegate] addToBmarks:curr_book Chapter:curr_chapter Verses: [NSArray arrayWithObject:obj]];	
 }
 
 
@@ -248,7 +248,7 @@
 	if([title isEqualToString:@ACTION_MEMORY])
 	{
 		NSLog(@"Added to memory verses");
-		[[self myDelegate] addToMem:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:[self gethighlighttexts]];   
+		[[self myDelegate] addToMem:curr_book Chapter:curr_chapter Verses:[self gethighlights] Text:[self gethighlighttexts]];	 
 		[self clearhighlights];
 	}
 	else if([title isEqualToString:@ACTION_CLEAR])
