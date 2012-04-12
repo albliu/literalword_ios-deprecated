@@ -264,7 +264,6 @@
 	CTFontRef thisFont = CTFontCreateWithName ((CFStringRef)[self.font fontName], [self.font pointSize], NULL); 
 	CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, thisFont);
 	
-	NSMutableArray *links = [NSMutableArray array];
 	
 	for (RTLabelComponent *component in self._textComponents)
 	{

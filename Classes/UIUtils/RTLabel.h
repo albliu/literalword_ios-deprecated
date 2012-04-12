@@ -93,6 +93,5 @@ typedef enum
 
 - (CGSize)optimumSize;
 - (void)setLineSpacing:(CGFloat)lineSpacing;
-- (NSString*)visibleText;
 
 @end
