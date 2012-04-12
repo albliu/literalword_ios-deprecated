@@ -37,6 +37,7 @@ LiteralWord_FRAMEWORKS+= CoreGraphics
 #LiteralWord_FRAMEWORKS+= OpenAL
 #LiteralWord_FRAMEWORKS+= OpenGLES
 LiteralWord_FRAMEWORKS+= QuartzCore
+LiteralWord_FRAMEWORKS+= CoreText
 #LiteralWord_FRAMEWORKS+= Security
 #LiteralWord_FRAMEWORKS+= StoreKit
 #LiteralWord_FRAMEWORKS+= System
