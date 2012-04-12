@@ -2,3 +2,4 @@
 #import "HistoryViewController.h"
 #import "BookmarkViewController.h"
 #import "SearchViewController.h"
+#import "NotesViewController.h"

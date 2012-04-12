@@ -172,7 +172,10 @@
 }
 - (void) notes:(id)ignored {
 
-	[[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%s", __FUNCTION__] message:@"implement me" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil] autorelease] show];
+	NotesViewController * myView = [[NotesViewController alloc] init] ;
+	myView.title = @"Notes"; 
+	[self.navigationController pushViewController:myView animated:YES];
+	[myView release];
 
 }
 - (void) fullscreen:(id)ignored {
