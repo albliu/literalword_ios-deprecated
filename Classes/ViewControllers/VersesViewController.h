@@ -1,4 +1,4 @@
-#import "VersesDataBase/VersesData.h"
+#import "../VersesDataBase/VersesData.h"
 
 @interface VersesViewController: UITableViewController {
 	VersesData * _myData;

@@ -1,4 +1,4 @@
-#import "BibleUtils/BibleUtils.h"
+#import "../BibleUtils/BibleUtils.h"
 #import "SelectorViewController.h"
 #define PASSAGESELECTOR_WIDTH 320 
 #define PASSAGESELECTOR_HEIGHT 216
