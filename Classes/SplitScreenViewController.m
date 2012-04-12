@@ -1,14 +1,22 @@
 #import "SplitScreenViewController.h"
 #import "BibleUtils/BibleUtils.h"
-#import <ViewControllers/ViewControllers.h>
 #import <QuartzCore/QuartzCore.h>
 
 @implementation SplitScreenViewController
 
 @synthesize bibleView=_bibleView;
 @synthesize secbibleView=_secbibleView;
+@synthesize searchView=_searchView;
 
+-(SearchViewController *) searchView {
 
+	if (!_searchView) {
+		_searchView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
+		_searchView.title = @"Search"; 
+	}
+	return _searchView;
+
+}
 
 -(BibleViewController *) bibleView{
 	if (!_bibleView) {
@@ -145,14 +153,12 @@
 	BookmarkViewController * myView = [[BookmarkViewController alloc] initWithDelegate: self.bibleView Data:bookmarks] ;
 	myView.title = @"Bookmarks"; 
 	[self.navigationController pushViewController:myView animated:YES];
-
+	[myView release];
 }
 
 - (void) search:(id)ignored {
 
-	SearchViewController * myView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
-	myView.title = @"Search"; 
-	[self.navigationController pushViewController:myView animated:YES];
+	[self.navigationController pushViewController:self.searchView animated:YES];
 
 }
 
@@ -161,6 +167,7 @@
 	HistoryViewController * historyView = [[HistoryViewController alloc] initWithDelegate: self.bibleView Data:history] ;
 	historyView.title = @"History"; 
 	[self.navigationController pushViewController:historyView animated:YES];
+	[historyView release];
 
 }
 - (void) notes:(id)ignored {
@@ -193,6 +200,7 @@
 	VersesViewController * myView = [[VersesViewController alloc] initWithDelegate:self.bibleView Data:memory] ;
 	myView.title = @"Memory Verses"; 
 	[self.navigationController pushViewController:myView animated:YES];
+	[myView release];
 
 }
 
@@ -244,6 +252,7 @@
 	[memory release];
 	[self.bibleView release];	
 	[self.secbibleView release];	
+	[self.searchView release];	
 	[super dealloc];
 }
 

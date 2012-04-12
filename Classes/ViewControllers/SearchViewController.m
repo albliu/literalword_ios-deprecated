@@ -1,6 +1,5 @@
 #import "SearchViewController.h"
 #import "BibleViewController.h"
-//#import "SearchTableViewCell.h"
 
 @implementation SearchViewController
 
@@ -49,6 +48,11 @@
 
 }
 
+- (NSString *) formatResultText : (NSString *) txt {
+
+
+	return txt;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {    
@@ -84,7 +88,7 @@
 
     VerseEntry * entry = [searchData objectAtIndex:[indexPath row]];
     verseLabel.text = [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter,entry.verses ];
-    [textLabel setText:[NSString stringWithFormat:@"%@", entry.text ]];
+    [textLabel setText:[NSString stringWithFormat:@"%@", [self formatResultText:entry.text] ]];
      
     return cell;
 }
@@ -107,6 +111,13 @@
 - (void)dealloc {
     [searchData release];
     [super dealloc];
+}
+- (void) clear:(id) ignored {
+	UISearchBar * myBar = (UISearchBar *) self.tableView.tableHeaderView;
+	myBar.text = nil;
+	[searchData release];
+    	searchData = [[NSArray alloc] init];
+	[self.tableView reloadData];
 }
 
 

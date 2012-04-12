@@ -64,6 +64,10 @@ include $(THEOS_MAKE_PATH)/application.mk
 after-clean::
 	rm -rf *.deb
 
+install_dropbox: after-clean package
+	rm -rf ~/Dropbox/com.ebcsv*.deb
+	mv com.ebcsv*.deb ~/Dropbox
+
 install_deb: after-clean package
 	scp com.ebcsv*.deb root@$(IPHONE_IP):~/Dev
 	ssh root@$(IPHONE_IP) "dpkg -r com.ebcsv.literalword; dpkg -i ~/Dev/com.ebcsv.literalword*.deb; su mobile -c \"uicache\"; rm ~/Dev/com.ebcsv.literalword*.deb"
