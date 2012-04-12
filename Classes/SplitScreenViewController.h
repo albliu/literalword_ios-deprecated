@@ -1,5 +1,5 @@
 #import "BibleViewController.h"
-#import <ViewControllers/ViewControllers.h>
+#import "ViewControllers/ViewControllers.h"
 #import "VersesDataBase/VersesDataBase.h"
 
 
