@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+#define NOTES_TOOLBAR_HEIGHT 35 
+
 #import <UIKit/UIKit.h>
 
 @interface NotesViewController : UIViewController {
