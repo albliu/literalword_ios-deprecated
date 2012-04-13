@@ -35,12 +35,31 @@
 
 }
 
+- (void) setupToolBar {
+
+	NSMutableArray * toolbarItems = [[NSMutableArray alloc] initWithCapacity:1];
+	UIBarButtonItem *bold = [[UIBarButtonItem alloc] initWithTitle:@"B" style:UIBarButtonItemStyleBordered target:self action:@selector(bold:)];
+	[toolbarItems addObject:bold];
+	[bold release];
+
+
+	UIBarButtonItem *italics = [[UIBarButtonItem alloc] initWithTitle:@"i" style:UIBarButtonItemStyleBordered target:self action:@selector(italics:)];
+	[toolbarItems addObject:italics];
+	[italics release];
+
+	[self setToolbarItems:toolbarItems];
+	[toolbarItems release];
+
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 
     [self.editView loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"document" ofType:@"html"]isDirectory:NO]]];	
+    [self setupToolBar];
+    [self.navigationController setToolbarHidden:NO];
 
 }
 
@@ -54,6 +73,22 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return YES;
+}
+
+- (void) bold:(id) ignored {
+
+	NSString *jsString = [[NSString alloc] initWithUTF8String:"editor.bold()"];
+	[self.editView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+
+}
+
+- (void) italics: (id) ignored {
+
+	NSString *jsString = [[NSString alloc] initWithUTF8String:"editor.italic()"];
+	[self.editView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+
 }
 
 @end
