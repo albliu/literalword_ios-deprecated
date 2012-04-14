@@ -1,7 +1,13 @@
 #import "SearchViewController.h"
 #import "BibleViewController.h"
 
+@interface SearchViewController() 
+- (void) refreshThread;
+@end
+
 @implementation SearchViewController
+
+static int loadedCount;
 
 - (NSString *) formatResultText : (NSString *) txt {
     
@@ -35,6 +41,7 @@
     [super viewDidLoad];
 
     searchData = [[NSMutableArray alloc] initWithCapacity:1];
+    loadedCount =0;
     UISearchBar * mySearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
     mySearchBar.delegate = self;
     [mySearchBar becomeFirstResponder];
@@ -120,32 +127,62 @@
 	return optimumSize.height + VERSE_LABEL_HEIGHT + 2 * CELL_SPACING;
     
 }
+
+- (void)scrollViewDidScroll:(UIScrollView *)aScrollView {
+    CGPoint offset = aScrollView.contentOffset;
+    CGRect bounds = aScrollView.bounds;
+    CGSize size = aScrollView.contentSize;
+    UIEdgeInsets inset = aScrollView.contentInset;
+    float y = offset.y + bounds.size.height - inset.bottom;
+    float h = size.height;
+    // NSLog(@"offset: %f", offset.y);   
+    // NSLog(@"content.height: %f", size.height);   
+    // NSLog(@"bounds.height: %f", bounds.size.height);   
+    // NSLog(@"inset.top: %f", inset.top);   
+    // NSLog(@"inset.bottom: %f", inset.bottom);   
+    // NSLog(@"pos: %f of %f", y, h);
+    
+    float reload_distance = 10;
+    if(y > h + reload_distance) {
+        [self refreshThread];
+    }
+}
 #pragma mark - searchDisplayControllerDelegate
 
 // this function is mainly for height calculating
-- (void) refreshResults 
-{
-    int i = 1;
-    for ( VerseEntry * entry in searchResults) {
-     
-        if ((i++ % 15) == 0)[self.tableView reloadData];
-     
+
+- (void) refreshThread {
+  
+    [myLoading startAnimating];
+    while (1) {
+        if (loadedCount == [searchResults count]) return;
+        VerseEntry * entry = [searchResults objectAtIndex:loadedCount];
         RTLabel * rtLabel = [[RTLabel alloc] initWithFrame:CGRectMake(CELL_SPACING, VERSE_LABEL_HEIGHT + CELL_SPACING, self.view.frame.size.width - CELL_SPACING, 100)];
         [rtLabel setText:entry.text];
         [searchData addObject: [NSValue valueWithCGSize:[rtLabel optimumSize]]];
         [rtLabel release];
+        if (++loadedCount % LOAD_REFRESH_RATE == 0) break;
+        
     }	
-    
-    
+    [self.tableView reloadData];
+    [myLoading stopAnimating];
 }
 
+-(void) refreshResults {
+
+    [searchData release];
+	searchData = [[NSMutableArray alloc] initWithCapacity:1];
+    loadedCount = 0;
+    [self refreshThread];
+    //[NSThread detachNewThreadSelector:@selector(refreshThread) toTarget:self withObject:nil];  
+    
+}
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-	//[myLoading startAnimating];
-	[searchData release];
-	searchData = [[NSMutableArray alloc] initWithCapacity:1];
+
     searchResults = [BibleDataBaseController searchString:[searchBar.text UTF8String]];
 	[searchBar resignFirstResponder];
+  
     [self refreshResults];
 
 }

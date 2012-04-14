@@ -1,16 +1,14 @@
 #import "VersesViewController.h"
 
 #define CELL_SPACING 4
+#define SEARCH_BAR_HEIGHT 40
 #define LOAD_REFRESH_RATE 50 
 #define VERSE_LABEL_HEIGHT 10 
 #define VERSE_LABEL_FONT_SIZE 10
 
-#define CELLTEXTVIEW 300
-#define CELLLABELVIEW 301
-
-@interface SearchViewController : VersesViewController <UIWebViewDelegate, UISearchBarDelegate>
+@interface SearchViewController2 : UIViewController <UIWebViewDelegate, UISearchBarDelegate>
 {
-    NSMutableArray *searchData;
+    UIWebView * myTable;
     NSArray * searchResults;
     UIActivityIndicatorView * myLoading;
  }

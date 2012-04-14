@@ -1,6 +1,7 @@
 #import "BibleDataBaseController.h"
 #import "VerseEntry.h"
 #import "NasbDataBaseHeaders.h"
+#import "BibleHtmlGenerator.h"
 
 @implementation QueryResults 
 
@@ -225,6 +226,40 @@ static sqlite3 *bibleDB;
 
 }
 
++ (NSString *) searchStringToHtml:(const char *) string {
+
+	sqlite3_stmt    *statement;
+	NSString *result = nil;
+	NSString *querySQL = [NSString stringWithFormat: 
+			@"SELECT %@,%@,%@,%@ FROM %@ WHERE %@",
+			@VERSES_BOOK_ROWID, @VERSES_CHAPTERS_ROWID, @VERSES_NUM_ROWID, @VERSES_TEXT_ROWID, 
+			@VERSES_TABLE, 
+			[self formatQuerySearchString:string]
+			];
+
+		const char *query_stmt = [querySQL UTF8String];
+		if(sqlite3_prepare_v2(bibleDB, query_stmt, -1, &statement, NULL) == SQLITE_OK) {
+			result = [BibleHtmlGenerator header:LITERARY_VIEW scale:1.0];
+			result = [result stringByAppendingString:@"<body><table width=\"100%%\" border = \"1\">"];
+			while(sqlite3_step(statement) == SQLITE_ROW) {
+                result = [result stringByAppendingString:@"<tr><td>"];                
+				const unsigned char *text = sqlite3_column_text(statement, 3);
+				const unsigned char *book = sqlite3_column_text(statement, 0);
+				int ver = sqlite3_column_int(statement, 2);
+				int chap = sqlite3_column_int(statement, 1);
+                result = [result stringByAppendingFormat:@"<b><font size=\"small\">%s %d:%d</font></b><br>%s", book, chap, ver, text];
+				
+                
+                result = [result stringByAppendingString:@"</td></tr>"]; 
+            }
+			sqlite3_finalize(statement);
+            result = [result stringByAppendingString:@"</table></body>"];
+		}
+
+
+	return result;
+
+}
 + (void) closeBibleDataBase{ 
 	if (bibleDB) sqlite3_close(bibleDB);
 	[books release];

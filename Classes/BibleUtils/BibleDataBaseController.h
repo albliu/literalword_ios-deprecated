@@ -40,4 +40,5 @@
 
 // returns passage that inlucde the string
 + (NSArray *) searchString:(const char *) string; 
++ (NSString *) searchStringToHtml:(const char *) string; 
 @end
