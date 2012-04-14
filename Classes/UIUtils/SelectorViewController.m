@@ -36,11 +36,12 @@
 - (void) loadClearView {
 
 	self.view.frame = myframe;
-	UIView * clearBackground = [[UIView alloc] initWithFrame:self.view.frame];
-	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.332f green:0.332f blue:0.332f alpha:0.6f]];
+	UIButton * clearBackground =  [UIButton buttonWithType:UIButtonTypeCustom];
+	clearBackground.frame = self.view.frame;
+	[clearBackground addTarget:self action:@selector(dismissMyView) forControlEvents:UIControlEventTouchUpInside];
+	[clearBackground setBackgroundColor: [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.4f]];
 	clearBackground.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ) ; 
 	[self.view addSubview:clearBackground];
-	[clearBackground release];
 
 }
 

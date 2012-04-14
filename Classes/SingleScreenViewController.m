@@ -5,6 +5,7 @@
 
 @synthesize bibleView=_bibleView;
 @synthesize searchView=_searchView;
+@synthesize notesView=_notesView;
 
 -(SearchViewController *) searchView {
 
@@ -21,6 +22,15 @@
 		_bibleView.myDelegate = self;
 	}
 	return _bibleView;
+}
+-(NotesViewController *) notesView {
+
+	if (!_notesView) {
+		_notesView = [[NotesViewController alloc] init];
+		_notesView.title = @"Notes"; 
+	}
+	return _notesView;
+
 }
 
 - (id) init {
@@ -109,7 +119,6 @@
 -(void) viewDidLoad {
 	[super viewDidLoad];
 
-
 	[self setUpToolBar];
 }
 
@@ -118,6 +127,8 @@
 	[bookmarks release];
 	[memory release];
 	[self.bibleView release];	
+	[self.notesView release];	
+	[self.searchView release];	
 	[super dealloc];
 }
 
@@ -213,10 +224,7 @@
 - (void) notes:(id)ignored {
 	[self hideToolBar:YES];
 
-	NotesViewController * myView = [[NotesViewController alloc] init] ;
-	myView.title = @"Notes"; 
-	[self.navigationController pushViewController:myView animated:YES];
-	[myView release];
+	[self.navigationController pushViewController:self.notesView animated:YES];
 
 }
 - (void) fullscreen:(id)ignored {

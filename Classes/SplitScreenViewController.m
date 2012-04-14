@@ -7,6 +7,7 @@
 @synthesize bibleView=_bibleView;
 @synthesize secbibleView=_secbibleView;
 @synthesize searchView=_searchView;
+@synthesize notesView=_notesView;
 
 -(SearchViewController *) searchView {
 
@@ -17,10 +18,18 @@
 	return _searchView;
 
 }
+-(NotesViewController *) notesView {
 
+	if (!_notesView) {
+		_notesView = [[NotesViewController alloc] init];
+		_notesView.title = @"Notes"; 
+	}
+	return _notesView;
+
+}
 -(BibleViewController *) bibleView{
 	if (!_bibleView) {
-		_bibleView = [[BibleViewController alloc] initWithFrame:CGRectMake(BORDER_OFFSET,0, self.view.bounds.size.width/2 - 2*BORDER_OFFSET, self.view.bounds.size.height)];
+		_bibleView = [[BibleViewController alloc] initWithFrame:CGRectMake(BORDER_OFFSET,0, self.view.bounds.size.width - 2*BORDER_OFFSET, self.view.bounds.size.height)];
 		_bibleView.myDelegate = self;
 	}
 	return _bibleView;
@@ -102,9 +111,6 @@
 	[leftButtons release];
 
 
-	UIBarButtonItem *rightButtons = [[UIBarButtonItem alloc] initWithCustomView:self.secbibleView.passageTitle];
-	self.navigationItem.rightBarButtonItem = rightButtons;
-	[rightButtons release];
 
 
 }
@@ -172,28 +178,30 @@
 }
 - (void) notes:(id)ignored {
 
-	NotesViewController * myView = [[NotesViewController alloc] init] ;
-	myView.title = @"Notes"; 
-	[self.navigationController pushViewController:myView animated:YES];
-	[myView release];
+	[self.navigationController pushViewController:self.notesView animated:YES];
 
 }
 - (void) fullscreen:(id)ignored {
 
-	
-	if (split) {
-		
+
+	if (self.bibleView.view.frame.size.width == (self.view.bounds.size.width/2 - 2 * BORDER_OFFSET)) {
 		self.bibleView.view.frame = CGRectMake(BORDER_OFFSET, 0, self.view.bounds.size.width - 2 * BORDER_OFFSET, self.view.bounds.size.height);
-		self.secbibleView.view.hidden = YES;
-		self.secbibleView.passageTitle.hidden = YES;
-		split = NO;
+		
+		self.navigationItem.rightBarButtonItem = nil;
+		[self.secbibleView.view removeFromSuperview];
+		[self.secbibleView release];
+		_secbibleView = nil;
 	} else {
 		self.bibleView.view.frame = CGRectMake(BORDER_OFFSET, 0, self.view.bounds.size.width/2 - 2 * BORDER_OFFSET, self.view.bounds.size.height);
-		self.secbibleView.view.hidden = NO;
-		self.secbibleView.passageTitle.hidden = NO;
-
-		split = YES;
 	
+		[self.view addSubview:self.secbibleView.view];
+		self.secbibleView.view.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+		[self.secbibleView.view.layer setCornerRadius:8.0f];
+		[self.secbibleView.view.layer setMasksToBounds:YES];
+
+		UIBarButtonItem *rightButtons = [[UIBarButtonItem alloc] initWithCustomView:self.secbibleView.passageTitle];
+		self.navigationItem.rightBarButtonItem = rightButtons;
+		[rightButtons release];
 	}
 
 }
@@ -235,17 +243,10 @@
 	[self.bibleView.view.layer setCornerRadius:8.0f];
 	[self.bibleView.view.layer setMasksToBounds:YES];
 
-
-	[self.view addSubview:self.secbibleView.view];
-	self.secbibleView.view.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-	[self.secbibleView.view.layer setCornerRadius:8.0f];
-	[self.secbibleView.view.layer setMasksToBounds:YES];
 }
 -(void) viewDidLoad {
 	[super viewDidLoad];
 
-	split = YES;
-	[self fullscreen:nil];
 	[self setUpToolBar];
 }
 
@@ -256,6 +257,7 @@
 	[self.bibleView release];	
 	[self.secbibleView release];	
 	[self.searchView release];	
+	[self.notesView release];	
 	[super dealloc];
 }
 

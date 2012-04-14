@@ -155,7 +155,6 @@
 
 - (CGFloat)frameHeight:(CTFrameRef)frame;
 - (NSArray *)components;
-- (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags;
 - (NSArray*) colorForHex:(NSString *)hexColor;
 - (void)render;
 - (void)extractTextStyle:(NSString*)text;
@@ -600,7 +599,7 @@
 
 - (void)extractTextStyle:(NSString*)data
 {
-	NSLog(@"%@", data);
+	//NSLog(@"%@", data);
 	
 	NSScanner *scanner = nil; 
 	NSString *text = nil;
@@ -629,7 +628,7 @@
 		{
 			// end of tag
 			tag = [text substringFromIndex:2];
-			NSLog(@"end of tag: %@", tag);
+		//	NSLog(@"end of tag: %@", tag);
 			if (position!=NSNotFound)
 			{
 				
@@ -652,7 +651,7 @@
 			// start of tag
 			NSArray *textComponents = [[text substringFromIndex:1] componentsSeparatedByString:@" "];
 			tag = [textComponents objectAtIndex:0];
-			NSLog(@"start of tag: %@", tag);
+			//NSLog(@"start of tag: %@", tag);
 			NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 			for (int i=1; i<[textComponents count]; i++)
 			{
@@ -662,7 +661,7 @@
 					[attributes setObject:[[pair subarrayWithRange:NSMakeRange(1, [pair count] - 1)] componentsJoinedByString:@"="] forKey:[pair objectAtIndex:0]];
 				}
 			}
-			NSLog(@"%@", attributes);
+			//NSLog(@"%@", attributes);
 			
 			RTLabelComponent *component = [RTLabelComponent componentWithString:nil tag:tag attributes:attributes];
 			component.position = position;
@@ -673,106 +672,9 @@
 		
 	}
 	
-	NSLog(@"%@", components);
+	//NSLog(@"%@", components);
 	self._textComponents = components;
 	self._plainText = data;
-}
-
-
-- (void)parse:(NSString *)data valid_tags:(NSArray *)valid_tags
-{
-	//use to strip the HTML tags from the data
-	NSScanner *scanner = nil;
-	NSString *text = nil;
-	NSString *tag = nil;
-	
-	NSMutableArray *components = [NSMutableArray array];
-	
-	//set up the scanner
-	scanner = [NSScanner scannerWithString:data];
-	NSMutableDictionary *lastAttributes = nil;
-	
-	int last_position = 0;
-	while([scanner isAtEnd] == NO) 
-	{
-		//find start of tag
-		[scanner scanUpToString:@"<" intoString:NULL];
-		
-		//find end of tag
-		[scanner scanUpToString:@">" intoString:&text];
-		
-		NSMutableDictionary *attributes = nil;
-		//get the name of the tag
-		if([text rangeOfString:@"</"].location != NSNotFound)
-			tag = [text substringFromIndex:2]; //remove </
-		else 
-		{
-			tag = [text substringFromIndex:1]; //remove <
-			//find out if there is a space in the tag
-			if([tag rangeOfString:@" "].location != NSNotFound)
-			{
-				attributes = [NSMutableDictionary dictionary];
-				NSArray *rawAttributes = [tag componentsSeparatedByString:@" "];
-				for (int i=1; i<[rawAttributes count]; i++)
-				{
-					NSArray *pair = [[rawAttributes objectAtIndex:i] componentsSeparatedByString:@"="];
-					if ([pair count]==2)
-					{
-						[attributes setObject:[pair objectAtIndex:1] forKey:[pair objectAtIndex:0]];
-					}
-				}
-				
-				//remove text after a space
-				tag = [tag substringToIndex:[tag rangeOfString:@" "].location];
-			}
-		}
-		
-		//if not a valid tag, replace the tag with a space
-		if([valid_tags containsObject:tag] == NO)
-		{
-			NSString *delimiter = [NSString stringWithFormat:@"%@>", text];
-			int position = [data rangeOfString:delimiter].location;
-			BOOL isEnd = [delimiter rangeOfString:@"</"].location!=NSNotFound;
-			if (position!=NSNotFound)
-			{
-				NSString *text2 = [data substringWithRange:NSMakeRange(last_position, position-last_position)];
-				if (isEnd)
-				{
-					// is inside a tag
-					//NSLog(@">>>>>>> %@: %@ %@", tag, text2, lastAttributes);
-					[components addObject:[RTLabelComponent componentWithString:text2 tag:tag attributes:lastAttributes]];
-				}
-				else
-				{
-					// is outside a tag
-					//NSLog(@">>>>>>> normal: %@ %@", text2, lastAttributes);
-					[components addObject:[RTLabelComponent componentWithString:text2 tag:nil attributes:lastAttributes]];
-				}
-				
-				//NSLog(@".......... %i %i %i %@", [data length], last_position, position, [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NULL range:NSMakeRange(last_position, position+delimiter.length)]);
-				data = [data stringByReplacingOccurrencesOfString:delimiter withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(last_position, position+delimiter.length-last_position)];
-				
-				last_position = position;
-				
-			}
-			else
-			{
-				NSString *text2 = [data substringFromIndex:last_position];
-				// is outside a tag
-				//NSLog(@">>>>>>> normal: %@ %@", text2, lastAttributes);
-				[components addObject:[RTLabelComponent componentWithString:text2 tag:nil attributes:lastAttributes]];
-			}
-			
-			//data = [data stringByReplacingOccurrencesOfString:delimiter withString:@""];
-			
-			lastAttributes = attributes;
-		}
-	}
-	
-	self._textComponents = components;
-	self._plainText = data;
-	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&lt;" withString:@"<"];
-	//self._plainText = [self._plainText stringByReplacingOccurrencesOfString:@"&gt;" withString:@">"];
 }
 
 - (NSArray*)colorForHex:(NSString *)hexColor 

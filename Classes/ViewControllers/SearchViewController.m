@@ -3,24 +3,56 @@
 
 @implementation SearchViewController
 
+- (NSString *) formatResultText : (NSString *) txt {
+    
+	txt = [txt stringByReplacingOccurrencesOfString:@"<fn>" withString:@"<!--"];
+	txt = [txt stringByReplacingOccurrencesOfString:@"</fn>" withString:@"-->"];
+	txt = [txt stringByReplacingOccurrencesOfString:@"<h1>" withString:@"<!--"];
+	txt = [txt stringByReplacingOccurrencesOfString:@"</h1>" withString:@"-->"];
+	txt = [txt stringByReplacingOccurrencesOfString:@"<vn>" withString:@"<!--"];
+	txt = [txt stringByReplacingOccurrencesOfString:@"</vn>" withString:@"-->"];
+	txt = [txt stringByReplacingOccurrencesOfString:@"<sv>" withString:@"<!--"];
+	txt = [txt stringByReplacingOccurrencesOfString:@"</sv>" withString:@"-->"];
+    
+	return txt;
+}
+
+
+
+
 #pragma mark - View lifecycle
+- (void) loadView {
+	[super loadView];
+
+	myLoading = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+
+	myLoading.center = self.view.center;
+	[self.view addSubview:myLoading];
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    searchData = [[NSArray alloc] init];
+    searchData = [[NSMutableArray alloc] initWithCapacity:1];
     UISearchBar * mySearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
     mySearchBar.delegate = self;
     [mySearchBar becomeFirstResponder];
     
     self.tableView.tableHeaderView = mySearchBar;
     [mySearchBar release];
+
+
 }
 
 #pragma mark - Table view data source
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	return NO;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	VerseEntry * entry = [searchData objectAtIndex:[indexPath row]];
+	VerseEntry * entry = [searchResults objectAtIndex:[indexPath row]];
 	// we assume search results will always only have 1 verse
 	if (entry != nil) {
 		[self.delegate selectedbook:entry.book_index chapter:entry.chapter 
@@ -37,29 +69,13 @@
 	return [searchData count];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-
-	VerseEntry * entry = [searchData objectAtIndex:[indexPath row]];
-	RTLabel * rtLabel = [[RTLabel alloc] initWithFrame:CGRectMake(0, VERSE_LABEL_HEIGHT, self.view.frame.size.width, 100)];
-	[rtLabel setText:entry.text];
-	CGSize optimumSize = [rtLabel optimumSize];
-	return optimumSize.height + VERSE_LABEL_HEIGHT + 2 * CELL_SPACING;
-
-}
-
-- (NSString *) formatResultText : (NSString *) txt {
-
-
-	return txt;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {    
     static NSString* CellIdentifier = @"ResultCell";
     RTLabel * textLabel = nil;
     UILabel* verseLabel = nil;
 
+    NSLog(@"drawing cell : %d", indexPath.row);
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier: CellIdentifier];
     if ( cell == nil ) 
     {
@@ -86,37 +102,66 @@
         verseLabel = (UILabel*)[cell.contentView viewWithTag: CELLLABELVIEW];
     }
 
-    VerseEntry * entry = [searchData objectAtIndex:[indexPath row]];
+    VerseEntry * entry = [searchResults objectAtIndex:[indexPath row]];
     verseLabel.text = [NSString stringWithFormat:@"%@ %d:%@", entry.book, entry.chapter,entry.verses ];
-    [textLabel setText:[NSString stringWithFormat:@"%@", [self formatResultText:entry.text] ]];
+    [textLabel setText:[self formatResultText:entry.text]];
      
     return cell;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	return NO;
+	NSValue * entry = [searchData objectAtIndex:[indexPath row]];
+	CGSize optimumSize = [entry CGSizeValue];
+    
+	NSLog(@"height cell[%d] : %f ", indexPath.row, optimumSize.height);    
+	return optimumSize.height + VERSE_LABEL_HEIGHT + 2 * CELL_SPACING;
+    
+}
+#pragma mark - searchDisplayControllerDelegate
+
+// this function is mainly for height calculating
+- (void) refreshResults 
+{
+    int i = 1;
+    for ( VerseEntry * entry in searchResults) {
+     
+        if ((i++ % 15) == 0)[self.tableView reloadData];
+     
+        RTLabel * rtLabel = [[RTLabel alloc] initWithFrame:CGRectMake(CELL_SPACING, VERSE_LABEL_HEIGHT + CELL_SPACING, self.view.frame.size.width - CELL_SPACING, 100)];
+        [rtLabel setText:entry.text];
+        [searchData addObject: [NSValue valueWithCGSize:[rtLabel optimumSize]]];
+        [rtLabel release];
+    }	
+    
+    
 }
 
-#pragma mark - searchDisplayControllerDelegate
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-
+	//[myLoading startAnimating];
 	[searchData release];
-	searchData = [BibleDataBaseController searchString:[searchBar.text UTF8String]];
+	searchData = [[NSMutableArray alloc] initWithCapacity:1];
+    searchResults = [BibleDataBaseController searchString:[searchBar.text UTF8String]];
 	[searchBar resignFirstResponder];
-	[self.tableView reloadData];
+    [self refreshResults];
+
 }
 
 - (void)dealloc {
     [searchData release];
+    searchResults = nil;
+    [myLoading release];
     [super dealloc];
 }
 - (void) clear:(id) ignored {
 	UISearchBar * myBar = (UISearchBar *) self.tableView.tableHeaderView;
 	myBar.text = nil;
 	[searchData release];
-    	searchData = [[NSArray alloc] init];
+    searchData = [[NSMutableArray alloc] init];
+    searchResults = nil;
 	[self.tableView reloadData];
 }
 

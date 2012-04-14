@@ -10,7 +10,9 @@
 
 @interface SearchViewController : VersesViewController <UIWebViewDelegate, UISearchBarDelegate>
 {
-    NSArray *searchData;
-}
+    NSMutableArray *searchData;
+    NSArray * searchResults;
+    UIActivityIndicatorView * myLoading;
+ }
 
 @end

@@ -19,7 +19,7 @@
 
     // Set up the cell...
 	if (cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:MyIdentifier] autorelease];
+		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MyIdentifier] autorelease];
 	}
 	
 	VerseEntry * entry = [self.myData.myVerses objectAtIndex:[indexPath row]];
