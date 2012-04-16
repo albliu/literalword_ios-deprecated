@@ -47,8 +47,9 @@ enum {
 	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	[items addObject:flex];
 	[flex release];
-
+    [self addButtonToToolBar:items Title:@"set" Tag:UNDERLINE_BUTTON Action:@selector(testSet:)];
 		
+    
 	[toolbar setItems:items];	
 	[items release];
 
@@ -89,6 +90,12 @@ enum {
 
 }
 
+- (void) testSet:(id) ignored {
+    NSString *jsString = [[NSString alloc] initWithUTF8String:"editor.setHTML('<div> you better work! </div>')"];
+	[self.editView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];    
+
+}
 
 - (void) undo:(id) ignored {
 
@@ -121,11 +128,6 @@ enum {
 
 }
 
-- (id) initWithNote:(NoteEntry *) note {
-	initNote = note;
-	return [self init];
-}
-
 - (void)loadView {
 
     [super loadView];
@@ -135,6 +137,19 @@ enum {
     UIToolbar * toolbar = [self setupEditToolBar];
     [self.view addSubview:toolbar]; 
     [toolbar release];
+    
+    
+    UITextView * title = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, (self.view.frame.size.width - 80), 44)];
+    title.editable = YES;
+    //title.text = @"Change Me";
+    [title setFont: [UIFont systemFontOfSize:14]];
+    [title sizeToFit];
+    title.backgroundColor = [UIColor clearColor];
+    title.textColor = [UIColor whiteColor];
+    [title becomeFirstResponder];
+    self.navigationItem.titleView = title;
+    [title release];
+    
 
 }
 
@@ -143,25 +158,43 @@ enum {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 
+    
     [self.editView loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"document" ofType:@"html"]isDirectory:NO]]];	
     [self.navigationController setToolbarHidden:YES];
-
+    
+    
     UIBarButtonItem *save = [[UIBarButtonItem alloc] initWithTitle:@"save" style:UIBarButtonItemStyleBordered target:self action:@selector(save:)];
     self.navigationItem.rightBarButtonItem = save;
     [save release];
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
+- (void) newNote {
 
-    if (initNote != nil) {
-	[[[[UIAlertView alloc] initWithTitle: [NSString stringWithUTF8String:"loading"] message:initNote.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
+    
+    
+    UITextView * title = (UITextView *) self.navigationItem.titleView;
+    title.text = @"";
+    
+    NSString *jsString = [[NSString alloc] initWithFormat:@"editor.setHTML('<div><br></div>')"];
+    [self.editView stringByEvaluatingJavaScriptFromString:jsString];  
+    [jsString release];
 
-	NSString *jsString = [[NSString alloc] initWithFormat:@"editor.setHTML('%@')", initNote.body];
-	[webView stringByEvaluatingJavaScriptFromString:jsString];  
-	[jsString release];
+    
+    
+}
+- (void)loadNote:(NoteEntry *)note {
 
-	initNote = nil;
-    }
+ 
+    [[[[UIAlertView alloc] initWithTitle: note.title message:note.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
+
+        
+        UITextView * title = (UITextView *) self.navigationItem.titleView;
+        title.text = note.title;
+        
+        NSString *jsString = [[NSString alloc] initWithFormat:@"editor.setHTML(\"%@\")", note.body];
+        [self.editView stringByEvaluatingJavaScriptFromString:jsString];  
+        [jsString release];
+
 
 
 }
@@ -173,12 +206,13 @@ enum {
 }
 
 - (void) save:(id) ignored {
-
+    
 	NSString *jsString = [[NSString alloc] initWithUTF8String:"editor.getHTML()"];
 	NSString * obj = [self.editView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-	[[self myDelegate] saveNote:@"untitled" Body:obj ];
+    UITextView * title = (UITextView *) self.navigationItem.titleView; 
+	[[self myDelegate] saveNote:title.text Body:obj ];
 	
 
 }

@@ -41,7 +41,7 @@
 
 
 
-	// Show 4 buttons
+	// Show 6 buttons
 
 	UIToolbar *tools = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 240.0f, 44.01f)];
 	tools.clearsContextBeforeDrawing = NO;

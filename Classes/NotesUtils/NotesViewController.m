@@ -3,7 +3,16 @@
 
 @implementation NotesViewController
 @synthesize myData=_myData;
+@synthesize myedit = _myedit;
 
+- (NotesEditViewController *) myedit {
+    if (_myedit == nil) { 
+        _myedit = [[NotesEditViewController alloc] init];
+        _myedit.myDelegate = self;
+    }
+    return _myedit;
+
+}
 
 - (id) initWithNotes:(NotesData *) data {
 	self = [ super initWithStyle: UITableViewStylePlain];
@@ -20,8 +29,8 @@
 	// setup our list view to autoresizing in case we decide to support autorotation along the other UViewControllers
 	self.tableView.autoresizesSubviews = YES;
 	self.tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
- 
- 
+
+    
 }
 
 - (void) viewDidLoad {
@@ -78,10 +87,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	NoteEntry * entry = [self.myData.myNotes objectAtIndex:[indexPath row]];
 	
-	NotesEditViewController * myView = [[NotesEditViewController alloc] initWithNote:entry] ;
-	myView.myDelegate = self;
-	[self.navigationController pushViewController:myView animated:YES];
-	[myView release];
+	
+	[self.navigationController pushViewController:self.myedit animated:YES];
+    [self.myedit loadNote:entry];
 
 //	[[[[UIAlertView alloc] initWithTitle: [NSString stringWithFormat:@"%@", entry.title] message:entry.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
 }
@@ -96,6 +104,7 @@
 
 - (void)dealloc {
     [self.myData release];
+    [self.myedit release];
     [super dealloc];
 }
 
@@ -116,9 +125,8 @@
 
 - (void) newnote:(id) ignored {
 
-	NotesEditViewController * myView = [[NotesEditViewController alloc] init] ;
-	myView.myDelegate = self;
-	[self.navigationController pushViewController:myView animated:YES];
-	[myView release];
+   
+	[self.navigationController pushViewController:self.myedit animated:YES];
+    [self.myedit newNote];
 }
 @end

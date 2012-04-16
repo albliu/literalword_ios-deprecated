@@ -25,5 +25,6 @@
 @property (nonatomic, retain) UIWebView *editView;
 @property (nonatomic, assign) id <NotesEditDelegate> myDelegate;
 
-- (id) initWithNote:(NoteEntry *) note;
+- (void) newNote;
+- (void) loadNote:(NoteEntry *) note;
 @end

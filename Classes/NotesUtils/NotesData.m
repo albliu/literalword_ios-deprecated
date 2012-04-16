@@ -6,7 +6,7 @@
 @synthesize myDB = _myDB;
 
 - (id) init {
-    self.myDB = nil;
+    self.myDB = [[NotesDbController alloc] init];
     self.myNotes = [[NSMutableArray alloc] initWithCapacity:10];
 		
     return self;
