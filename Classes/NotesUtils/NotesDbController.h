@@ -30,6 +30,7 @@
 - (void) deleteNote: (int) row_id;
 - (void) deleteAllNotes;
 - (NoteEntry *) findNote: (int) row_id; 
+- (void) updateNote:(NoteEntry *) note;
 
 @end
 

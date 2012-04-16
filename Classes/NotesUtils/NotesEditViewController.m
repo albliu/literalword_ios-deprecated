@@ -148,11 +148,13 @@ enum {
     [toolbar release];
     
     
-    UITextView * title = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, (self.view.frame.size.width - 80), 44)];
+    UITextView * title = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, (self.view.frame.size.width - 80), 30)];
     title.editable = YES;
     //title.text = @"Change Me";
+    title.scrollEnabled = NO;
     [title setFont: [UIFont systemFontOfSize:14]];
     [title sizeToFit];
+    title.delegate = self;
     title.backgroundColor = [UIColor clearColor];
     title.textColor = [UIColor whiteColor];
     [title becomeFirstResponder];
@@ -195,7 +197,7 @@ enum {
 - (void)loadNote:(NoteEntry *)note {
 
  
-    [[[[UIAlertView alloc] initWithTitle: note.title message:note.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
+   // [[[[UIAlertView alloc] initWithTitle: note.title message:note.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
 
        	currNote_id = note.rowid; 
         UITextView * title = (UITextView *) self.navigationItem.titleView;
@@ -224,7 +226,9 @@ enum {
     UITextView * title = (UITextView *) self.navigationItem.titleView; 
 	[[self myDelegate] saveNote:title.text Body:obj ID:currNote_id];
 	
-
+    UIAlertView * alert = [[[UIAlertView alloc] initWithTitle:@"Saved" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
+    //[alert setTransform:CGAffineTransformMakeScale(0.5f, 0.5f)];
+    [alert show];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -237,5 +241,14 @@ enum {
             (webView.loading?@"NO":@"YES"));
 }
 
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text{
+    if(range.length > text.length){
+        return YES;
+    }else if([[textView text] length] + text.length > TITLE_MAX_CHAR){
+        return NO;
+    }
+
+    return YES;
+}
 
 @end

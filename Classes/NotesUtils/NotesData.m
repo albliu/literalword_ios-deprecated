@@ -17,7 +17,6 @@
     return self;
 }
 
-
 - (void) clear {
 	[self.myDB deleteAllNotes];
 	[self.myNotes removeAllObjects];
@@ -30,13 +29,28 @@
 	[self.myDB deleteNote:note.rowid];	
 }
 
+
+- (int) findNote:(int) rowid {
+    
+    int i = -1;
+    for (NoteEntry * obj in self.myNotes) {
+        i++;
+        if (obj.rowid == rowid) return i;
+        
+    }
+    
+    return i;
+    
+}
+
 - (void) addToList:(NoteEntry *) note {
 	if (note.rowid != NEW_NOTE) {
-		NSLog(@"replace note");
-	}
-
-	note.rowid = [self.myDB addNote:[note.title UTF8String] Body:[note.body UTF8String]];
-	[self.myNotes addObject:note];
+		[self.myDB updateNote:note];
+        [self.myNotes replaceObjectAtIndex:[self findNote:note.rowid] withObject:note];
+	} else {
+        note.rowid = [self.myDB addNote:[note.title UTF8String] Body:[note.body UTF8String]];
+        [self.myNotes addObject:note];
+    }
 }
 
 

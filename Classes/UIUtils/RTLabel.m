@@ -615,7 +615,7 @@
 	{
 		[scanner scanUpToString:@"<!--" intoString:NULL];
 		[scanner scanUpToString:@"-->" intoString:&text];
-		data = [data stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"<!--%@-->", text] withString:@""];
+		data = [data stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@-->", text] withString:@""];
 	}
 	
 	scanner = nil;

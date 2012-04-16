@@ -147,6 +147,29 @@ static sqlite3 *database = nil;
 	return [result autorelease];
 }
 
+- (void) updateNote:(NoteEntry *) note {
+    sqlite3_stmt	*statement;
+    
+    
+    const char * update_sql = [[NSString stringWithFormat:
+                                @"UPDATE %s SET %s = '%@', %s = '%@' WHERE %s = %d", 
+                                NOTES_TABLE, 
+                                KEY_TITLE, note.title,
+                                KEY_BODY, note.body,
+                                KEY_ROWID, note.rowid ] UTF8String];
+    
+    NSLog(@"%s", update_sql);
+    
+    if(sqlite3_prepare_v2(database, update_sql, -1, &statement, NULL) == SQLITE_OK) { 
+        
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Error while deleting data. '%s'", sqlite3_errmsg(database));
+        }
+        sqlite3_finalize(statement);
+    }
+
+}
+
 - (void) deleteNote:(int) row_id {
 
 	sqlite3_stmt	*statement;
