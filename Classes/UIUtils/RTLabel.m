@@ -609,10 +609,26 @@
 	
 	int last_position = 0;
 	scanner = [NSScanner scannerWithString:data];
+
+	// get rid of comments first
+	while (![scanner isAtEnd]) 
+	{
+		[scanner scanUpToString:@"<!--" intoString:NULL];
+		[scanner scanUpToString:@"-->" intoString:&text];
+		data = [data stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"<!--%@-->", text] withString:@""];
+	}
+	
+	scanner = nil;
+	text = nil;
+	// restart scanner
+	scanner = [NSScanner scannerWithString:data];
+	
+
 	while (![scanner isAtEnd])
     {
 		[scanner scanUpToString:@"<" intoString:NULL];
 		[scanner scanUpToString:@">" intoString:&text];
+		//NSLog(@"text = %@\n", text);	
 		
 		NSString *delimiter = [NSString stringWithFormat:@"%@>", text];
 		int position = [data rangeOfString:delimiter].location;

@@ -7,11 +7,11 @@
 @synthesize searchView=_searchView;
 @synthesize notesView=_notesView;
 
--(SearchViewController2 *) searchView {
+-(SearchViewController *) searchView {
 
 	if (!_searchView) {
-		//_searchView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
-        _searchView = [[SearchViewController2 alloc] init];
+		_searchView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
+        //_searchView = [[SearchViewController2 alloc] init];
 		_searchView.title = @"Search"; 
 	}
 	return _searchView;

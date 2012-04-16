@@ -247,7 +247,7 @@ static sqlite3 *bibleDB;
 				const unsigned char *book = sqlite3_column_text(statement, 0);
 				int ver = sqlite3_column_int(statement, 2);
 				int chap = sqlite3_column_int(statement, 1);
-                result = [result stringByAppendingFormat:@"<b><font size=\"small\">%s %d:%d</font></b><br>%s", book, chap, ver, text];
+                result = [result stringByAppendingFormat:@"<b><font size=\"small\">%s %d:%d</font></b><br>%@", book, chap, ver, [[NSString stringWithUTF8String:(const char *)text] stringByReplacingOccurrencesOfString:@"<p></p>" withString:@""]];
 				
                 
                 result = [result stringByAppendingString:@"</td></tr>"]; 
