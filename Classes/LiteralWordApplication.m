@@ -41,6 +41,7 @@
 
 	[VersesDataBaseController openDataBase];
 	[BibleDataBaseController initBibleDataBase];
+	[NotesDbController openDataBase];
 	application.statusBarHidden = YES;	
 
 	[self.window addSubview: self.rootview.view];
@@ -52,6 +53,7 @@
 
         [VersesDataBaseController closeDataBase];
 	[BibleDataBaseController closeBibleDataBase];
+        [NotesDbController closeDataBase];
 }
 
 

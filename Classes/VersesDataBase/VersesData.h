@@ -1,5 +1,4 @@
 #import "../BibleUtils/BibleUtils.h"
-#import "sqlite3.h"
 
 
 @interface VersesData : NSObject {

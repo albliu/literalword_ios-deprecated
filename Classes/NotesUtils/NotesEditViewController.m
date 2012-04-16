@@ -1,12 +1,12 @@
 //
-//  NotesViewController.m
+//  NotesEditViewController.m
 //  LiteralWord
 //
 //  Created by Albert Liu on 4/12/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "NotesViewController.h"
+#import "NotesEditViewController.h"
 
 enum {
 	NOT_NEEDED = 500,
@@ -15,12 +15,12 @@ enum {
 	UNDERLINE_BUTTON,
 };
 
-@interface NotesViewController (edit) {
+@interface NotesEditViewController (edit) {
 }
 - (UIToolbar * ) setupEditToolBar; 
 @end
 
-@implementation NotesViewController(edit) 
+@implementation NotesEditViewController(edit) 
 
 
 - (void) addButtonToToolBar:(NSMutableArray *) toolbar Title:(NSString *) title Tag:(int) t Action:(SEL) act {
@@ -106,21 +106,25 @@ enum {
 
 @end
 
-@implementation NotesViewController
+@implementation NotesEditViewController
 
 @synthesize editView;   
+@synthesize myDelegate;   
 
 -(UIWebView *) editView{
 	if (_editView == nil) { 
 		_editView = [[UIWebView alloc] initWithFrame:CGRectMake(0, NOTES_TOOLBAR_HEIGHT, self.view.frame.size.width, self.view.frame.size.height)];
 		_editView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-		//[_editView setDelegate:self];
+		[_editView setDelegate:self];
 	}
 	return _editView;
 
 }
 
-
+- (id) initWithNote:(NoteEntry *) note {
+	initNote = note;
+	return [self init];
+}
 
 - (void)loadView {
 
@@ -145,9 +149,22 @@ enum {
     UIBarButtonItem *save = [[UIBarButtonItem alloc] initWithTitle:@"save" style:UIBarButtonItemStyleBordered target:self action:@selector(save:)];
     self.navigationItem.rightBarButtonItem = save;
     [save release];
-
 }
 
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+
+    if (initNote != nil) {
+	[[[[UIAlertView alloc] initWithTitle: [NSString stringWithUTF8String:"loading"] message:initNote.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
+
+	NSString *jsString = [[NSString alloc] initWithFormat:@"editor.setHTML('%@')", initNote.body];
+	[webView stringByEvaluatingJavaScriptFromString:jsString];  
+	[jsString release];
+
+	initNote = nil;
+    }
+
+
+}
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -161,7 +178,7 @@ enum {
 	NSString * obj = [self.editView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-	[[[[UIAlertView alloc] initWithTitle: [NSString stringWithUTF8String:"saving"] message:obj delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
+	[[self myDelegate] saveNote:@"untitled" Body:obj ];
 	
 
 }

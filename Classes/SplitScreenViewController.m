@@ -7,7 +7,6 @@
 @synthesize bibleView=_bibleView;
 @synthesize secbibleView=_secbibleView;
 @synthesize searchView=_searchView;
-@synthesize notesView=_notesView;
 
 -(SearchViewController *) searchView {
 
@@ -18,15 +17,7 @@
 	return _searchView;
 
 }
--(NotesViewController *) notesView {
 
-	if (!_notesView) {
-		_notesView = [[NotesViewController alloc] init];
-		_notesView.title = @"Notes"; 
-	}
-	return _notesView;
-
-}
 -(BibleViewController *) bibleView{
 	if (!_bibleView) {
 		_bibleView = [[BibleViewController alloc] initWithFrame:CGRectMake(BORDER_OFFSET,0, self.view.bounds.size.width - 2*BORDER_OFFSET, self.view.bounds.size.height)];
@@ -90,10 +81,10 @@
 	[search release];
 
 
-	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"edit.png"] style:UIBarButtonItemStylePlain target:self action:@selector(notes:)];
-	notes.width = 35.0f;
-	[toolbarItems addObject:notes];
-	[notes release];
+	UIBarButtonItem *mynotes = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"edit.png"] style:UIBarButtonItemStylePlain target:self action:@selector(notes:)];
+	mynotes.width = 35.0f;
+	[toolbarItems addObject:mynotes];
+	[mynotes release];
 
 	flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	[toolbarItems addObject:flex];
@@ -178,7 +169,10 @@
 }
 - (void) notes:(id)ignored {
 
-	[self.navigationController pushViewController:self.notesView animated:YES];
+	NotesViewController * myView = [[NotesViewController alloc] initWithNotes:notes] ;
+	myView.title = @"Notes"; 
+	[self.navigationController pushViewController:myView animated:YES];
+	[myView release];
 
 }
 - (void) fullscreen:(id)ignored {
@@ -228,6 +222,8 @@
 	history = [[HistoryData alloc] init];
 	bookmarks = [[BookmarkData alloc] init];
 	memory = [[MemoryVersesData alloc] init];
+	notes = [[NotesData alloc] init];
+
 
 	return [super init];
 }	
@@ -254,10 +250,10 @@
 	[history release]; 
 	[bookmarks release];
 	[memory release];
+	[notes release];
 	[self.bibleView release];	
 	[self.secbibleView release];	
 	[self.searchView release];	
-	[self.notesView release];	
 	[super dealloc];
 }
 

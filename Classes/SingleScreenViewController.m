@@ -5,13 +5,12 @@
 
 @synthesize bibleView=_bibleView;
 @synthesize searchView=_searchView;
-@synthesize notesView=_notesView;
 
--(SearchViewController2 *) searchView {
+-(SearchViewController *) searchView {
 
 	if (!_searchView) {
-		//_searchView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
-        _searchView = [[SearchViewController2 alloc] init];
+		_searchView = [[SearchViewController alloc] initWithDelegate: self.bibleView Data:nil];
+        //_searchView = [[SearchViewController2 alloc] init];
 		_searchView.title = @"Search"; 
 	}
 	return _searchView;
@@ -24,21 +23,13 @@
 	}
 	return _bibleView;
 }
--(NotesViewController *) notesView {
-
-	if (!_notesView) {
-		_notesView = [[NotesViewController alloc] init];
-		_notesView.title = @"Notes"; 
-	}
-	return _notesView;
-
-}
 
 - (id) init {
 
 	history = [[HistoryData alloc] init];
 	bookmarks = [[BookmarkData alloc] init];
 	memory = [[MemoryVersesData alloc] init];
+	notes = [[NotesData alloc] init];
 
 	return [super init];
 }	
@@ -59,10 +50,10 @@
 	[search release];
 
 
-	UIBarButtonItem *notes = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(notes:)];
-	notes.style = UIBarButtonItemStyleBordered;
-	[toolbarItems addObject:notes];
-	[notes release];
+	UIBarButtonItem *mynotes = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(notes:)];
+	mynotes.style = UIBarButtonItemStyleBordered;
+	[toolbarItems addObject:mynotes];
+	[mynotes release];
 
 	UIBarButtonItem *memoryverse = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"memory.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(memverse:)];
 	[toolbarItems addObject:memoryverse];
@@ -127,8 +118,8 @@
 	[history release]; 
 	[bookmarks release];
 	[memory release];
+	[notes release];
 	[self.bibleView release];	
-	[self.notesView release];	
 	[self.searchView release];	
 	[super dealloc];
 }
@@ -225,7 +216,10 @@
 - (void) notes:(id)ignored {
 	[self hideToolBar:YES];
 
-	[self.navigationController pushViewController:self.notesView animated:YES];
+	NotesViewController * myView = [[NotesViewController alloc] initWithNotes:notes] ;
+	myView.title = @"Notes"; 
+	[self.navigationController pushViewController:myView animated:YES];
+	[myView release];
 
 }
 - (void) fullscreen:(id)ignored {
