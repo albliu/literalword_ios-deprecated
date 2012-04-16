@@ -128,9 +128,18 @@ enum {
 
 }
 
+- (id) initWithFrame :(CGRect) f {
+	currNote_id = NEW_NOTE;
+	myinitFrame = f;
+	return [self init];
+
+}
+
 - (void)loadView {
 
     [super loadView];
+    self.view.frame = myinitFrame;
+
 
     [self.view addSubview:self.editView];
 
@@ -174,6 +183,7 @@ enum {
     
     UITextView * title = (UITextView *) self.navigationItem.titleView;
     title.text = @"";
+    currNote_id = NEW_NOTE;
     
     NSString *jsString = [[NSString alloc] initWithFormat:@"editor.setHTML('<div><br></div>')"];
     [self.editView stringByEvaluatingJavaScriptFromString:jsString];  
@@ -187,7 +197,7 @@ enum {
  
     [[[[UIAlertView alloc] initWithTitle: note.title message:note.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
 
-        
+       	currNote_id = note.rowid; 
         UITextView * title = (UITextView *) self.navigationItem.titleView;
         title.text = note.title;
         
@@ -212,7 +222,7 @@ enum {
 	[jsString release];
 
     UITextView * title = (UITextView *) self.navigationItem.titleView; 
-	[[self myDelegate] saveNote:title.text Body:obj ];
+	[[self myDelegate] saveNote:title.text Body:obj ID:currNote_id];
 	
 
 }
@@ -221,4 +231,11 @@ enum {
 {
 	return YES;
 }
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+       NSLog(@"didFinish: %@; stillLoading:%@", [[webView request]URL],
+            (webView.loading?@"NO":@"YES"));
+}
+
+
 @end

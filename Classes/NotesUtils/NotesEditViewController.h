@@ -6,25 +6,28 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#define NOTES_TOOLBAR_HEIGHT 35 
-
 #import <UIKit/UIKit.h>
 #import "NotesDbController.h"
 
+#define NOTES_TOOLBAR_HEIGHT 35 
+#define NEW_NOTE -1
 @protocol NotesEditDelegate
-- (void) saveNote: (NSString *) title Body:(NSString *) body;
+- (void) saveNote: (NSString *) title Body:(NSString *) body ID:(int) i;
 @end
 
 
 @interface NotesEditViewController : UIViewController<UIWebViewDelegate> {
-	NoteEntry * initNote;    
+	int currNote_id;
 	UIWebView *_editView;
 	id <NotesEditDelegate> myDelegate;
+
+	CGRect myinitFrame;
 }
 
 @property (nonatomic, retain) UIWebView *editView;
 @property (nonatomic, assign) id <NotesEditDelegate> myDelegate;
 
+- (id) initWithFrame: (CGRect) f;
 - (void) newNote;
 - (void) loadNote:(NoteEntry *) note;
 @end

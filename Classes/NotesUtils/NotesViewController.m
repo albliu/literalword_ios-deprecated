@@ -7,7 +7,7 @@
 
 - (NotesEditViewController *) myedit {
     if (_myedit == nil) { 
-        _myedit = [[NotesEditViewController alloc] init];
+        _myedit = [[NotesEditViewController alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
         _myedit.myDelegate = self;
     }
     return _myedit;
@@ -30,6 +30,9 @@
 	self.tableView.autoresizesSubviews = YES;
 	self.tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 
+	// create initial frame!
+	[self.view addSubview:self.myedit.view];
+	[self.myedit.view removeFromSuperview];
     
 }
 
@@ -96,8 +99,8 @@
 
 
 
-- (void) saveNote: (NSString *) title Body:(NSString *) body {
-	[self.myData addNewNote:title Body:body];	
+- (void) saveNote: (NSString *) title Body:(NSString *) body ID:(int) i {
+	[self.myData addNewNote:title Body:body ID:i];	
 	[self.tableView reloadData];	// populate our table's data
 
 }

@@ -11,7 +11,7 @@
 @property (nonatomic, retain) NotesDbController * myDB;
 
 
-- (void) addNewNote:(NSString *) title Body:(NSString *) body; 
+- (void) addNewNote:(NSString *) title Body:(NSString *) body ID:(int) i; 
 - (void) addToList:(NoteEntry *) note; 
 - (void) removeFromList:(int) index; 
 - (void) clear;

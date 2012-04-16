@@ -1,4 +1,5 @@
 #import "NotesData.h"
+#import "NotesEditViewController.h"
 
 @implementation NotesData
 
@@ -8,7 +9,11 @@
 - (id) init {
     self.myDB = [[NotesDbController alloc] init];
     self.myNotes = [[NSMutableArray alloc] initWithCapacity:10];
-		
+
+    NSArray * tmp = [self.myDB findAllNotes];
+    for (NoteEntry * obj in tmp) {
+        [self.myNotes addObject:obj];
+    }	
     return self;
 }
 
@@ -26,15 +31,18 @@
 }
 
 - (void) addToList:(NoteEntry *) note {
+	if (note.rowid != NEW_NOTE) {
+		NSLog(@"replace note");
+	}
 
 	note.rowid = [self.myDB addNote:[note.title UTF8String] Body:[note.body UTF8String]];
 	[self.myNotes addObject:note];
 }
 
 
-- (void) addNewNote:(NSString *) title Body:(NSString *) body {
+- (void) addNewNote:(NSString *) title Body:(NSString *) body ID:(int) i {
 		
-	NoteEntry * entry = [[NoteEntry alloc] initWithTitle:title Body: body ID:-1];
+	NoteEntry * entry = [[NoteEntry alloc] initWithTitle:title Body: body ID:i];
 	[self addToList:entry];
 	[entry release];	
 
