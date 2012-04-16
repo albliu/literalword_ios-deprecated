@@ -7,7 +7,6 @@
 	BibleViewController * _bibleView;
 	SearchViewController * _searchView;
 
-
 	NotesData * notes;
 	HistoryData * history;
 	BookmarkData * bookmarks;

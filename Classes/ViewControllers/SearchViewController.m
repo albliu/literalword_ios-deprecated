@@ -7,7 +7,8 @@
 
 @implementation SearchViewController
 
-static int loadedCount;
+int loadedCount;
+int currRotation;
 
 - (NSString *) formatResultText : (NSString *) txt {
     
@@ -19,7 +20,7 @@ static int loadedCount;
 	txt = [txt stringByReplacingOccurrencesOfString:@"</vn>" withString:@"-->"];
 	txt = [txt stringByReplacingOccurrencesOfString:@"<sv>" withString:@"<!--"];
 	txt = [txt stringByReplacingOccurrencesOfString:@"</sv>" withString:@"-->"];
-    
+    txt = [txt stringByReplacingOccurrencesOfString:@"<p></p>" withString:@""];
 	return txt;
 }
 
@@ -29,7 +30,7 @@ static int loadedCount;
 #pragma mark - View lifecycle
 - (void) loadView {
 	[super loadView];
-
+    currRotation = 0;
 	myLoading = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 
 	myLoading.center = self.view.center;
@@ -51,7 +52,13 @@ static int loadedCount;
 
 
 }
-
+-(void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    
+    if (currRotation == 0) currRotation = 1;
+    else currRotation = 0;
+    
+    [self.tableView reloadData];
+}
 #pragma mark - Table view data source
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -78,18 +85,23 @@ static int loadedCount;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    static NSString* CellIdentifier = @"ResultCell";
+    NSString* CellIdentifier;
     RTLabel * textLabel = nil;
     UILabel* verseLabel = nil;
 
-    NSLog(@"drawing cell : %d", indexPath.row);
+    if (currRotation == 0) CellIdentifier = @"currRotationCell";
+    else CellIdentifier= @"rotatedCell";
+    
+    //NSLog(@"drawing cell : %d", indexPath.row);
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier: CellIdentifier];
     if ( cell == nil ) 
     {
         cell = [[[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault 
                                        reuseIdentifier: CellIdentifier] autorelease];
-
+    if (currRotation == 0)
 	textLabel = [[RTLabel alloc] initWithFrame:CGRectMake(CELL_SPACING, VERSE_LABEL_HEIGHT + CELL_SPACING, self.view.frame.size.width - CELL_SPACING, 100)];
+    else 
+       textLabel = [[RTLabel alloc] initWithFrame:CGRectMake(CELL_SPACING, VERSE_LABEL_HEIGHT + CELL_SPACING, self.view.frame.size.height - CELL_SPACING, 100)]; 
     	[textLabel setParagraphReplacement:@""];
 	textLabel.tag = CELLTEXTVIEW;
         [cell.contentView addSubview: textLabel];
@@ -120,10 +132,11 @@ static int loadedCount;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	NSValue * entry = [searchData objectAtIndex:[indexPath row]];
+	NSArray * curr = [searchData objectAtIndex:[indexPath row]];
+    NSValue * entry = [curr objectAtIndex:currRotation];
 	CGSize optimumSize = [entry CGSizeValue];
     
-	NSLog(@"height cell[%d] : %f ", indexPath.row, optimumSize.height);    
+	//NSLog(@"height cell[%d] : %f (rotation %d)", indexPath.row, optimumSize.height, currRotation);    
 	return optimumSize.height + VERSE_LABEL_HEIGHT + 2 * CELL_SPACING;
     
 }
@@ -153,18 +166,41 @@ static int loadedCount;
 
 - (void) refreshThread {
   
+    
+    NSMutableArray * inserts = [[NSMutableArray alloc] initWithCapacity:1];
     [myLoading startAnimating];
     while (1) {
         if (loadedCount == [searchResults count]) return;
+        
+        // add new index path
+        NSIndexPath * newPath = [NSIndexPath indexPathForRow:loadedCount inSection:0];
+        [inserts addObject:newPath];
+        
+        //figure out cell widths 
+        
         VerseEntry * entry = [searchResults objectAtIndex:loadedCount];
+        
         RTLabel * rtLabel = [[RTLabel alloc] initWithFrame:CGRectMake(CELL_SPACING, VERSE_LABEL_HEIGHT + CELL_SPACING, self.view.frame.size.width - CELL_SPACING, 100)];
         [rtLabel setText:entry.text];
-        [searchData addObject: [NSValue valueWithCGSize:[rtLabel optimumSize]]];
+        NSValue * curr = [NSValue valueWithCGSize:[rtLabel optimumSize]];
         [rtLabel release];
+        
+        rtLabel = [[RTLabel alloc] initWithFrame:CGRectMake(CELL_SPACING, VERSE_LABEL_HEIGHT + CELL_SPACING, self.view.frame.size.height - CELL_SPACING, 100)];
+        [rtLabel setText:entry.text];   
+        NSValue * rotate = [NSValue valueWithCGSize:[rtLabel optimumSize]];
+        [rtLabel release];
+        
+        NSArray * heights = [NSArray arrayWithObjects:curr,rotate, nil];
+        [searchData addObject: heights];
+    
         if (++loadedCount % LOAD_REFRESH_RATE == 0) break;
         
     }	
-    [self.tableView reloadData];
+    
+    [self.tableView beginUpdates];
+    [self.tableView insertRowsAtIndexPaths:inserts withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView endUpdates];
+    //[self.tableView reloadData];
     [myLoading stopAnimating];
 }
 
