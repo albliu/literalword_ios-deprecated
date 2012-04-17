@@ -118,6 +118,7 @@ int currRotation;
         textLabel.font = [UIFont systemFontOfSize:VERSE_TEXT_FONT_SIZE];
         //textLabel.lineBreakMode = UILineBreakModeWordWrap;
         textLabel.numberOfLines = 2;
+	textLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
         [cell.contentView addSubview: textLabel];
         [textLabel release];
         

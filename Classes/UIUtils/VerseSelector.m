@@ -34,7 +34,7 @@
 	[self setMyFrames];
 
 	[self loadClearView];
-	int myheight = ( myHeight > ( rows * VERSES_CELL_SIDE) ) ? (rows * VERSES_CELL_SIDE) : myHeight;	
+	int myheight = ( myHeight > ( rows * VERSES_CELL_SIDE) ) ? (rows * VERSES_CELL_SIDE) : myHeight + VERSES_CELL_SIDE/2;	
 
 
 	UIView * viewFrame = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - myWidth / 2 - VERSES_TABLE_BORDER, self.view.frame.size.height / 2 - myheight / 2 - VERSES_TABLE_BORDER, myWidth + 2*VERSES_TABLE_BORDER, myheight + 2*VERSES_TABLE_BORDER)];
@@ -98,9 +98,10 @@
 	for (int i = 0; i < cols; i++) {
 		int value = (row * cols) + i + 1;	
 		if (value > ver) break;
-		UIButton * tmp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+		UIButton * tmp = [UIButton buttonWithType:UIButtonTypeCustom];
 		tmp.frame = CGRectMake(i*VERSES_CELL_SIDE, 0, VERSES_CELL_SIDE, VERSES_CELL_SIDE);
-		tmp.tag = value; 
+		tmp.tag = value;
+		tmp.backgroundColor = [UIColor whiteColor]; 
 		[tmp setTitle:[NSString stringWithFormat:@"%d", value] forState: UIControlStateNormal];	
 		[tmp setTitleColor:[UIColor blackColor] forState: UIControlStateNormal];	
 		[tmp addTarget:self action:@selector(selectedVerse:) forControlEvents:UIControlEventTouchUpInside];

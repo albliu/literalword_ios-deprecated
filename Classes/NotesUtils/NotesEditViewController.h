@@ -17,7 +17,7 @@
 @end
 
 
-@interface NotesEditViewController : UIViewController<UIWebViewDelegate, UIAlertViewDelegate, UITextViewDelegate> {
+@interface NotesEditViewController : UIViewController<UIWebViewDelegate, UIAlertViewDelegate> {
 	int currNote_id;
 	UIWebView *_editView;
 	id <NotesEditDelegate> myDelegate;

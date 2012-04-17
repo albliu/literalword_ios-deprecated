@@ -7,6 +7,7 @@
 //
 
 #import "NotesEditViewController.h"
+#import "../UIUtils/UIUtils.h"
 
 enum {
 	NOT_NEEDED = 500,
@@ -47,7 +48,6 @@ enum {
 	UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	[items addObject:flex];
 	[flex release];
-    [self addButtonToToolBar:items Title:@"set" Tag:UNDERLINE_BUTTON Action:@selector(testSet:)];
 		
     
 	[toolbar setItems:items];	
@@ -87,13 +87,6 @@ enum {
 	[self.editView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 	
-
-}
-
-- (void) testSet:(id) ignored {
-    NSString *jsString = [[NSString alloc] initWithUTF8String:"editor.setHTML('<div> you better work! </div>')"];
-	[self.editView stringByEvaluatingJavaScriptFromString:jsString];  
-	[jsString release];    
 
 }
 
@@ -147,19 +140,15 @@ enum {
     [self.view addSubview:toolbar]; 
     [toolbar release];
     
-    
-    UITextView * title = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, (self.view.frame.size.width - 80), 30)];
-    title.editable = YES;
-    //title.text = @"Change Me";
-    title.scrollEnabled = NO;
-    [title setFont: [UIFont systemFontOfSize:14]];
+   
+    UIButton * title = [UIButton buttonWithType:UIButtonTypeCustom]; 
+    [title setTitle:@"Click to Change title" forState:UIControlStateNormal];
+    [title setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [title.titleLabel setFont: [UIFont systemFontOfSize:14]];
+    [title addTarget:self action:@selector(changeTitle:) forControlEvents:UIControlEventTouchUpInside];
     [title sizeToFit];
-    title.delegate = self;
     title.backgroundColor = [UIColor clearColor];
-    title.textColor = [UIColor whiteColor];
-    [title becomeFirstResponder];
     self.navigationItem.titleView = title;
-    [title release];
     
 
 }
@@ -179,12 +168,28 @@ enum {
     [save release];
 }
 
+- (void) changeTitle:(UIButton *) button {
+    UIAlertView *prompt = [[[UIAlertView alloc]initWithTitle:@"Title" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Done", nil] autorelease];
+    [prompt setAlertViewStyle:UIAlertViewStylePlainTextInput];
+
+    [prompt show];
+
+}
+
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex != [alertView cancelButtonIndex])
+    {
+        UITextField *entered = [(UIAlertView *) alertView textFieldAtIndex:0];
+        UIButton * title = (UIButton *) self.navigationItem.titleView;
+        [title setTitle:entered.text forState:UIControlStateNormal];
+    }
+}
+
 - (void) newNote {
 
-    
-    
-    UITextView * title = (UITextView *) self.navigationItem.titleView;
-    title.text = @"";
+    UIButton * title = (UIButton *) self.navigationItem.titleView;
+    [title setTitle:@"Click to Change title" forState:UIControlStateNormal];
     currNote_id = NEW_NOTE;
     
     NSString *jsString = [[NSString alloc] initWithFormat:@"editor.setHTML('<div><br></div>')"];
@@ -200,8 +205,8 @@ enum {
    // [[[[UIAlertView alloc] initWithTitle: note.title message:note.body delegate:nil cancelButtonTitle:@"Done" otherButtonTitles:nil] autorelease] show];
 
        	currNote_id = note.rowid; 
-        UITextView * title = (UITextView *) self.navigationItem.titleView;
-        title.text = note.title;
+        UIButton * title = (UIButton *) self.navigationItem.titleView;
+        [title setTitle:note.title forState:UIControlStateNormal];
         
         NSString *jsString = [[NSString alloc] initWithFormat:@"editor.setHTML(\"%@\")", note.body];
         [self.editView stringByEvaluatingJavaScriptFromString:jsString];  
@@ -223,11 +228,10 @@ enum {
 	NSString * obj = [self.editView stringByEvaluatingJavaScriptFromString:jsString];  
 	[jsString release];
 
-    UITextView * title = (UITextView *) self.navigationItem.titleView; 
-	[[self myDelegate] saveNote:title.text Body:obj ID:currNote_id];
+    UIButton * title = (UIButton *) self.navigationItem.titleView; 
+	[[self myDelegate] saveNote:title.titleLabel.text Body:obj ID:currNote_id];
 	
     UIAlertView * alert = [[[UIAlertView alloc] initWithTitle:@"Saved" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-    //[alert setTransform:CGAffineTransformMakeScale(0.5f, 0.5f)];
     [alert show];
 }
 
@@ -239,16 +243,6 @@ enum {
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
        NSLog(@"didFinish: %@; stillLoading:%@", [[webView request]URL],
             (webView.loading?@"NO":@"YES"));
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text{
-    if(range.length > text.length){
-        return YES;
-    }else if([[textView text] length] + text.length > TITLE_MAX_CHAR){
-        return NO;
-    }
-
-    return YES;
 }
 
 @end

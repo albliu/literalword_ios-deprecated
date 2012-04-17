@@ -31,26 +31,25 @@
 
 
 - (int) findNote:(int) rowid {
-    
-    int i = -1;
+   
+    int i = 0; 
     for (NoteEntry * obj in self.myNotes) {
-        i++;
         if (obj.rowid == rowid) return i;
-        
+        i++;
     }
     
-    return i;
+    return -1;
     
 }
 
 - (void) addToList:(NoteEntry *) note {
 	if (note.rowid != NEW_NOTE) {
-		[self.myDB updateNote:note];
-        [self.myNotes replaceObjectAtIndex:[self findNote:note.rowid] withObject:note];
+	    [self.myDB updateNote:note];
+            [self.myNotes replaceObjectAtIndex:[self findNote:note.rowid] withObject:note];
 	} else {
-        note.rowid = [self.myDB addNote:[note.title UTF8String] Body:[note.body UTF8String]];
-        [self.myNotes addObject:note];
-    }
+            note.rowid = [self.myDB addNote:[note.title UTF8String] Body:[note.body UTF8String]];
+            [self.myNotes addObject:note];
+        }
 }
 
 
